@@ -57,14 +57,37 @@
                   </p>
                 </div>
 
-                <form action="#">
+                <form action="../includes/signup.inc.php" method="post">
                   <div class="mb-3">
-                    <label for="fullname" class="form-label">Full Name</label>
+                    <label for="firstname" class="form-label">First Name</label>
                     <input
                       class="form-control"
                       type="text"
-                      id="fullname"
-                      placeholder="Enter your name"
+                      id="firstname"
+                      placeholder="Enter your first name"
+                      name="firstname"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="lastname" class="form-label">Last Name</label>
+                    <input
+                      class="form-control"
+                      type="text"
+                      id="lastname"
+                      placeholder="Enter your last name"
+                      name="lastname"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="username" class="form-label">UserName</label>
+                    <input
+                      class="form-control"
+                      type="text"
+                      id="username"
+                      placeholder="Enter your username"
+                      name="username"
                       required
                     />
                   </div>
@@ -77,8 +100,9 @@
                       class="form-control"
                       type="email"
                       id="emailaddress"
-                      required
                       placeholder="Enter your email"
+                      name="email"
+                      required
                     />
                   </div>
 
@@ -90,6 +114,26 @@
                         id="password"
                         class="form-control"
                         placeholder="Enter your password"
+                        name="password"
+                        required
+                      />
+                      <div class="input-group-text" data-password="false">
+                        <span class="password-eye"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="repeat_password" class="form-label"
+                      >Repeat Password</label
+                    >
+                    <div class="input-group input-group-merge">
+                      <input
+                        type="password"
+                        id="repeat_password"
+                        class="form-control"
+                        placeholder="Repeat Password"
+                        name="repeat_password"
+                        required
                       />
                       <div class="input-group-text" data-password="false">
                         <span class="password-eye"></span>
@@ -114,7 +158,7 @@
                   </div>
 
                   <div class="mb-3 text-center">
-                    <button class="btn btn-primary" type="submit">
+                    <button class="btn btn-primary" type="submit" name="submit">
                       Sign Up
                     </button>
                   </div>
