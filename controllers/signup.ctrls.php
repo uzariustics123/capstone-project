@@ -11,32 +11,32 @@ if (isset($_POST['submit'])) {
     $repeat_password = $_POST['repeat_password'];
 
     require_once '../config/db.php';
-    require_once 'functions.inc.php';
+    require_once 'functions.ctrls.php';
 
 
     if (emptyInputSignup($firstname, $lastname, $username, $email, $password) !== false) {
-        header("location: ../views/pages-login.html?error=emptyinput");
+        header("location: ../views/pages-login.php?error=emptyinput");
         exit();
     }
     if (invalidUid($username) !== false) {
-        header("location: ../views/pages-login.html?error=invalidusername");
+        header("location: ../views/pages-login.php?error=invalidusername");
         exit();
     }
     if (invalidEmail($email) !== false) {
-        header("location: ../views/pages-login.html?error=invalidemail");
+        header("location: ../views/pages-login.php?error=invalidemail");
         exit();
     }
     if (pwdMatch($password, $repeat_password) !== false) {
-        header("location: ../views/pages-login.html?error=passwordsdontmatch");
+        header("location: ../views/pages-login.php?error=passwordsdontmatch");
         exit();
     }
     if (usernameExist($conn, $username, $email) !== false) {
-        header("location: ../views/pages-login.html?error=usernametaken");
+        header("location: ../views/pages-login.php?error=usernametaken");
         exit();
     }
 
     createUser($conn, $firstname, $lastname, $username, $email, $password);
 } else {
-    header("location: ../index.html");
+    header("location: ../index.php");
     exit();
 }
