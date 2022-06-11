@@ -22,17 +22,36 @@
       <div class="row justify-content-center">
         <div class="col-xxl-4 col-lg-5">
           <div class="card">
+
             <!-- Logo-->
             <div class="card-header pt-4 pb-4 text-center bg-primary">
               <a href="index.html">
                 <span><img src="../assets/images/logo.png" alt="" height="18" /></span>
               </a>
             </div>
-
+            <?php
+            if (isset($_GET["error"])) {
+              if ($_GET['error'] == "emptyinput") {
+                echo "<p> Fill in all the Fields </p>";
+              } else if ($_GET['error'] == "invalidusername") {
+                echo "<p> Invalid username </p>";
+              } else if ($_GET['error'] == "invalidemail") {
+                echo "<p> Invalid email </p>";
+              } else if ($_GET['error'] == "passwordsdontmatch") {
+                echo "<p> Password dont match </p>";
+              } else if ($_GET['error'] == "usernametaken") {
+                echo "<p> Username taken</p>";
+              } else if ($_GET['error'] == "none") {
+                echo '<div class="alert alert-success text-center mb-0" role="alert">
+                        Registered <strong>Successfully!</strong>
+                      </div>';
+              }
+            }
+            ?>
             <div class="card-body p-4">
               <div class="text-center w-75 m-auto">
                 <h4 class="text-dark-50 text-center mt-0 fw-bold">
-                  Free Sign Up
+                  Sign Up
                 </h4>
                 <p class="text-muted mb-4">
                   Don't have an account? Create your account, it takes less
@@ -40,7 +59,7 @@
                 </p>
               </div>
 
-              <form action="../controllers/signup.inc.php" method="post">
+              <form action="../controllers/signup.ctrls.php" method="post">
                 <div class="mb-3">
                   <label for="firstname" class="form-label">First Name</label>
                   <input class="form-control" type="text" id="firstname" placeholder="Enter your first name" name="firstname" required />
@@ -91,6 +110,7 @@
                     Sign Up
                   </button>
                 </div>
+
               </form>
             </div>
             <!-- end card-body -->

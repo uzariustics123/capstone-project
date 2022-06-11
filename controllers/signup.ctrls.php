@@ -15,23 +15,23 @@ if (isset($_POST['submit'])) {
 
 
     if (emptyInputSignup($firstname, $lastname, $username, $email, $password) !== false) {
-        header("location: ../views/pages-login.php?error=emptyinput");
+        header("location: ../views/pages-register.php?error=emptyinput");
         exit();
     }
     if (invalidUid($username) !== false) {
-        header("location: ../views/pages-login.php?error=invalidusername");
+        header("location: ../views/pages-register.php?error=invalidusername");
         exit();
     }
     if (invalidEmail($email) !== false) {
-        header("location: ../views/pages-login.php?error=invalidemail");
+        header("location: ../views/pages-register.php?error=invalidemail");
         exit();
     }
     if (pwdMatch($password, $repeat_password) !== false) {
-        header("location: ../views/pages-login.php?error=passwordsdontmatch");
+        header("location: ../views/pages-register.php?error=passwordsdontmatch");
         exit();
     }
     if (usernameExist($conn, $username, $email) !== false) {
-        header("location: ../views/pages-login.php?error=usernametaken");
+        header("location: ../views/pages-register.php?error=usernametaken");
         exit();
     }
 

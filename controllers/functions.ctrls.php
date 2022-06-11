@@ -54,7 +54,7 @@ function usernameExist($conn, $username, $email)
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
-        header("location: ../index.html?error=stmtfailed");
+        header("location: ../views/pages-register.php?error=stmtfailed");
         exit();
     }
 
@@ -79,7 +79,7 @@ function createUser($conn, $firstname, $lastname, $username, $email, $password)
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
-        header("location: ../index.html?error=stmtfailed");
+        header("location: ../views/pages-register.php?error=stmtfailed");
         exit();
     }
 
@@ -89,6 +89,43 @@ function createUser($conn, $firstname, $lastname, $username, $email, $password)
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
 
-    header("location: ../views/pages-login.html?error=none");
+    header("location: ../views/pages-register.php?error=none");
     exit();
+}
+
+
+function emptyInputLogin($email, $password)
+{
+    $result = true;
+
+    if (empty($email) || empty($password)) {
+        $result = true;
+    } else {
+        $result = false;
+    }
+    return $result;
+}
+
+function loginUser($conn, $email, $password)
+{
+    $usernameExists = usernameExist($conn, $email, $email);
+
+    if ($usernameExists === false) {
+        header("location: ../views/pages-login.php?error=wronglogin");
+        exit();
+    }
+
+    $passwordHashed = $usernameExists["password"];
+    $checkPassword = password_verify($password, $passwordHashed);
+
+    if ($checkPassword === false) {
+        header("location: ../views/pages-login.php?error=wrongpassword");
+        exit();
+    } else if ($checkPassword === true) {
+        session_start();
+        $_SESSION["userid"] = $usernameExists["user_id"];
+        $_SESSION["useruid"] = $usernameExists["username"];
+        header("location: ../views/index.php");
+        exit();
+    }
 }
