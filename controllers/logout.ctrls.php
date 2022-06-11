@@ -3,5 +3,5 @@
 session_start();
 session_unset();
 session_destroy();
-header("location: ../views/pages-login.php");
+header("location: ../views/pages-logout.php");
 exit();

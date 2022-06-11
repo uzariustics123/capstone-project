@@ -817,6 +817,6 @@
   <?php include '../includes/footer.php'; ?>
 
 <?php } else {
-  header("location: ../views/pages-login.php");
+  header("location: ../views/pages-404.php");
   exit();
 } ?>
