@@ -29,6 +29,15 @@
                 </span>
               </a>
             </div>
+            <?php
+            if (isset($_GET["error"])) {
+              if ($_GET['error'] == "wronglogin") {
+                echo '<div class="alert alert-danger text-center mb-0" role="alert" >
+                        Invalid Login <strong>Details!</strong>
+                      </div>';
+              }
+            }
+            ?>
 
             <div class="card-body p-4">
               <div class="text-center w-75 m-auto">
