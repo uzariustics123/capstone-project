@@ -19035,3 +19035,6 @@ div.table-responsive
   display: none;
 }
 /*# sourceMappingURL=app.min.css.map */
+.active {
+  color: #fff !important;
+}

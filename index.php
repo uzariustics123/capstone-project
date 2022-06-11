@@ -53,8 +53,8 @@
         <!-- right menu -->
         <ul class="navbar-nav ms-auto align-items-center">
           <li class="nav-item me-0">
-            <a href="views/pages-login.php" target="_blank" class="nav-link d-lg-none">Login now</a>
-            <a href="views/pages-login.php" target="_blank" class="btn btn-md btn-success btn-rounded d-none d-lg-inline-flex">
+            <a href="views/pages-login.php" class="nav-link d-lg-none">Login now</a>
+            <a href="views/pages-login.php" class="btn btn-md btn-success btn-rounded d-none d-lg-inline-flex">
               <i class="mdi mdi-login-variant me-2"></i> Login now
             </a>
           </li>
