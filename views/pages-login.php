@@ -32,11 +32,11 @@
             <?php
             if (isset($_GET["error"])) {
               if ($_GET['error'] == "wronglogin") {
-                echo '<div class="alert alert-danger text-center mb-0" role="alert" >
+                echo '<div class="alert alert-danger text-center mb-0" role="alert" id="alert" >
                         Invalid Login <strong>Details!</strong>
                       </div>';
               } else if ($_GET['error'] == "wrongpassword") {
-                echo '<div class="alert alert-danger text-center mb-0" role="alert" >
+                echo '<div class="alert alert-danger text-center mb-0" role="alert" id="alert" >
                         Invalid Login <strong>Details!</strong>
                       </div>';
               }

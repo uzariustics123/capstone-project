@@ -32,27 +32,27 @@
             <?php
             if (isset($_GET["error"])) {
               if ($_GET['error'] == "emptyinput") {
-                echo '<div class="alert alert-danger text-center mb-0" role="alert">
+                echo '<div class="alert alert-danger text-center mb-0" role="alert" id="alert">
                         Empty <strong>Fields!</strong>
                       </div>';
               } else if ($_GET['error'] == "invalidusername") {
-                echo '<div class="alert alert-danger text-center mb-0" role="alert">
+                echo '<div class="alert alert-danger text-center mb-0" role="alert" id="alert">
                         Invalid <strong>Username!</strong>
                       </div>';
               } else if ($_GET['error'] == "invalidemail") {
-                echo '<div class="alert alert-danger text-center mb-0" role="alert">
+                echo '<div class="alert alert-danger text-center mb-0" role="alert" id="alert">
                         Invalid <strong>Email!</strong>
                       </div>';
               } else if ($_GET['error'] == "passwordsdontmatch") {
-                echo '<div class="alert alert-danger text-center mb-0" role="alert">
+                echo '<div class="alert alert-danger text-center mb-0" role="alert" id="alert">
                         Password dont <strong>Match!</strong>
                       </div>';
               } else if ($_GET['error'] == "usernametaken") {
-                echo '<div class="alert alert-warning text-center mb-0" role="alert">
+                echo '<div class="alert alert-warning text-center mb-0" role="alert" id="alert">
                         Username <strong>Taken!</strong>
                       </div>';
               } else if ($_GET['error'] == "none") {
-                echo '<div class="alert alert-success text-center mb-0" role="alert">
+                echo '<div class="alert alert-success text-center mb-0" role="alert" id="alert">
                         Registered <strong>Successfully!</strong>
                       </div>';
               }

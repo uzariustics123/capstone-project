@@ -417,9 +417,9 @@
                                         <?php
                                         if (isset($_GET["error"])) {
                                             if ($_GET['error'] == "stmtfailed") {
-                                                echo '<div class="alert alert-danger text-center mb-0" role="alert"> Query <strong>Error!</strong></div>';
+                                                echo '<div class="alert alert-danger text-center mb-0" role="alert" id="alert"> Query <strong>Error!</strong></div>';
                                             } else if ($_GET['error'] == "none") {
-                                                echo '<div class="alert alert-success text-center mb-0" role="alert"> Update <strong>Success!</strong> </div>';
+                                                echo '<div class="alert alert-success text-center mb-0" role="alert" id="alert"> Update <strong>Success!</strong> </div>';
                                             }
                                         }
 
@@ -570,27 +570,7 @@
                                     }
         ?>
 
-        <!-- Footer Start -->
-        <footer class="footer">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-6">
-                        <script>
-                            document.write(new Date().getFullYear());
-                        </script>
-                        © Hyper - Coderthemes.com
-                    </div>
-                    <div class="col-md-6">
-                        <div class="text-md-end footer-links d-none d-md-block">
-                            <a href="javascript: void(0);">About</a>
-                            <a href="javascript: void(0);">Support</a>
-                            <a href="javascript: void(0);">Contact Us</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </footer>
-        <!-- end Footer -->
+
         </div>
 
         <!-- ============================================================== -->
@@ -602,6 +582,7 @@
 
     <div class="rightbar-overlay"></div>
     <!-- /End-bar -->
+    <script src="../assets/js/customscript.js"></script>
 
     <?php include '../includes/footer.php'; ?>
 
