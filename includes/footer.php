@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
+    header('location: ../views/pages-404.php');
+    exit();
+};
+?>
 <!-- Footer Start -->
 <footer class="footer">
     <div class="container-fluid">

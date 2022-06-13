@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
+    header('location: ../views/pages-404.php');
+    exit();
+};
+?>
 <!-- Topbar Start -->
 <div class="navbar-custom">
     <ul class="list-unstyled topbar-menu float-end mb-0">

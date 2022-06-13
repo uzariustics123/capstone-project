@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
+    header('location: ../views/pages-404.php');
+    exit();
+};
+?>
 <!-- Right Sidebar -->
 <div class="end-bar">
     <div class="rightbar-title">
