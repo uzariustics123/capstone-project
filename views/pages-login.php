@@ -35,6 +35,10 @@
                 echo '<div class="alert alert-danger text-center mb-0" role="alert" >
                         Invalid Login <strong>Details!</strong>
                       </div>';
+              } else if ($_GET['error'] == "wrongpassword") {
+                echo '<div class="alert alert-danger text-center mb-0" role="alert" >
+                        Invalid Login <strong>Details!</strong>
+                      </div>';
               }
             }
             ?>

@@ -28,7 +28,7 @@
             class="logo-dark"
             height="18"
           /> -->
-        <span class="text-white fw-bold">E-MAP</span>
+        <span class="text-white fw-bold">E-MAPP</span>
       </a>
 
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
