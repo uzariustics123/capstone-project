@@ -129,3 +129,21 @@ function loginUser($conn, $email, $password)
         exit();
     }
 }
+function updateUser($conn, $firstname, $lastname, $username, $bio, $address, $mobile, $facebook, $gmail, $twitter, $github, $instagram, $user_id)
+{
+    $sql = "UPDATE users SET firstname=?, lastname=?, username=?, bio=?, address=?, mobile=?, facebook=?, gmail=?, twitter=?, github=?, instagram=? WHERE user_id=?;";
+
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        header("location: ../views/pages-profile.php?error=stmtfailed1");
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "ssssssssssss", $firstname, $lastname, $username, $bio, $address, $mobile, $facebook, $gmail, $twitter, $github, $instagram, $user_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    header("location: ../views/pages-profile.php?error=none");
+    exit();
+}
