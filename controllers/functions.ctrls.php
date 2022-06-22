@@ -124,7 +124,6 @@ function loginUser($conn, $email, $password)
     } else if ($checkPassword === true) {
         session_start();
         $_SESSION["userid"] = $usernameExists["user_id"];
-        $_SESSION["useruid"] = $usernameExists["username"];
         header("location: ../views/index.php");
         exit();
     }
@@ -145,5 +144,35 @@ function updateUser($conn, $firstname, $lastname, $username, $bio, $address, $mo
     mysqli_stmt_close($stmt);
 
     header("location: ../views/pages-profile.php?error=none");
+    exit();
+}
+
+function emptyInputOrganization($organization_name, $organization_description, $user_id)
+{
+    $result = true;
+
+    if (empty($organization_name) || empty($organization_description) || empty($user_id)) {
+        $result = true;
+    } else {
+        $result = false;
+    }
+    return $result;
+}
+
+function createOrganization($conn, $organization_name, $organization_description, $user_id)
+{
+    $sql = "INSERT INTO organizations (organization_name, organization_description, user_id) VALUES (?,?,?);";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        header("location: ../views/pages-add-organization.php?error=mysqlierror");
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "sss", $organization_name, $organization_description, $user_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    header("location: ../views/pages-add-organization.php?error=none");
     exit();
 }
