@@ -21,6 +21,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
 <!-- demo app -->
 <script src="../assets/js/pages/demo.dashboard.js"></script>
+<script src="../assets/js/vendor/Chart.bundle.min.js"></script>
+<script src="../assets/js/pages/demo.project-detail.js"></script>
 <!-- end demo js-->
 </body>
 

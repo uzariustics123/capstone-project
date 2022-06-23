@@ -176,3 +176,19 @@ function createOrganization($conn, $organization_name, $organization_description
     header("location: ../views/pages-add-organization.php?error=none");
     exit();
 }
+function deleteOrganization($conn, $organization_id)
+{
+    $sql = "DELETE FROM organizations WHERE organization_id=?";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        header("location: ../views/pages-add-organization.php?error=mysqlierror");
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "i", $organization_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    header("location: ../views/pages-add-organization.php?success");
+    exit();
+}

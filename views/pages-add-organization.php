@@ -24,13 +24,6 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box">
-                                <div class="page-title-right">
-                                    <ol class="breadcrumb m-0">
-                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Hyper</a></li>
-                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Projects</a></li>
-                                        <li class="breadcrumb-item active">Create Project</li>
-                                    </ol>
-                                </div>
                                 <h4 class="page-title">Add Organization</h4>
                             </div>
                         </div>
@@ -38,7 +31,7 @@
                     <!-- end page title -->
                     <!-- end row-->
 
-                    <div class="row mb-2">
+                    <div class="row mb-3">
                         <div class="col-sm-4">
                             <button type="button" class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#bs-example-modal-lg"><i class="mdi mdi-plus"></i> Create Organization</button>
                         </div>
@@ -66,9 +59,55 @@
                                                                 <textarea class="form-control" name="organization_description" id="project-overview" rows="6" placeholder="Enter some brief details about the organization.."></textarea>
                                                             </div>
                                                         </div> <!-- end col-->
+
+                                                        <div class="col-xl-6">
+                                                            <div class="mb-3 mt-3 mt-xl-0">
+                                                                <label for="projectname" class="mb-0">Avatar</label>
+                                                                <p class="text-muted font-14">Recommended thumbnail size 800x400 (px).</p>
+
+                                                                <div action="/" class="dropzone" id="myAwesomeDropzone" data-plugin="dropzone" data-previews-container="#file-previews" data-upload-preview-template="#uploadPreviewTemplate">
+                                                                    <div class="fallback">
+                                                                        <input name="file" type="file">
+                                                                    </div>
+
+                                                                    <div class="dz-message needsclick">
+                                                                        <i class="h3 text-muted dripicons-cloud-upload"></i>
+                                                                        <h4>Drop files here or click to upload.</h4>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Preview -->
+                                                                <div class="dropzone-previews mt-3" id="file-previews"></div>
+
+                                                                <!-- file preview template -->
+                                                                <div class="d-none" id="uploadPreviewTemplate">
+                                                                    <div class="card mt-1 mb-0 shadow-none border">
+                                                                        <div class="p-2">
+                                                                            <div class="row align-items-center">
+                                                                                <div class="col-auto">
+                                                                                    <img data-dz-thumbnail="" src="#" class="avatar-sm rounded bg-light" alt="">
+                                                                                </div>
+                                                                                <div class="col ps-0">
+                                                                                    <a href="javascript:void(0);" class="text-muted fw-bold" data-dz-name=""></a>
+                                                                                    <p class="mb-0" data-dz-size=""></p>
+                                                                                </div>
+                                                                                <div class="col-auto">
+                                                                                    <!-- Button -->
+                                                                                    <a href="" class="btn btn-link btn-lg text-muted" data-dz-remove="">
+                                                                                        <i class="dripicons-cross"></i>
+                                                                                    </a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- end file preview template -->
+                                                            </div>
+                                                        </div> <!-- end col-->
+
                                                     </div>
                                                     <!-- end row -->
-                                                    <div class="row text-center">
+                                                    <div class="modal-footer text-center p-1">
                                                         <div class="col"><button type="submit" name="submit" class="btn btn-primary btn-rounded">Primary</button></div>
                                                     </div>
                                                 </div> <!-- end card-body -->
@@ -81,50 +120,53 @@
                     </form>
                     <!-- end row-->
 
+
+
                     <div class="row">
-                        <div class="col-md-6 col-xxl-3">
-                            <!-- project card -->
-                            <div class="card d-block">
-                                <!-- project-thumbnail -->
-                                <img class="card-img-top" src="../assets/images/projects/project-1.jpg" alt="project image cap">
-                                <div class="card-img-overlay">
-                                    <div class="badge bg-danger text-light p-1">Organization</div>
-                                </div>
+                        <?php
 
-                                <div class="card-body position-relative">
-                                    <!-- project title-->
-                                    <h4 class="mt-0">
-                                        <a href="apps-projects-details.html" class="text-title">Organization Name</a>
-                                    </h4>
+                        $query = "SELECT * FROM organizations WHERE user_id = $user;";
+                        $results = $conn->query($query);
 
-                                    <!-- project detail-->
-                                    <p class="mb-3">
-                                        <span class="pe-2 text-nowrap">
-                                            <i class="mdi mdi-format-list-bulleted-type"></i>
-                                            <b>5</b> Departments
-                                        </span>
-                                        <span class="text-nowrap">
-                                            <i class="mdi mdi-comment-multiple-outline"></i>
-                                            <b>104</b> Organizers
-                                        </span>
-                                    </p>
-                                    <div class="mb-3" id="tooltip-container4">
-                                        <a href="javascript:void(0);" data-bs-container="#tooltip-container4" data-bs-toggle="tooltip" data-bs-placement="top" title="Mat Helme" class="d-inline-block">
-                                            <img src="../assets/images/users/avatar-3.jpg" class="rounded-circle avatar-xs" alt="friend">
-                                        </a>
-
-                                        <a href="javascript:void(0);" data-bs-container="#tooltip-container4" data-bs-toggle="tooltip" data-bs-placement="top" title="Michael Zenaty" class="d-inline-block">
-                                            <img src="../assets/images/users/avatar-5.jpg" class="rounded-circle avatar-xs" alt="friend">
-                                        </a>
-
-                                        <a href="javascript:void(0);" data-bs-container="#tooltip-container4" data-bs-toggle="tooltip" data-bs-placement="top" title="James Anderson" class="d-inline-block">
-                                            <img src="../assets/images/users/avatar-9.jpg" class="rounded-circle avatar-xs" alt="friend">
-                                        </a>
+                        while ($row = $results->fetch_row()) {
+                        ?>
+                            <div class="col-md-6 col-xxl-3">
+                                <!-- project card -->
+                                <div class="card d-block">
+                                    <!-- project-thumbnail -->
+                                    <img class="card-img-top" src="../assets/images/projects/project-1.jpg" alt="project image cap">
+                                    <div class="card-img-overlay">
+                                        <div class="badge bg-danger p-1">Organization</div>
                                     </div>
-                                </div> <!-- end card-body-->
-                            </div> <!-- end card-->
-                        </div> <!-- end col -->
+
+                                    <div class="card-body position-relative">
+                                        <!-- project title-->
+                                        <h4 class="mt-0">
+                                            <a href="apps-projects-details.html" class="text-title"><?php echo $row[1] ?></a>
+                                        </h4>
+                                        <!-- project detail-->
+                                        <p class="mb-3">
+                                            <span class="pe-2 text-nowrap">
+                                                <i class="mdi mdi-format-list-bulleted-type"></i>
+                                                <b>5</b> Departments
+                                            </span>
+                                            <span class="text-nowrap">
+                                                <i class="mdi mdi-comment-multiple-outline"></i>
+                                                <b>104</b> Organizers
+                                            </span>
+                                        </p>
+
+                                        <div class="text-center"><a href="pages-my-organization.php?id=<?php echo $row[0] ?>" class="btn btn-success btn-rounded">Manage Organization</a></div>
+
+                                    </div> <!-- end card-body-->
+                                </div> <!-- end card-->
+                            </div>
+                        <?php
+                        }
+                        ?>
+                        <!-- end col -->
                     </div>
+
                     <!-- end row-->
                 </div> <!-- container -->
             </div> <!-- content -->
