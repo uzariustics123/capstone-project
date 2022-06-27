@@ -38,7 +38,7 @@
                     </div>
 
                     <!-- Large modal -->
-                    <form action="../controllers/add.organization.ctrls.php" method="post">
+                    <form action="../controllers/add.organization.ctrls.php" method="post" enctype="multipart/form-data">
                         <div class="modal fade" id="bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
@@ -51,66 +51,35 @@
                                                             <input type="hidden" class="form-control" name="user_id" value="<?php echo $user; ?>">
                                                             <div class="mb-3">
                                                                 <label for="projectname" class="form-label">Name</label>
-                                                                <input type="text" id="projectname" class="form-control" name="organization_name" placeholder="Enter organization name">
+                                                                <input type="text" id="projectname" class="form-control" name="organization_name" placeholder="Enter organization name" required>
                                                             </div>
 
                                                             <div class="mb-3">
                                                                 <label for="project-overview" class="form-label">Organization Details</label>
-                                                                <textarea class="form-control" name="organization_description" id="project-overview" rows="6" placeholder="Enter some brief details about the organization.."></textarea>
+                                                                <textarea class="form-control" name="organization_description" id="project-overview" rows="6" placeholder="Enter some brief details about the organization.." required></textarea>
                                                             </div>
+
                                                         </div> <!-- end col-->
 
                                                         <div class="col-xl-6">
                                                             <div class="mb-3 mt-3 mt-xl-0">
-                                                                <label for="projectname" class="mb-0">Avatar</label>
+                                                                <label for="projectname" class="mb-0">Organization Cover Photo</label>
                                                                 <p class="text-muted font-14">Recommended thumbnail size 800x400 (px).</p>
 
-                                                                <div action="/" class="dropzone" id="myAwesomeDropzone" data-plugin="dropzone" data-previews-container="#file-previews" data-upload-preview-template="#uploadPreviewTemplate">
-                                                                    <div class="fallback">
-                                                                        <input name="file" type="file">
-                                                                    </div>
-
-                                                                    <div class="dz-message needsclick">
-                                                                        <i class="h3 text-muted dripicons-cloud-upload"></i>
-                                                                        <h4>Drop files here or click to upload.</h4>
-                                                                    </div>
+                                                                <div class="mb-3">
+                                                                    <label for="project-overview" class="form-label">Image</label>
+                                                                    <input type="file" class="form-control" name="image" id="image" rows="6" placeholder="Enter some brief details about the organization.." required></input>
                                                                 </div>
 
-                                                                <!-- Preview -->
-                                                                <div class="dropzone-previews mt-3" id="file-previews"></div>
-
-                                                                <!-- file preview template -->
-                                                                <div class="d-none" id="uploadPreviewTemplate">
-                                                                    <div class="card mt-1 mb-0 shadow-none border">
-                                                                        <div class="p-2">
-                                                                            <div class="row align-items-center">
-                                                                                <div class="col-auto">
-                                                                                    <img data-dz-thumbnail="" src="#" class="avatar-sm rounded bg-light" alt="">
-                                                                                </div>
-                                                                                <div class="col ps-0">
-                                                                                    <a href="javascript:void(0);" class="text-muted fw-bold" data-dz-name=""></a>
-                                                                                    <p class="mb-0" data-dz-size=""></p>
-                                                                                </div>
-                                                                                <div class="col-auto">
-                                                                                    <!-- Button -->
-                                                                                    <a href="" class="btn btn-link btn-lg text-muted" data-dz-remove="">
-                                                                                        <i class="dripicons-cross"></i>
-                                                                                    </a>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <!-- end file preview template -->
                                                             </div>
                                                         </div> <!-- end col-->
-
                                                     </div>
                                                     <!-- end row -->
-                                                    <div class="modal-footer text-center p-1">
-                                                        <div class="col"><button type="submit" name="submit" class="btn btn-primary btn-rounded">Primary</button></div>
-                                                    </div>
+
                                                 </div> <!-- end card-body -->
+                                                <div class="modal-footer text-center p-1">
+                                                    <div class="col"><button type="submit" name="submit" class="btn btn-primary btn-rounded">Submit</button></div>
+                                                </div>
                                             </div> <!-- end card-->
                                         </div> <!-- end col-->
                                     </div>
@@ -128,13 +97,19 @@
                         $query = "SELECT * FROM organizations WHERE user_id = $user;";
                         $results = $conn->query($query);
 
+
                         while ($row = $results->fetch_row()) {
                         ?>
                             <div class="col-md-6 col-xxl-3">
                                 <!-- project card -->
                                 <div class="card d-block">
                                     <!-- project-thumbnail -->
-                                    <img class="card-img-top" src="../assets/images/projects/project-1.jpg" alt="project image cap">
+                                    <img class="card-img-top img-fluid" src="<?php if (is_null($row[6])) {
+                                                                                    echo '../assets/images/projects/project-1.jpg';
+                                                                                } else {
+                                                                                    echo $row[6];
+                                                                                }
+                                                                                ?>" alt="project image cap">
                                     <div class="card-img-overlay">
                                         <div class="badge bg-danger p-1">Organization</div>
                                     </div>
