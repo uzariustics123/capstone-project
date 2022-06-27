@@ -45,8 +45,14 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             <li class="side-nav-title side-nav-item">Apps</li>
             <li class="side-nav-item">
                 <a href="pages-add-organization.php" class="side-nav-link">
-                    <i class="uil-users-alt"></i>
+                    <i class="uil-archway"></i>
                     <span> Organization </span>
+                </a>
+            </li>
+            <li class="side-nav-item">
+                <a href="pages-members-list.php" class="side-nav-link">
+                    <i class="uil-users-alt"></i>
+                    <span> Members </span>
                 </a>
             </li>
         </ul>

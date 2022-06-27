@@ -159,22 +159,35 @@ function emptyInputOrganization($organization_name, $organization_description, $
     return $result;
 }
 
-function createOrganization($conn, $organization_name, $organization_description, $user_id)
+function createOrganization($conn, $organization_name, $organization_description, $user_id, $file)
 {
-    $sql = "INSERT INTO organizations (organization_name, organization_description, user_id) VALUES (?,?,?);";
-    $stmt = mysqli_stmt_init($conn);
 
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        header("location: ../views/pages-add-organization.php?error=mysqlierror");
-        exit();
+    $allow = array('jpg', 'jpeg', 'png');
+    $exntension = explode('.', $file['name']);
+    $fileActExt = strtolower(end($exntension));
+    $fileNew = rand() . "." . $fileActExt;  // rand function create the rand number 
+    $filePath = '../assets/uploads/' . $fileNew;
+
+    if (in_array($fileActExt, $allow)) {
+        if ($file['size'] > 0 && $file['error'] == 0) {
+            if (move_uploaded_file($file['tmp_name'], $filePath)) {
+                $sql = "INSERT INTO organizations (organization_name, organization_description, user_id, image) VALUES (?,?,?,?);";
+                $stmt = mysqli_stmt_init($conn);
+
+                if (!mysqli_stmt_prepare($stmt, $sql)) {
+                    header("location: ../views/pages-add-organization.php?error=mysqlierror");
+                    exit();
+                }
+
+                mysqli_stmt_bind_param($stmt, "ssss", $organization_name, $organization_description, $user_id, $filePath);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+
+                header("location: ../views/pages-add-organization.php?error=none");
+                exit();
+            }
+        }
     }
-
-    mysqli_stmt_bind_param($stmt, "sss", $organization_name, $organization_description, $user_id);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
-
-    header("location: ../views/pages-add-organization.php?error=none");
-    exit();
 }
 function deleteOrganization($conn, $organization_id)
 {
@@ -190,5 +203,25 @@ function deleteOrganization($conn, $organization_id)
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
     header("location: ../views/pages-add-organization.php?success");
+    exit();
+}
+
+function editOrganization($conn, $organization_name, $organization_description, $user_id, $organization_id)
+{
+    $sql = "UPDATE organizations SET organization_name=?, organization_description=? WHERE user_id=? AND organization_id=?;";
+
+    $stmt = mysqli_stmt_init($conn);
+
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        header("location: ../views/pages-my-organization.php?error=stmtfailed");
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "ssii", $organization_name, $organization_description, $user_id, $organization_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    header("location: ../views/pages-add-organization.php?error=none");
     exit();
 }

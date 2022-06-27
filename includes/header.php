@@ -22,7 +22,10 @@ session_start();
 
     <!-- third party css -->
     <link href="../assets/css/vendor/jquery-jvectormap-1.2.2.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/vendor/dataTables.bootstrap5.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/vendor/responsive.bootstrap5.css" rel="stylesheet" type="text/css">
     <!-- third party css end -->
+
 
     <!-- App css -->
     <link href="../assets/css/icons.min.css" rel="stylesheet" type="text/css">
@@ -31,4 +34,4 @@ session_start();
     <link rel="stylesheet" href="../assets/custom/css/styles.css">
 </head>
 
-<body class="loading" data-layout-config='{"leftSideBarTheme":"dark","layoutBoxed":false, "leftSidebarCondensed":false, "leftSidebarScrollable":false,"darkMode":true, "showRightSidebarOnStart": false}'>
+<body class="loading" data-layout-config='{"leftSideBarTheme":"dark","layoutBoxed":false, "leftSidebarCondensed":false, "leftSidebarScrollable":false,"darkMode":false, "showRightSidebarOnStart": false}'>

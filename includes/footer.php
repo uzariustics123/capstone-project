@@ -24,6 +24,19 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <script src="../assets/js/vendor/Chart.bundle.min.js"></script>
 <script src="../assets/js/pages/demo.project-detail.js"></script>
 <!-- end demo js-->
+
+<!-- third party js -->
+<script src="../assets/js/vendor/jquery.dataTables.min.js"></script>
+<script src="../assets/js/vendor/dataTables.bootstrap5.js"></script>
+<script src="../assets/js/vendor/dataTables.responsive.min.js"></script>
+<script src="../assets/js/vendor/responsive.bootstrap5.min.js"></script>
+<script src="../assets/js/vendor/dataTables.checkboxes.min.js"></script>
+
+<!-- third party js ends -->
+
+<!-- demo app -->
+<script src="../assets/js/pages/demo.sellers.js"></script>
+<!-- end demo js-->
 </body>
 
 </html>
