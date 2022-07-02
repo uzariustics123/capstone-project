@@ -8,13 +8,14 @@ if (isset($_POST['submit'])) {
     $organization_name = $_POST['organization_name'];
     $organization_description = $_POST['organization_description'];
     $file = $_FILES['image'];
+    $date_created = date('Y-m-d');
 
     if (emptyInputOrganization($organization_name, $organization_description, $user_id) !== false) {
         header("location: ../views/pages-add-organization.php?error=emptyfields");
         exit();
     }
 
-    createOrganization($conn, $organization_name, $organization_description, $user_id, $file);
+    createOrganization($conn, $organization_name, $organization_description, $user_id, $file, $date_created);
 } else {
     header("location: ../views/pages-add-organization.php");
     exit();

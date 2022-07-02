@@ -21,7 +21,7 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box">
-                                <h4 class="page-title">My Organization</h4>
+                                <h3 class="page-title">My Organization</h3>
                             </div>
                         </div>
                     </div>
@@ -37,48 +37,42 @@
 
                     while ($row = $results->fetch_row()) {
                     ?>
-                        <!-- /.modal Start -->
-                        <form action="../controllers/edit.organization.ctrls.php" method="post">
-                            <div class="modal fade" id="bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-lg">
+
+                        <!-- Standard modal -->
+                        <div id="organization_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
+                            <form action="../controllers/edit.organization.ctrls.php" method="post">
+                                <div class="modal-dialog">
                                     <div class="modal-content">
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <div class="card">
-                                                    <div class="card-body">
-                                                        <div class="row">
-                                                            <div class="col-xl-6">
-                                                                <input type="hidden" class="form-control" name="user_id" value="<?php echo $user; ?>">
-                                                                <input type="hidden" class="form-control" name="organization_id" value="<?php echo $row[0]; ?>">
-                                                                <div class="mb-3">
-                                                                    <label for="projectname" class="form-label">Name</label>
-                                                                    <input type="text" id="projectname" class="form-control" name="organization_name" placeholder="Enter organization name" value="<?php echo $row[1] ?>">
-                                                                </div>
+                                        <div class="modal-body">
+                                            <input type="hidden" class="form-control" name="user_id" value="<?php echo $user; ?>">
+                                            <input type="hidden" class="form-control" name="organization_id" value="<?php echo $row[0]; ?>">
+                                            <div class="mb-3">
+                                                <label for="projectname" class="form-label">Name</label>
+                                                <input type="text" id="projectname" class="form-control" name="organization_name" placeholder="Enter organization name" value="<?php echo $row[1] ?>">
+                                            </div>
 
-                                                                <div class="mb-3">
-                                                                    <label for="project-overview" class="form-label">Organization Details</label>
-                                                                    <textarea class="form-control" name="organization_description" id="project-overview" rows="6" placeholder="Enter some brief details about the organization.."><?php echo $row[2] ?></textarea>
-                                                                </div>
-                                                            </div> <!-- end col-->
-                                                        </div>
-                                                        <!-- end row -->
+                                            <div class="mb-3">
+                                                <label for="project-overview" class="form-label">Organization Details</label>
+                                                <textarea class="form-control" name="organization_description" id="project-overview" rows="6" placeholder="Enter some brief details about the organization.."><?php echo $row[2] ?></textarea>
+                                            </div>
+                                            <div class="mb-1 mt-3">
+                                                <label for="exampleInputPassword1" class="form-label">Image</label>
+                                                <input type="file" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                                            </div>
 
-                                                    </div> <!-- end card-body -->
-                                                    <div class="modal-footer text-center p-1">
-                                                        <div class="col"><button type="submit" name="submit" class="btn btn-primary btn-rounded">Submit</button></div>
-                                                    </div>
-                                                </div> <!-- end card-->
-                                            </div> <!-- end col-->
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" name="submit" class="btn btn-primary">Save changes</button>
                                         </div>
                                     </div><!-- /.modal-content -->
                                 </div><!-- /.modal-dialog -->
-                            </div><!-- /.modal -->
-                        </form>
-                        <!-- end row-->
-                        <!-- /.modal -->
+                            </form>
+                        </div><!-- /.modal -->
+
 
                         <div class="row">
-                            <div class="col-xxl-8 col-lg-6">
+                            <div class="col-lg-8">
                                 <!-- project card -->
                                 <div class="card d-block">
                                     <div class="card-body">
@@ -88,7 +82,7 @@
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-end">
                                                 <!-- item-->
-                                                <a href="../controllers/edit.organization.ctrls.php?id=<?php echo $row[0] ?>" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#bs-example-modal-lg"> <i class="mdi mdi-square-edit-outline me-1"></i>Edit</a>
+                                                <a href="../controllers/edit.organization.ctrls.php?id=<?php echo $row[0] ?>" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#organization_modal"> <i class="mdi mdi-square-edit-outline me-1"></i>Edit</a>
                                                 <!-- item-->
                                                 <a href="../controllers/delete.organization.ctrls.php?id=<?php echo $row[0] ?>" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
                                             </div>
@@ -110,6 +104,12 @@
                                         </p>
 
                                         <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="mb-4">
+                                                    <h5>Date Created</h5>
+                                                    <p><?php echo $row[07] ?></p>
+                                                </div>
+                                            </div>
                                             <?php
                                             $query = "SELECT * FROM users WHERE user_id = $user;";
                                             $results = $conn->query($query);
@@ -119,13 +119,6 @@
                                                     <div class="mb-4">
                                                         <h5>Created by:</h5>
                                                         <p><?php echo $row[01] ?> <?php echo $row[2] ?></p>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-4">
-                                                    <div class="mb-4">
-                                                        <h5>Date Created</h5>
-                                                        <p>22 December 2018 <small class="text-muted">1:00 PM</small></p>
                                                     </div>
                                                 </div>
                                             <?php } ?>
@@ -163,141 +156,133 @@
                                 </div> <!-- end card-->
 
                             </div>
-                            <div class="col-lg-6 col-xxl-4">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Import</h5>
-                                        <div class="">
-                                            <p class="text-muted font-14">Import your CSV file here</p>
-                                            <div action="/" class="dropzone" id="myAwesomeDropzone" data-plugin="dropzone" data-previews-container="#file-previews" data-upload-preview-template="#uploadPreviewTemplate">
-                                                <div class="fallback">
-                                                    <input name="file" type="file">
-                                                </div>
+                            <div class="col-lg-4">
 
-                                                <div class="dz-message needsclick">
-                                                    <i class="h3 text-muted dripicons-cloud-upload"></i>
-                                                    <h4>Drop files here or click to upload.</h4>
-                                                </div>
-                                            </div>
-
-                                            <!-- Preview -->
-                                            <div class="dropzone-previews mt-3" id="file-previews"></div>
-
-                                            <!-- file preview template -->
-                                            <div class="d-none" id="uploadPreviewTemplate">
-                                                <div class="card mt-1 mb-0 shadow-none border">
-                                                    <div class="p-2">
-                                                        <div class="row align-items-center">
-                                                            <div class="col-auto">
-                                                                <img data-dz-thumbnail="" src="#" class="avatar-sm rounded bg-light" alt="">
-                                                            </div>
-                                                            <div class="col ps-0">
-                                                                <a href="javascript:void(0);" class="text-muted fw-bold" data-dz-name=""></a>
-                                                                <p class="mb-0" data-dz-size=""></p>
-                                                            </div>
-                                                            <div class="col-auto">
-                                                                <!-- Button -->
-                                                                <a href="" class="btn btn-link btn-lg text-muted" data-dz-remove="">
-                                                                    <i class="dripicons-cross"></i>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- end file preview template -->
-                                            <div class="text-center p-1">
-                                                <div class="col"><button type="submit" name="submit" class="btn btn-primary btn-rounded">Submit</button></div>
+                                <div class="mb-3 mt-5 mt-xl-0">
+                                    <form method="post" action="../controllers/add.department.ctrls.php" enctype="multipart/form-data">
+                                        <h4 class="mb-3">Add Department</h4>
+                                        <input type="hidden" class="form-control" name="user_id" value="<?php echo $user; ?>">
+                                        <input type="hidden" class="form-control" name="organization_id" value="<?php echo $organization_id = $_GET['id']; ?>">
+                                        <div class="mb-1 mt-3">
+                                            <label for="department" class="form-label">Department Name</label>
+                                            <input type="input" name="department_name" class="form-control" id="department" aria-describedby="emailHelp" placeholder="Enter department name.." required>
+                                        </div>
+                                        <div class="mb-1 mt-3">
+                                            <label for="description" class="form-label">Description</label>
+                                            <input type="input" name="department_desc" class="form-control" id="description" placeholder="Enter department description..">
+                                        </div>
+                                        <div class="mb-1 mt-3">
+                                            <label for="code" class="form-label">Department Code</label>
+                                            <input type="input" name="department_code" class="form-control" id="code" placeholder="Enter department code.." required>
+                                        </div>
+                                        <div class="mb-1 mt-3">
+                                            <label for="projectname" class="mb-0">Department Cover Photo</label>
+                                            <p class="text-muted font-14">Recommended thumbnail size 800x400 (px). Only accepts jpg, jpeg, png file format</p>
+                                            <div class="mb-3">
+                                                <input type="file" class="form-control" name="image" id="image" rows="6"></input>
                                             </div>
                                         </div>
-                                    </div>
+                                        <div class="text-center">
+                                            <button type="submit" class="btn btn-primary btn-rounded" name="submit">Save</button>
+                                        </div>
+
+                                    </form>
                                 </div>
-                            </div><!-- end col -->
 
-                        </div>
-                        <!-- end row -->
-
-                </div> <!-- container -->
-
-
-
-                <!-- Start Content-->
-                <div class="container-fluid">
-                    <!-- start page title -->
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="page-title-box">
-                                <h4 class="page-title">Members</h4>
                             </div>
+
+                        </div><!-- end col -->
+
+                </div>
+                <!-- end row -->
+
+            </div>
+
+
+
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <h3 class="page-title">Departments</h3>
                         </div>
                     </div>
-                    <!-- end page title -->
+                </div>
 
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
+                <div class="row">
+                    <?php
+                        $query = "SELECT * FROM departments WHERE user_id = $user AND organization_id = $organization_id;";
+                        $results = $conn->query($query);
+                        while ($row = $results->fetch_row()) {
+                    ?>
+
+                        <div class="col-md-6 col-xxl-3">
+                            <!-- project card -->
+                            <div class="card d-block">
                                 <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-centered table-borderless table-hover w-100 dt-responsive nowrap" id="products-datatable">
-                                            <thead class="table-dark">
-                                                <tr>
-
-                                                    <th>Name</th>
-                                                    <th>Course</th>
-                                                    <th>Year Level</th>
-                                                    <th>Department</th>
-                                                    <th>Usertype</th>
-
-                                                    <th style="width: 75px">Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php
-                                                $query = "SELECT * FROM members WHERE user_id = $user AND organization_id = $organization_id;";
-                                                $results = $conn->query($query);
-                                                while ($row = $results->fetch_row()) {
-                                                ?>
-                                                    <tr>
-
-                                                        <td class="table-user">
-                                                            <img src="../assets/images/users/avatar-4.jpg" alt="table-user" class="me-2 rounded-circle" />
-                                                            <a href="javascript:void(0);" class="text-body fw-semibold"><?php echo $row[1] ?> <?php echo $row[2] ?> <?php echo $row[3] ?></a>
-                                                        </td>
-                                                        <td><?php echo $row[4] ?></td>
-                                                        <td>
-                                                            <?php echo $row[5] ?>
-                                                        </td>
-                                                        <td><?php echo $row[6] ?></td>
-                                                        <td><?php echo $row[7] ?></td>
-
-
-                                                        <td>
-                                                            <a href="javascript:void(0);" class="action-icon">
-                                                                <i class="mdi mdi-square-edit-outline"></i></a>
-                                                            <a href="javascript:void(0);" class="action-icon">
-                                                                <i class="mdi mdi-delete"></i></a>
-                                                        </td>
-                                                    </tr>
-                                                <?php
-                                                }
-                                                ?>
-                                            </tbody>
-                                        </table>
+                                    <div class="dropdown card-widgets">
+                                        <a href="#" class="dropdown-toggle arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="dripicons-dots-3"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-end">
+                                            <!-- item-->
+                                            <a href="../views/pages-my-department.php?user_id=<?php echo $user; ?>&org_id=<?php echo $organization_id ?>&dept_id=<?php echo $row[0] ?>" class="dropdown-item"><i class="mdi mdi-account-cog me-1"></i>Manage</a>
+                                            <!-- item-->
+                                            <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
+                                        </div>
                                     </div>
-                                </div>
-                                <!-- end card-body-->
-                            </div>
-                            <!-- end card-->
-                        </div>
-                        <!-- end col -->
-                    </div>
-                    <!-- end row -->
-                    <!-- end row -->
+                                    <!-- project title-->
+                                    <h4 class="mt-0">
+                                        <a href="apps-projects-details.html" class="text-title"><?php echo $row[1] ?></a>
+                                    </h4>
+                                    <div class="badge bg-secondary text-light mb-3"><?php echo $row[3] ?></div>
 
-                </div> <!-- container -->
-            </div> <!-- content -->
-        </div>
-    <?php } ?>
+                                    <p class="text-muted font-13 mb-3"><?php echo $row[2] ?>
+                                    </p>
+
+                                    <!-- project detail-->
+                                    <p class="mb-1">
+                                        <span class="pe-2 text-nowrap mb-2 d-inline-block">
+                                            <i class="mdi mdi-format-list-bulleted-type text-muted"></i>
+                                            <b>12</b> Tasks
+                                        </span>
+                                        <span class="text-nowrap mb-2 d-inline-block">
+                                            <i class="mdi mdi-comment-multiple-outline text-muted"></i>
+                                            <b>482</b> Comments
+                                        </span>
+                                    </p>
+                                    <div id="tooltip-container2">
+                                        <a href="javascript:void(0);" data-bs-container="#tooltip-container2" data-bs-toggle="tooltip" data-bs-placement="top" title="Mat Helme" class="d-inline-block">
+                                            <img src="../assets/images/users/avatar-4.jpg" class="rounded-circle avatar-xs" alt="friend">
+                                        </a>
+
+                                        <a href="javascript:void(0);" data-bs-container="#tooltip-container2" data-bs-toggle="tooltip" data-bs-placement="top" title="Michael Zenaty" class="d-inline-block">
+                                            <img src="../assets/images/users/avatar-5.jpg" class="rounded-circle avatar-xs" alt="friend">
+                                        </a>
+                                    </div>
+                                </div> <!-- end card-body-->
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item p-3">
+                                        <!-- project progress-->
+                                        <p class="mb-2 fw-bold">Progress <span class="float-end">63%</span></p>
+                                        <div class="progress progress-sm">
+                                            <div class="progress-bar" role="progressbar" aria-valuenow="63" aria-valuemin="0" aria-valuemax="100" style="width: 63%;">
+                                            </div><!-- /.progress-bar -->
+                                        </div><!-- /.progress -->
+                                    </li>
+                                </ul>
+                            </div> <!-- end card-->
+                        </div>
+
+                    <?php } ?>
+                </div>
+
+            </div><!-- container -->
+        <?php } ?>
+        </div> <!-- content -->
+    </div>
+
     <!-- ============================================================== -->
     <!-- End Page content -->
     <!-- ============================================================== -->

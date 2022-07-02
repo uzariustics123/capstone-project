@@ -38,23 +38,11 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
                 <a href="index.php" class="side-nav-link">
                     <i class="uil-home-alt"></i>
-                    <span> Dashboards </span>
+                    <span> My Organization </span>
                 </a>
             </li>
 
             <li class="side-nav-title side-nav-item">Apps</li>
-            <li class="side-nav-item">
-                <a href="pages-add-organization.php" class="side-nav-link">
-                    <i class="uil-archway"></i>
-                    <span> Organization </span>
-                </a>
-            </li>
-            <li class="side-nav-item">
-                <a href="pages-members-list.php" class="side-nav-link">
-                    <i class="uil-users-alt"></i>
-                    <span> Members </span>
-                </a>
-            </li>
         </ul>
 
         <!-- End Sidebar -->
