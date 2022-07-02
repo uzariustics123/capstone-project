@@ -18,6 +18,6 @@ if (isset($_POST['submit'])) {
 
     editOrganization($conn, $organization_name, $organization_description, $user_id, $organization_id);
 } else {
-    header("location: ../views/pages-add-organization.php");
+    header("location: ../views/pages-my-organization.php");
     exit();
 }

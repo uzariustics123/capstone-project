@@ -159,7 +159,7 @@ function emptyInputOrganization($organization_name, $organization_description, $
     return $result;
 }
 
-function createOrganization($conn, $organization_name, $organization_description, $user_id, $file)
+function createOrganization($conn, $organization_name, $organization_description, $user_id, $file, $date_created)
 {
 
     $allow = array('jpg', 'jpeg', 'png');
@@ -171,7 +171,7 @@ function createOrganization($conn, $organization_name, $organization_description
     if (in_array($fileActExt, $allow)) {
         if ($file['size'] > 0 && $file['error'] == 0) {
             if (move_uploaded_file($file['tmp_name'], $filePath)) {
-                $sql = "INSERT INTO organizations (organization_name, organization_description, user_id, image) VALUES (?,?,?,?);";
+                $sql = "INSERT INTO organizations (organization_name, organization_description, user_id, image, date_created) VALUES (?,?,?,?,?);";
                 $stmt = mysqli_stmt_init($conn);
 
                 if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -179,7 +179,7 @@ function createOrganization($conn, $organization_name, $organization_description
                     exit();
                 }
 
-                mysqli_stmt_bind_param($stmt, "ssss", $organization_name, $organization_description, $user_id, $filePath);
+                mysqli_stmt_bind_param($stmt, "sssss", $organization_name, $organization_description, $user_id, $filePath, $date_created);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
 
@@ -193,6 +193,8 @@ function deleteOrganization($conn, $organization_id)
 {
     $sql = "DELETE FROM organizations WHERE organization_id=?";
     $stmt = mysqli_stmt_init($conn);
+
+
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
         header("location: ../views/pages-add-organization.php?error=mysqlierror");
@@ -222,6 +224,125 @@ function editOrganization($conn, $organization_name, $organization_description, 
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
 
-    header("location: ../views/pages-add-organization.php?error=none");
+    header("location: ../views/pages-my-organization.php?id=$organization_id&error=none");
     exit();
+}
+function createDepartment($conn, $department_name, $department_desc, $department_code, $file, $user_id, $organization_id, $date_created)
+{
+
+    $allow = array('jpg', 'jpeg', 'png');
+    $exntension = explode('.', $file['name']);
+    $fileActExt = strtolower(end($exntension));
+    $fileNew = rand() . "." . $fileActExt;  // rand function create the rand number 
+    $filePath = '../assets/uploads/' . $fileNew;
+
+    if (in_array($fileActExt, $allow)) {
+        if ($file['size'] > 0 && $file['error'] == 0) {
+            if (move_uploaded_file($file['tmp_name'], $filePath)) {
+
+                $sql = "INSERT INTO departments (department_name, department_description, department_code, department_image, user_id, organization_id, date_created) VALUES (?,?,?,?,?,?,?);";
+                $stmt = mysqli_stmt_init($conn);
+
+                if (!mysqli_stmt_prepare($stmt, $sql)) {
+                    header("location: ../views/pages-add-organization.php?error=mysqlierror");
+                    exit();
+                }
+
+                mysqli_stmt_bind_param($stmt, "ssssiis", $department_name, $department_desc, $department_code, $filePath, $user_id, $organization_id, $date_created);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+
+                header("location: ../views/pages-my-organization.php?id=$organization_id");
+                exit();
+            }
+        }
+    }
+}
+
+function importMembers($conn, $files, $department_id, $user_id, $organization_id)
+{
+    // Allowed mime types
+    $fileMimes = array(
+        'text/x-comma-separated-values',
+        'text/comma-separated-values',
+        'application/octet-stream',
+        'application/vnd.ms-excel',
+        'application/x-csv',
+        'text/x-csv',
+        'text/csv',
+        'application/csv',
+        'application/excel',
+        'application/vnd.msexcel',
+        'text/plain'
+    );
+
+    // Validate whether selected file is a CSV file
+    if (
+        !empty($_FILES['file']['name']) && in_array($_FILES['file']['type'], $fileMimes)
+    ) {
+
+        // Open uploaded CSV file with read-only mode
+        $files = fopen($_FILES['file']['tmp_name'], 'r');
+
+        // Skip the first line
+        fgetcsv($files);
+        // Parse data from CSV file line by line
+        // Parse data from CSV file line by line
+        while (($getData = fgetcsv($files, 10000, ",")) !== FALSE) {
+            // Get row data
+            $firstname = $getData[0];
+            $middlename = $getData[1];
+            $lastname = $getData[2];
+            $email = $getData[3];
+            $course = $getData[4];
+            $yearlevel = $getData[5];
+            $usertype = "student";
+
+
+            $sql = "SELECT email FROM members WHERE email = ?;";
+            $stmt = mysqli_stmt_init($conn);
+            if (!mysqli_stmt_prepare($stmt, $sql)) {
+                header("location: ../views/pages-register.php?error=stmtfailed");
+                exit();
+            }
+            mysqli_stmt_bind_param($stmt, "s", $email);
+            mysqli_stmt_execute($stmt);
+
+            $result = $stmt->get_result(); // get the mysqli result
+            $user = $result->fetch_assoc();
+
+            if (isset($user['email']) == $email) {
+                $sql = "UPDATE members SET firstname=?, middlename=?, lastname=?, email=?, course=?, yearlevel=?, usertype=?, department_id=?, user_id=?, organization_id=? WHERE email='$email';";
+                $stmt = mysqli_stmt_init($conn);
+                $stmt = $conn->prepare($sql);
+                if (!mysqli_stmt_prepare($stmt, $sql)) {
+                    header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id&error=stmntfailed");
+                    exit();
+                }
+                mysqli_stmt_bind_param($stmt, "sssssssiii", $firstname, $middlename, $lastname, $email, $course, $yearlevel, $usertype, $department_id, $user_id, $organization_id);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+            } else {
+                $sql = "INSERT INTO members (firstname, middlename, lastname, email, course, yearlevel, usertype, department_id, user_id, organization_id) VALUES (?,?,?,?,?,?,?,?,?,?);";
+                $stmt = mysqli_stmt_init($conn);
+
+                if (!mysqli_stmt_prepare($stmt, $sql)) {
+                    header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id&error=stmntfailed");
+                    exit();
+                }
+
+                mysqli_stmt_bind_param($stmt, "sssssssiii", $firstname, $middlename, $lastname, $email, $course, $yearlevel, $usertype, $department_id, $user_id, $organization_id);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+            }
+        }
+        // Close opened CSV file
+        fclose($files);
+
+        header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id&error=none");
+        exit();
+    } else {
+        header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id&error=failed");
+        exit();
+    }
 }
