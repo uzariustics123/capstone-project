@@ -233,9 +233,12 @@
                                         </div>
                                     </div>
                                     <!-- project title-->
-                                    <h4 class="mt-0">
+                                    <!-- Thumbnail-->
+                                    <div class="text-center"><img src="<?php echo $row[4] ?>" alt="image" class="img-fluid rounded mt-2" width="400" /></div>
+
+                                    <h2 class="mt-3">
                                         <a href="apps-projects-details.html" class="text-title"><?php echo $row[1] ?></a>
-                                    </h4>
+                                    </h2>
                                     <div class="badge bg-secondary text-light mb-3"><?php echo $row[3] ?></div>
 
                                     <p class="text-muted font-13 mb-3"><?php echo $row[2] ?>

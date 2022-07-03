@@ -76,7 +76,7 @@
                 </div>
 
                 <div class="mb-3 mb-0 text-center">
-                  <button class="btn btn-primary btn-rounded" type="submit" name="submit">
+                  <button class="btn btn-primary" type="submit" name="submit">
                     Log In
                   </button>
                 </div>

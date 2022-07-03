@@ -227,6 +227,17 @@ function editOrganization($conn, $organization_name, $organization_description, 
     header("location: ../views/pages-my-organization.php?id=$organization_id&error=none");
     exit();
 }
+function emptyInputDepartment($department_name, $department_desc, $department_code, $user_id, $organization_id, $department_id)
+{
+    $result = true;
+
+    if (empty($department_name) || empty($department_desc) || empty($department_code) || empty($user_id) || empty($organization_id) || empty($department_code)) {
+        $result = true;
+    } else {
+        $result = false;
+    }
+    return $result;
+}
 function createDepartment($conn, $department_name, $department_desc, $department_code, $file, $user_id, $organization_id, $date_created)
 {
 
@@ -258,6 +269,41 @@ function createDepartment($conn, $department_name, $department_desc, $department
         }
     }
 }
+
+function editDepartment($conn, $department_name, $department_desc, $department_code, $file, $user_id, $organization_id, $department_id)
+{
+
+
+    $allow = array('jpg', 'jpeg', 'png');
+    $exntension = explode('.', $file['name']);
+    $fileActExt = strtolower(end($exntension));
+    $fileNew = rand() . "." . $fileActExt;  // rand function create the rand number 
+    $filePath = '../assets/uploads/' . $fileNew;
+    if (in_array($fileActExt, $allow)) {
+        if ($file['size'] > 0 && $file['error'] == 0) {
+            if (move_uploaded_file($file['tmp_name'], $filePath)) {
+                $sql = "UPDATE departments SET department_name=?, department_description=?, department_code=?, department_image=? WHERE user_id=$user_id AND organization_id=$organization_id AND department_id=$department_id;";
+
+                $stmt = mysqli_stmt_init($conn);
+
+
+                if (!mysqli_stmt_prepare($stmt, $sql)) {
+                    header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id&error=stmtfailed");
+                    exit();
+                }
+
+                mysqli_stmt_bind_param($stmt, "ssss", $department_name, $department_desc, $department_code, $filePath);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+
+                header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id&error=none");
+                exit();
+            }
+        }
+    }
+}
+
+
 
 function importMembers($conn, $files, $department_id, $user_id, $organization_id)
 {

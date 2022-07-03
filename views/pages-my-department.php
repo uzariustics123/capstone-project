@@ -32,32 +32,34 @@
                         ?>
                             <!-- Standard modal -->
                             <div id="edit-department-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
-                                <form action="">
+                                <form action="../controllers/edit.department.ctrls.php" method="post" enctype="multipart/form-data">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-body">
-
+                                                <input type="hidden" name="user_id" value="<?php echo $user_id ?>">
+                                                <input type="hidden" name="organization_id" value="<?php echo $organization_id ?>">
+                                                <input type="hidden" name="department_id" value="<?php echo $department_id ?>">
                                                 <div class="mb-3">
                                                     <label for="department_name" class="form-label">Department Name</label>
-                                                    <input type="text" class="form-control" id="department_name" aria-describedby="emailHelp" placeholder="Enter department name" value="<?php echo $row[1] ?>">
+                                                    <input type="text" class="form-control" name="department_name" id="department_name" aria-describedby="emailHelp" placeholder="Enter department name" value="<?php echo $row[1] ?>">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="department_description" class="form-label">Department Description</label>
-                                                    <input type="text" class="form-control" id="department_description" placeholder="Enter department description" value="<?php echo $row[2] ?>">
+                                                    <input type="text" class="form-control" name="department_desc" id="department_description" placeholder="Enter department description" value="<?php echo $row[2] ?>">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="department_code" class="form-label">Department Code</label>
-                                                    <input type="text" class="form-control" id="department_code" placeholder="Enter department code" value="<?php echo $row[3] ?>">
+                                                    <input type="text" class="form-control" name="department_code" id="department_code" placeholder="Enter department code" value="<?php echo $row[3] ?>">
                                                 </div>
                                                 <div class="mb-1 mt-3">
                                                     <label for="exampleInputPassword1" class="form-label">Image</label>
-                                                    <input type="file" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                                                    <input type="file" class="form-control" name="image" id="image" placeholder="Password" required>
                                                 </div>
 
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                                                <button type="button" class="btn btn-primary">Save changes</button>
+                                                <button type="submit" name="save" class="btn btn-primary">Save changes</button>
                                             </div>
                                         </div><!-- /.modal-content -->
                                     </div><!-- /.modal-dialog -->
