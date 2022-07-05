@@ -32,13 +32,13 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         <!--- Sidemenu -->
         <ul class="side-nav">
 
-            <li class="side-nav-title side-nav-item">Navigation</li>
+            <li class="side-nav-title side-nav-item">Home</li>
 
             <li class="side-nav-item">
 
                 <a href="index.php" class="side-nav-link">
                     <i class="uil-home-alt"></i>
-                    <span> My Organization </span>
+                    <span> My Organizations </span>
                 </a>
             </li>
 

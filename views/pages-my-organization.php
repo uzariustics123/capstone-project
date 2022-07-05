@@ -28,7 +28,6 @@
                     <!-- end page title -->
 
 
-
                     <?php
 
                     $organization_id = $_GET['id'];
@@ -40,7 +39,7 @@
 
                         <!-- Standard modal -->
                         <div id="organization_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
-                            <form action="../controllers/edit.organization.ctrls.php" method="post">
+                            <form action="../controllers/edit.organization.ctrls.php" method="post" enctype="multipart/form-data">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-body">
@@ -48,16 +47,16 @@
                                             <input type="hidden" class="form-control" name="organization_id" value="<?php echo $row[0]; ?>">
                                             <div class="mb-3">
                                                 <label for="projectname" class="form-label">Name</label>
-                                                <input type="text" id="projectname" class="form-control" name="organization_name" placeholder="Enter organization name" value="<?php echo $row[1] ?>">
+                                                <input type="text" id="projectname" class="form-control" name="organization_name" placeholder="Enter organization name" value="<?php echo $row[1] ?>" required>
                                             </div>
 
                                             <div class="mb-3">
                                                 <label for="project-overview" class="form-label">Organization Details</label>
-                                                <textarea class="form-control" name="organization_description" id="project-overview" rows="6" placeholder="Enter some brief details about the organization.."><?php echo $row[2] ?></textarea>
+                                                <textarea class="form-control" name="organization_description" id="project-overview" rows="6" placeholder="Enter some brief details about the organization.." required><?php echo $row[2] ?></textarea>
                                             </div>
                                             <div class="mb-1 mt-3">
                                                 <label for="exampleInputPassword1" class="form-label">Image</label>
-                                                <input type="file" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                                                <input type="file" name="image" class="form-control" id="exampleInputPassword1" placeholder="Password" required>
                                             </div>
 
                                         </div>
@@ -183,7 +182,7 @@
                                             </div>
                                         </div>
                                         <div class="text-center">
-                                            <button type="submit" class="btn btn-primary btn-rounded" name="submit">Save</button>
+                                            <button type="submit" class="btn btn-primary" name="submit">Save</button>
                                         </div>
 
                                     </form>
@@ -234,7 +233,7 @@
                                     </div>
                                     <!-- project title-->
                                     <!-- Thumbnail-->
-                                    <div class="text-center"><img src="<?php echo $row[4] ?>" alt="image" class="img-fluid rounded mt-2" width="400" /></div>
+                                    <div class="text-center"><img src="<?php echo $row[4] ?>" alt="image" class="img-fluid rounded mt-2" width="250" /></div>
 
                                     <h2 class="mt-3">
                                         <a href="apps-projects-details.html" class="text-title"><?php echo $row[1] ?></a>
@@ -297,7 +296,41 @@
     <div class="rightbar-overlay"></div>
     <!-- /End-bar -->
 
+
     <?php include '../includes/footer.php'; ?>
+    <script>
+        $(function(e) {
+            var error = `<?= $_GET['error']; ?>`;
+            if (error === 'stmtfailed') {
+                e.NotificationApp.send(
+                    'Oh snap!',
+                    'Change a few things up and try submitting again.',
+                    'top-right',
+                    'rgba(0,0,0,0.2)',
+                    'error'
+                );
+            }
+            if (error === 'editsuccess') {
+                e.NotificationApp.send(
+                    'Well Done!',
+                    'Edit Success.',
+                    'top-right',
+                    'rgba(0,0,0,0.2)',
+                    'success'
+                );
+            }
+            if (error === 'none') {
+                e.NotificationApp.send(
+                    'Well Done!',
+                    'Added a new Department.',
+                    'top-right',
+                    'rgba(0,0,0,0.2)',
+                    'success'
+                );
+            }
+
+        });
+    </script>
 
 <?php } else {
     header("location: ../views/pages-404.php");

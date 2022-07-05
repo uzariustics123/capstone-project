@@ -256,6 +256,41 @@
 
     <?php include '../includes/footer.php'; ?>
 
+    <script>
+        $(function(e) {
+            var error = `<?= $_GET['error']; ?>`;
+            if (error === 'stmtfailed') {
+                e.NotificationApp.send(
+                    'Oh snap!',
+                    'Change a few things up and try submitting again.',
+                    'top-right',
+                    'rgba(0,0,0,0.2)',
+                    'error'
+                );
+            }
+            if (error === 'editsuccess') {
+                e.NotificationApp.send(
+                    'Well Done!',
+                    'Edit Success.',
+                    'top-right',
+                    'rgba(0,0,0,0.2)',
+                    'success'
+                );
+
+            }
+            if (error === 'none') {
+                e.NotificationApp.send(
+                    'Well Done!',
+                    'Import CSV success',
+                    'top-right',
+                    'rgba(0,0,0,0.2)',
+                    'success'
+                );
+            }
+
+        });
+    </script>
+    <?php unset($_GET['error']) ?>
 <?php } else {
     header("location: ../views/pages-404.php");
     exit();

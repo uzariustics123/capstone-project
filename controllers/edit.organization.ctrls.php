@@ -16,7 +16,7 @@ if (isset($_POST['submit'])) {
         exit();
     }
 
-    editOrganization($conn, $organization_name, $organization_description, $user_id, $organization_id);
+    editOrganization($conn, $organization_name, $organization_description, $file, $user_id, $organization_id);
 } else {
     header("location: ../views/pages-my-organization.php");
     exit();

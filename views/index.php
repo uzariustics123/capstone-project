@@ -11,7 +11,6 @@
         <!-- ============================================================== -->
         <!-- Start Page Content here -->
         <!-- ============================================================== -->
-
         <div class="content-page">
             <div class="content">
                 <!-- Topbar Start -->
@@ -24,7 +23,7 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box">
-                                <h4 class="page-title">Add Organization</h4>
+                                <h4 class="page-title">My Organizations</h4>
                             </div>
                         </div>
                     </div>
@@ -33,7 +32,7 @@
 
                     <div class="row mb-3">
                         <div class="col-sm-4">
-                            <button type="button" class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#bs-example-modal-lg"><i class="mdi mdi-plus"></i> Create Organization</button>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bs-example-modal-lg"><i class="mdi mdi-plus"></i> Create Organization</button>
                         </div>
                     </div>
 
@@ -93,13 +92,12 @@
 
                     <div class="row">
                         <?php
-
                         $query = "SELECT * FROM organizations WHERE user_id = $user;";
                         $results = $conn->query($query);
-
-
                         while ($row = $results->fetch_row()) {
+
                         ?>
+
                             <div class="col-md-6 col-xxl-3">
                                 <!-- project card -->
                                 <div class="card d-block">
@@ -121,9 +119,14 @@
                                         </h4>
                                         <!-- project detail-->
                                         <p class="mb-3">
+                                            <?php
+                                            $query = "SELECT * FROM departments WHERE organization_id = $row[0] ;";
+                                            $result = $conn->query($query);
+                                            $total = $result->num_rows;
+                                            ?>
                                             <span class="pe-2 text-nowrap">
                                                 <i class="mdi mdi-format-list-bulleted-type"></i>
-                                                <b>5</b> Departments
+                                                <b><?= $total ?></b> Departments
                                             </span>
                                             <span class="text-nowrap">
                                                 <i class="mdi mdi-comment-multiple-outline"></i>
@@ -131,7 +134,7 @@
                                             </span>
                                         </p>
 
-                                        <div class="text-center"><a href="pages-my-organization.php?id=<?php echo $row[0] ?>" class="btn btn-success btn-rounded">Manage Organization</a></div>
+                                        <div class="text-center"><a href="pages-my-organization.php?id=<?php echo $row[0] ?>" class="btn btn-success ">Manage Organization</a></div>
 
                                     </div> <!-- end card-body-->
                                 </div> <!-- end card-->
@@ -162,6 +165,32 @@
     <!-- /End-bar -->
 
     <?php include '../includes/footer.php'; ?>
+
+    <script>
+        $(function(e) {
+
+            var error = `<?= $_GET['error']; ?>`;
+            if (error === 'none') {
+                e.NotificationApp.send(
+                    'Well Done!',
+                    'You successfully added an organization.',
+                    'top-right',
+                    'rgba(0,0,0,0.2)',
+                    'success'
+                );
+            } 
+            if (error === 'success') {
+                e.NotificationApp.send(
+                    'Well Done!',
+                    'You successfully logged.',
+                    'top-right',
+                    'rgba(0,0,0,0.2)',
+                    'success'
+                );
+            }
+
+        });
+    </script>
 
 <?php } else {
     header("location: ../views/pages-404.php");

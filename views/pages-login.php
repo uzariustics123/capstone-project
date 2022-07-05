@@ -29,19 +29,6 @@
                 </span>
               </a>
             </div>
-            <?php
-            if (isset($_GET["error"])) {
-              if ($_GET['error'] == "wronglogin") {
-                echo '<div class="alert alert-danger text-center mb-0" role="alert" id="alert" >
-                        Invalid Login <strong>Details!</strong>
-                      </div>';
-              } else if ($_GET['error'] == "wrongpassword") {
-                echo '<div class="alert alert-danger text-center mb-0" role="alert" id="alert" >
-                        Invalid Login <strong>Details!</strong>
-                      </div>';
-              }
-            }
-            ?>
 
             <div class="card-body p-4">
               <div class="text-center w-75 m-auto">
@@ -109,6 +96,31 @@
   <!-- bundle -->
   <script src="../assets/js/vendor.min.js"></script>
   <script src="../assets/js/app.min.js"></script>
+
+  <script src="../assets/js/pages/demo.toastr.js"></script>
+  <!-- end demo js-->
+  <script>
+    $(function(e) {
+      var error = `<?= $_GET['error']; ?>`;
+      if (error === 'wrongpassword' || error === 'wronglogin') {
+        e.NotificationApp.send(
+          'Oh snap!',
+          'Change a few things up and try submitting again.',
+          'top-right',
+          'rgba(0,0,0,0.2)',
+          'error'
+        );
+      } else if (error === 'none') {
+        e.NotificationApp.send(
+          'Well Done!',
+          'You successfully read this important alert message',
+          'top-right',
+          'rgba(0,0,0,0.2)',
+          'success'
+        );
+      }
+    });
+  </script>
 </body>
 
 </html>

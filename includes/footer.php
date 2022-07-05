@@ -36,7 +36,9 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
 <!-- demo app -->
 <script src="../assets/js/pages/demo.sellers.js"></script>
+<script src="../assets/js/pages/demo.toastr.js"></script>
 <!-- end demo js-->
+<script src="../assets/js/customscript.js"></script>
 </body>
 
 </html>

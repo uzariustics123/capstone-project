@@ -68,21 +68,27 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         <li class="dropdown notification-list">
             <a class="nav-link dropdown-toggle nav-user arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                 <span class="account-user-avatar">
-                    <img src="../assets/images/users/avatar-1.jpg" alt="user-image" class="rounded-circle">
-                </span>
-                <span>
                     <?php
                     $user = $_SESSION['userid'];
                     include_once('../config/db.php');
                     $query = "SELECT * FROM users WHERE user_id = $user;";
                     $results = $conn->query($query);
-                    while ($row = $results->fetch_row()) {
+                    while ($row = $results->fetch_assoc()) {
                     ?>
-                        <span class="account-user-name"><?php echo $row[1] ?> <?php echo $row[2] ?></span>
-                        <span class="account-position">Administrator</span>
-                    <?php
+                        <img src="<?php if (is_null($row['image'])) {
+                                        echo '../assets/images/users/avatar-1.jpg';
+                                    } else {
+                                        echo $row['image'];
+                                    }
+                                    ?>" alt="user-image" class="rounded-circle">
+                </span>
+                <span>
+
+                    <span class="account-user-name"><?= $row['firstname'] ?> <?php echo $row['lastname'] ?></span>
+                    <span class="account-position">Administrator</span>
+                <?php
                     }
-                    ?>
+                ?>
                 </span>
             </a>
             <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated topbar-dropdown-menu profile-dropdown">

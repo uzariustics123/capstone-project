@@ -29,35 +29,7 @@
                 <span><img src="../assets/images/logo.png" alt="" height="18" /></span>
               </a>
             </div>
-            <?php
-            if (isset($_GET["error"])) {
-              if ($_GET['error'] == "emptyinput") {
-                echo '<div class="alert alert-danger text-center mb-0" role="alert" id="alert">
-                        Empty <strong>Fields!</strong>
-                      </div>';
-              } else if ($_GET['error'] == "invalidusername") {
-                echo '<div class="alert alert-danger text-center mb-0" role="alert" id="alert">
-                        Invalid <strong>Username!</strong>
-                      </div>';
-              } else if ($_GET['error'] == "invalidemail") {
-                echo '<div class="alert alert-danger text-center mb-0" role="alert" id="alert">
-                        Invalid <strong>Email!</strong>
-                      </div>';
-              } else if ($_GET['error'] == "passwordsdontmatch") {
-                echo '<div class="alert alert-danger text-center mb-0" role="alert" id="alert">
-                        Password dont <strong>Match!</strong>
-                      </div>';
-              } else if ($_GET['error'] == "usernametaken") {
-                echo '<div class="alert alert-warning text-center mb-0" role="alert" id="alert">
-                        Username <strong>Taken!</strong>
-                      </div>';
-              } else if ($_GET['error'] == "none") {
-                echo '<div class="alert alert-success text-center mb-0" role="alert" id="alert">
-                        Registered <strong>Successfully!</strong>
-                      </div>';
-              }
-            }
-            ?>
+
             <div class="card-body p-4">
               <div class="text-center w-75 m-auto">
                 <h4 class="text-dark-50 text-center mt-0 fw-bold">
@@ -146,11 +118,36 @@
   </div>
   <!-- end page -->
 
- 
+
 
   <!-- bundle -->
   <script src="../assets/js/vendor.min.js"></script>
   <script src="../assets/js/app.min.js"></script>
+
+  <script src="../assets/js/pages/demo.toastr.js"></script>
+  <!-- end demo js-->
+  <script>
+    $(function(e) {
+      var error = `<?= $_GET['error']; ?>`;
+      if (error === 'stmtfailed') {
+        e.NotificationApp.send(
+          'Oh snap!',
+          'Change a few things up and try submitting again.',
+          'top-right',
+          'rgba(0,0,0,0.2)',
+          'error'
+        );
+      } else if (error === 'none') {
+        e.NotificationApp.send(
+          'Well Done!',
+          "You successfully registered! Login <a href='pages-login.php'>here</a>.",
+          'top-right',
+          'rgba(0,0,0,0.2)',
+          'success'
+        );
+      }
+    });
+  </script>
 </body>
 
 </html>

@@ -73,9 +73,9 @@ function usernameExist($conn, $username, $email)
     mysqli_stmt_close($stmt);
 }
 
-function createUser($conn, $firstname, $lastname, $username, $email, $password)
+function createUser($conn, $firstname, $lastname, $username, $email, $password, $date_created)
 {
-    $sql = "INSERT INTO users (firstname, lastname, username, email, password) VALUES (?,?,?,?,?);";
+    $sql = "INSERT INTO users (firstname, lastname, username, email, password, date_created) VALUES (?,?,?,?,?,?);";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -85,7 +85,7 @@ function createUser($conn, $firstname, $lastname, $username, $email, $password)
 
     $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
 
-    mysqli_stmt_bind_param($stmt, "sssss", $firstname, $lastname, $username, $email, $hashedpassword);
+    mysqli_stmt_bind_param($stmt, "ssssss", $firstname, $lastname, $username, $email, $hashedpassword, $date_created);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
 
@@ -124,27 +124,50 @@ function loginUser($conn, $email, $password)
     } else if ($checkPassword === true) {
         session_start();
         $_SESSION["userid"] = $usernameExists["user_id"];
-        header("location: ../views/index.php");
+        header("location: ../views/index.php?error=success");
         exit();
     }
 }
-function updateUser($conn, $firstname, $lastname, $username, $bio, $address, $mobile, $facebook, $gmail, $twitter, $github, $instagram, $user_id)
+function emptyInputUserProfile($firstname, $lastname)
 {
-    $sql = "UPDATE users SET firstname=?, lastname=?, username=?, bio=?, address=?, mobile=?, facebook=?, gmail=?, twitter=?, github=?, instagram=? WHERE user_id=?;";
+    $result = true;
 
-    $stmt = mysqli_stmt_init($conn);
-
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        header("location: ../views/pages-profile.php?error=stmtfailed1");
-        exit();
+    if (empty($firstname) || empty($lastname)) {
+        $result = true;
+    } else {
+        $result = false;
     }
+    return $result;
+}
+function editUserProfile($conn, $user_id, $firstname, $lastname, $file, $mobile, $bio, $address, $facebook, $gmail, $twitter, $github, $instagram)
+{
+    $allow = array('jpg', 'jpeg', 'png');
+    $exntension = explode('.', $file['name']);
+    $fileActExt = strtolower(end($exntension));
+    $fileNew = rand() . "." . $fileActExt;  // rand function create the rand number 
+    $filePath = '../assets/uploads/' . $fileNew;
 
-    mysqli_stmt_bind_param($stmt, "ssssssssssss", $firstname, $lastname, $username, $bio, $address, $mobile, $facebook, $gmail, $twitter, $github, $instagram, $user_id);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
+    if (in_array($fileActExt, $allow)) {
+        if ($file['size'] > 0 && $file['error'] == 0) {
+            if (move_uploaded_file($file['tmp_name'], $filePath)) {
+                $sql = "UPDATE users SET firstname=?, lastname=?, image=?,mobile=?, bio=?, address=?, facebook=?, gmail=?, twitter=?, github=?, instagram=? WHERE user_id=$user_id;";
 
-    header("location: ../views/pages-profile.php?error=none");
-    exit();
+                $stmt = mysqli_stmt_init($conn);
+
+                if (!mysqli_stmt_prepare($stmt, $sql)) {
+                    header("location: ../views/pages-profile.php?error=stmtfailed");
+                    exit();
+                }
+
+                mysqli_stmt_bind_param($stmt, "sssssssssss", $firstname, $lastname, $filePath, $mobile, $bio, $address, $facebook, $gmail, $twitter, $github, $instagram);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+
+                header("location: ../views/pages-profile.php?error=none");
+                exit();
+            }
+        }
+    }
 }
 
 function emptyInputOrganization($organization_name, $organization_description, $user_id)
@@ -183,7 +206,7 @@ function createOrganization($conn, $organization_name, $organization_description
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
 
-                header("location: ../views/pages-add-organization.php?error=none");
+                header("location: ../views/index.php?error=none");
                 exit();
             }
         }
@@ -208,24 +231,35 @@ function deleteOrganization($conn, $organization_id)
     exit();
 }
 
-function editOrganization($conn, $organization_name, $organization_description, $user_id, $organization_id)
+function editOrganization($conn, $organization_name, $organization_description, $file, $user_id, $organization_id)
 {
-    $sql = "UPDATE organizations SET organization_name=?, organization_description=? WHERE user_id=? AND organization_id=?;";
+    $allow = array('jpg', 'jpeg', 'png');
+    $exntension = explode('.', $file['name']);
+    $fileActExt = strtolower(end($exntension));
+    $fileNew = rand() . "." . $fileActExt;  // rand function create the rand number 
+    $filePath = '../assets/uploads/' . $fileNew;
+    if (in_array($fileActExt, $allow)) {
+        if ($file['size'] > 0 && $file['error'] == 0) {
+            if (move_uploaded_file($file['tmp_name'], $filePath)) {
+                $sql = "UPDATE organizations SET organization_name=?, organization_description=?, image=? WHERE user_id= $user_id AND organization_id= $organization_id;";
 
-    $stmt = mysqli_stmt_init($conn);
+                $stmt = mysqli_stmt_init($conn);
 
 
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        header("location: ../views/pages-my-organization.php?error=stmtfailed");
-        exit();
+                if (!mysqli_stmt_prepare($stmt, $sql)) {
+                    header("location: ../views/pages-my-organization.php?error=stmtfailed");
+                    exit();
+                }
+
+                mysqli_stmt_bind_param($stmt, "sss", $organization_name, $organization_description, $filePath);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+
+                header("location: ../views/pages-my-organization.php?id=$organization_id&error=editsuccess");
+                exit();
+            }
+        }
     }
-
-    mysqli_stmt_bind_param($stmt, "ssii", $organization_name, $organization_description, $user_id, $organization_id);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
-
-    header("location: ../views/pages-my-organization.php?id=$organization_id&error=none");
-    exit();
 }
 function emptyInputDepartment($department_name, $department_desc, $department_code, $user_id, $organization_id, $department_id)
 {
@@ -255,7 +289,7 @@ function createDepartment($conn, $department_name, $department_desc, $department
                 $stmt = mysqli_stmt_init($conn);
 
                 if (!mysqli_stmt_prepare($stmt, $sql)) {
-                    header("location: ../views/pages-add-organization.php?error=mysqlierror");
+                    header("location: ../views/pages-add-organization.php?error=stmtfailed");
                     exit();
                 }
 
@@ -263,7 +297,7 @@ function createDepartment($conn, $department_name, $department_desc, $department
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
 
-                header("location: ../views/pages-my-organization.php?id=$organization_id");
+                header("location: ../views/pages-my-organization.php?id=$organization_id&error=none");
                 exit();
             }
         }
@@ -296,7 +330,7 @@ function editDepartment($conn, $department_name, $department_desc, $department_c
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
 
-                header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id&error=none");
+                header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id&error=editsuccess");
                 exit();
             }
         }
@@ -388,7 +422,7 @@ function importMembers($conn, $files, $department_id, $user_id, $organization_id
         header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id&error=none");
         exit();
     } else {
-        header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id&error=failed");
+        header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id&error=stmntfailed");
         exit();
     }
 }
