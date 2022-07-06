@@ -28,7 +28,7 @@
                         $query = "SELECT * FROM departments WHERE user_id = $user_id AND organization_id = $organization_id AND department_id = $department_id;";
                         $results = $conn->query($query);
 
-                        while ($row = $results->fetch_row()) {
+                        while ($row = $results->fetch_assoc()) {
                         ?>
                             <!-- Standard modal -->
                             <div id="edit-department-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
@@ -36,20 +36,20 @@
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-body">
-                                                <input type="hidden" name="user_id" value="<?php echo $user_id ?>">
-                                                <input type="hidden" name="organization_id" value="<?php echo $organization_id ?>">
-                                                <input type="hidden" name="department_id" value="<?php echo $department_id ?>">
+                                                <input type="hidden" name="user_id" value="<?= $user_id ?>">
+                                                <input type="hidden" name="organization_id" value="<?= $organization_id ?>">
+                                                <input type="hidden" name="department_id" value="<?= $department_id ?>">
                                                 <div class="mb-3">
                                                     <label for="department_name" class="form-label">Department Name</label>
-                                                    <input type="text" class="form-control" name="department_name" id="department_name" aria-describedby="emailHelp" placeholder="Enter department name" value="<?php echo $row[1] ?>">
+                                                    <input type="text" class="form-control" name="department_name" id="department_name" aria-describedby="emailHelp" placeholder="Enter department name" value="<?= $row['department_name'] ?>">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="department_description" class="form-label">Department Description</label>
-                                                    <input type="text" class="form-control" name="department_desc" id="department_description" placeholder="Enter department description" value="<?php echo $row[2] ?>">
+                                                    <input type="text" class="form-control" name="department_desc" id="department_description" placeholder="Enter department description" value="<?= $row['department_description'] ?>">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="department_code" class="form-label">Department Code</label>
-                                                    <input type="text" class="form-control" name="department_code" id="department_code" placeholder="Enter department code" value="<?php echo $row[3] ?>">
+                                                    <input type="text" class="form-control" name="department_code" id="department_code" placeholder="Enter department code" value="<?= $row['department_code'] ?>">
                                                 </div>
                                                 <div class="mb-1 mt-3">
                                                     <label for="exampleInputPassword1" class="form-label">Image</label>
@@ -84,24 +84,24 @@
                                             <div class="col-lg-5">
                                                 <!-- Product image -->
                                                 <a href="javascript: void(0);" class="text-center d-block mb-4">
-                                                    <img src="<?php echo $row[4]; ?>" class="img-fluid" style="max-width: 580px; min-width: 200px" alt="Product-img">
+                                                    <img src="<?= $row['department_image']; ?>" class="img-fluid" style="max-width: 580px; min-width: 200px" alt="Product-img">
                                                 </a>
                                             </div> <!-- end col -->
                                             <div class="col-lg-7">
                                                 <form class="ps-lg-4">
                                                     <!-- Product title -->
-                                                    <h1 class="mt-0"><?php echo $row[1]; ?></h1>
-                                                    <p class="mb-1">Date Created: <b><?php echo $row[7]; ?></b></p>
+                                                    <h1 class="mt-0"><?= $row['department_name']; ?></h1>
+                                                    <p class="mb-1">Date Created: <b><?= $row['date_created']; ?></b></p>
 
                                                     <!-- Product stock -->
                                                     <div class="mt-3">
-                                                        <h4><span class="badge badge-success-lighten"><?php echo $row[3]; ?></span></h4>
+                                                        <h4><span class="badge badge-success-lighten"><?= $row['department_code']; ?></span></h4>
                                                     </div>
 
                                                     <!-- Product description -->
                                                     <div class="mt-4">
                                                         <h6 class="font-14">Description:</h6>
-                                                        <p><?php echo $row[2]; ?></p>
+                                                        <p><?= $row['department_description']; ?></p>
                                                     </div>
                                                 <?php } ?>
 
@@ -116,7 +116,7 @@
                                                             $results = $conn->query($query);
                                                             $total = $results->num_rows;
                                                             ?>
-                                                            <p class="text-sm lh-150"><?php echo $total; ?></p>
+                                                            <p class="text-sm lh-150"><?= $total; ?></p>
                                                         </div>
                                                         <div class="col-md-4">
                                                             <h6 class="font-14">Total Number of Organizers:</h6>
@@ -125,7 +125,7 @@
                                                             $results = $conn->query($query);
                                                             $total = $results->num_rows;
                                                             ?>
-                                                            <p class="text-sm lh-150"><?php echo $total; ?></p>
+                                                            <p class="text-sm lh-150"><?= $total; ?></p>
                                                         </div>
                                                         <div class="col-md-4">
                                                             <h6 class="font-14">Total Number of Students:</h6>
@@ -134,7 +134,7 @@
                                                             $results = $conn->query($query);
                                                             $total = $results->num_rows;
                                                             ?>
-                                                            <p class="text-sm lh-150"><?php echo $total; ?></p>
+                                                            <p class="text-sm lh-150"><?= $total; ?></p>
 
                                                         </div>
                                                     </div>
@@ -157,9 +157,9 @@
                                             <form action="../controllers/import.members.ctrls.php?" method="post" enctype="multipart/form-data">
                                                 <h4 class="mb-2">Import CSV</h4>
                                                 <p class="text-muted font-14">Import your CSV file here format should be Firstname, Middlename, Lastname, Course, Yearlevel</p>
-                                                <input type="hidden" name="department_id" value="<?php echo $department_id; ?>">
-                                                <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
-                                                <input type="hidden" name="organization_id" value="<?php echo $organization_id; ?>">
+                                                <input type="hidden" name="department_id" value="<?= $department_id; ?>">
+                                                <input type="hidden" name="user_id" value="<?= $user_id; ?>">
+                                                <input type="hidden" name="organization_id" value="<?= $organization_id; ?>">
                                                 <div class="mb-2">
                                                     <input type="file" class="form-control" name="file" id="file" rows="6"></input>
                                                 </div>
@@ -183,7 +183,7 @@
                             <div class="col-12">
                                 <div class="card">
                                     <div class="card-body">
-                                        <div class="table-responsive">
+                                        <div class="table-responsive">usertype
                                             <table class="table table-centered table-borderless table-hover w-100 dt-responsive nowrap" id="products-datatable">
                                                 <thead class="table-light">
                                                     <tr>
@@ -205,19 +205,19 @@
 
                                                     $query = "SELECT * FROM members WHERE user_id = $user_id AND organization_id = $organization_id AND department_id = $department_id;";
                                                     $results = $conn->query($query);
-                                                    while ($row = $results->fetch_row()) {
+                                                    while ($row = $results->fetch_assoc()) {
                                                     ?>
                                                         <tr>
                                                             <td class="table-user">
                                                                 <img src="../assets/images/users/avatar-4.jpg" alt="table-user" class="me-2 rounded-circle" />
-                                                                <a href="javascript:void(0);" class="text-body fw-semibold"><?php echo $row[1] ?> <?php echo $row[2] ?> <?php echo $row[3] ?></a>
+                                                                <a href="javascript:void(0);" class="text-body fw-semibold"><?= $row['firstname'] ?> <?= $row['middlename'] ?> <?= $row['lastname'] ?></a>
                                                             </td>
-                                                            <td><?php echo $row[4] ?></td>
-                                                            <td><?php echo $row[5] ?></td>
+                                                            <td><?= $row['email'] ?></td>
+                                                            <td><?= $row['course'] ?></td>
                                                             <td>
-                                                                <?php echo $row[6] ?>
+                                                                <?= $row['yearlevel'] ?>
                                                             </td>
-                                                            <td><?php echo $row[7] ?></td>
+                                                            <td><?= $row['usertype'] ?></td>
 
                                                             <td>
                                                                 <a href="javascript:void(0);" class="action-icon">
