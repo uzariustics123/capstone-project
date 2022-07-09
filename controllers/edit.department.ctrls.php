@@ -13,7 +13,7 @@ if (isset($_POST['save'])) {
     $department_code = $_POST['department_code'];
     $file = $_FILES['image'];
 
-    if (emptyInputDepartment($department_name, $department_desc, $department_code, $user_id, $organization_id, $department_id) !== false) {
+    if (emptyInputDepartment($department_name, $department_desc, $department_code, $user_id, $organization_id) !== false) {
         header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id&error=emptyfields");
         exit();
     }

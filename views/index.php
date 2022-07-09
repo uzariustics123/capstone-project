@@ -19,15 +19,16 @@
 
                 <!-- Start Content-->
                 <div class="container-fluid">
-                    <!-- start page title -->
+
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box">
+
                                 <h4 class="page-title">My Organizations</h4>
                             </div>
                         </div>
                     </div>
-                    <!-- end page title -->
+
                     <!-- end row-->
 
                     <div class="row mb-3">
@@ -178,7 +179,7 @@
                     'rgba(0,0,0,0.2)',
                     'success'
                 );
-            } 
+            }
             if (error === 'success') {
                 e.NotificationApp.send(
                     'Well Done!',

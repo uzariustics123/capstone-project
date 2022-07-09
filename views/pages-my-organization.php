@@ -13,7 +13,7 @@
         <div class="content-page">
             <div class="content">
                 <?php include '../includes/topbar.php' ?>
-
+                <?php $organization_id = $_GET['id']; ?>
                 <!-- Start Content-->
                 <div class="container-fluid">
 
@@ -21,7 +21,13 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box">
-                                <h3 class="page-title">My Organization</h3>
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+                                        <li class="breadcrumb-item active"><a href="pages-my-organization.php?id=<?= $organization_id ?>">My Organization</a></li>
+                                    </ol>
+                                </div>
+                                <h4 class="page-title">My Organization</h4>
                             </div>
                         </div>
                     </div>
@@ -29,8 +35,6 @@
 
 
                     <?php
-
-                    $organization_id = $_GET['id'];
                     $query = "SELECT * FROM organizations WHERE organization_id = $organization_id;";
                     $results = $conn->query($query);
 
@@ -230,7 +234,7 @@
                                             <!-- item-->
                                             <a href="../views/pages-my-department.php?user_id=<?= $user; ?>&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>" class="dropdown-item"><i class="mdi mdi-account-cog me-1"></i>Manage</a>
                                             <!-- item-->
-                                            <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
+                                            <a href="../controllers/delete.department.ctrls.php?user_id=<?= $user; ?>&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
                                         </div>
                                     </div>
                                     <!-- project title-->
@@ -324,7 +328,7 @@
             if (error === 'none') {
                 e.NotificationApp.send(
                     'Well Done!',
-                    'Added a new Department.',
+                    'Success',
                     'top-right',
                     'rgba(0,0,0,0.2)',
                     'success'

@@ -81,7 +81,7 @@
 
                 <div class="mb-3">
                   <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="checkbox-signup" />
+                    <input type="checkbox" class="form-check-input" id="checkbox-signup" required />
                     <label class="form-check-label" for="checkbox-signup">I accept
                       <a href="#" class="text-muted">Terms and Conditions</a></label>
                   </div>
@@ -129,7 +129,8 @@
   <script>
     $(function(e) {
       var error = `<?= $_GET['error']; ?>`;
-      if (error === 'stmtfailed') {
+
+      if (error === 'passwordsdontmatch') {
         e.NotificationApp.send(
           'Oh snap!',
           'Change a few things up and try submitting again.',
@@ -137,7 +138,8 @@
           'rgba(0,0,0,0.2)',
           'error'
         );
-      } else if (error === 'none') {
+      }
+      if (error === 'none') {
         e.NotificationApp.send(
           'Well Done!',
           "You successfully registered! Login <a href='pages-login.php'>here</a>.",

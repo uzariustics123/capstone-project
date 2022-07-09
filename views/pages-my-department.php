@@ -14,17 +14,32 @@
             <div class="content">
 
                 <?php include '../includes/topbar.php' ?>
-
+                <?php
+                $user_id = $_GET['user_id'];
+                $organization_id = $_GET['org_id'];
+                $department_id = $_GET['dept_id'];
+                ?>
                 <!-- Start Content-->
                 <div class="container-fluid">
-
+                    <!-- start page title -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box">
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+                                        <li class="breadcrumb-item active"><a href="pages-my-organization.php?id=<?= $organization_id ?>">My Organization</a></li>
+                                        <li class="breadcrumb-item active"><a href="pages-my-department.php?user_id=<?= $user_id ?>&org_id=<?= $organization_id ?>&dept_id=<?= $department_id ?>">My Department</a></li>
+                                    </ol>
+                                </div>
+                                <h4 class="page-title">My Department</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end page title -->
 
                     <div class="row">
                         <?php
-                        $user_id = $_GET['user_id'];
-                        $organization_id = $_GET['org_id'];
-                        $department_id = $_GET['dept_id'];
-
                         $query = "SELECT * FROM departments WHERE user_id = $user_id AND organization_id = $organization_id AND department_id = $department_id;";
                         $results = $conn->query($query);
 
@@ -161,7 +176,7 @@
                                                 <input type="hidden" name="user_id" value="<?= $user_id; ?>">
                                                 <input type="hidden" name="organization_id" value="<?= $organization_id; ?>">
                                                 <div class="mb-2">
-                                                    <input type="file" class="form-control" name="file" id="file" rows="6"></input>
+                                                    <input type="file" class="form-control" name="file" id="file" rows="6" required></input>
                                                 </div>
                                                 <div class="text-center"><button type="submit" name="import" class="btn btn-primary btn-rounded">Import</button></div>
                                             </form>
@@ -183,7 +198,7 @@
                             <div class="col-12">
                                 <div class="card">
                                     <div class="card-body">
-                                        <div class="table-responsive">usertype
+                                        <div class="table-responsive">
                                             <table class="table table-centered table-borderless table-hover w-100 dt-responsive nowrap" id="products-datatable">
                                                 <thead class="table-light">
                                                     <tr>
