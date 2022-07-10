@@ -63,20 +63,31 @@ function pwdMatch($password, $repeat_password)
     return $result;
 }
 
-function usernameExist($conn, $email)
+function emailExist($conn, $email)
 {
-    $sql = "SELECT * FROM users WHERE email = ?;";
+    $sql_user = "SELECT * FROM users WHERE email = ?;";
+    // $sql_members = "SELECT * FROM members WHERE email = ?;";
     $stmt = mysqli_stmt_init($conn);
 
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
+
+    if (!mysqli_stmt_prepare($stmt, $sql_user)) {
         header("location: ../views/pages-register.php?error=stmtfailed");
         exit();
     }
-
     mysqli_stmt_bind_param($stmt, "s",  $email);
     mysqli_stmt_execute($stmt);
 
+
+    // if (!mysqli_stmt_prepare($stmt, $sql_members)) {
+    //     header("location: ../views/pages-register.php?error=stmtfailed");
+    //     exit();
+    // }
+    // mysqli_stmt_bind_param($stmt, "s",  $email);
+    // mysqli_stmt_execute($stmt);
+
     $resultData = mysqli_stmt_get_result($stmt);
+
+
 
     if ($row = mysqli_fetch_assoc($resultData)) {
         return $row;
@@ -123,14 +134,14 @@ function emptyInputLogin($email, $password)
 
 function loginUser($conn, $email, $password)
 {
-    $usernameExists = usernameExist($conn, $email);
+    $emailExist = emailExist($conn, $email);
 
-    if ($usernameExists === false) {
+    if ($emailExist === false) {
         header("location: ../views/pages-login.php?error=wronglogin");
         exit();
     }
 
-    $passwordHashed = $usernameExists["password"];
+    $passwordHashed = $emailExist["password"];
     $checkPassword = password_verify($password, $passwordHashed);
 
     if ($checkPassword === false) {
@@ -138,8 +149,8 @@ function loginUser($conn, $email, $password)
         exit();
     } else if ($checkPassword === true) {
         session_start();
-        $_SESSION["userid"] = $usernameExists["user_id"];
-        header("location: ../views/index.php?error=success");
+        $_SESSION["userid"] = $emailExist["user_id"];
+        header("location: ../views/index.php?error=none");
         exit();
     }
 }
@@ -229,17 +240,33 @@ function createOrganization($conn, $organization_name, $organization_description
 }
 function deleteOrganization($conn, $organization_id)
 {
-    $sql = "DELETE FROM organizations WHERE organization_id=?";
+    $sql_org = "DELETE FROM organizations WHERE organization_id=?";
+    $sql_dept = "DELETE FROM departments WHERE organization_id=?";
+    $sql_mem = "DELETE FROM members WHERE organization_id=?";
+
     $stmt = mysqli_stmt_init($conn);
 
-
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
+    if (!mysqli_stmt_prepare($stmt, $sql_org)) {
         header("location: ../views/pages-add-organization.php?error=mysqlierror");
         exit();
     }
-
     mysqli_stmt_bind_param($stmt, "i", $organization_id);
     mysqli_stmt_execute($stmt);
+
+    if (!mysqli_stmt_prepare($stmt, $sql_dept)) {
+        header("location: ../views/pages-add-organization.php?error=mysqlierror");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, "i", $organization_id);
+    mysqli_stmt_execute($stmt);
+
+    if (!mysqli_stmt_prepare($stmt, $sql_mem)) {
+        header("location: ../views/pages-add-organization.php?error=mysqlierror");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, "i", $organization_id);
+    mysqli_stmt_execute($stmt);
+
     mysqli_stmt_close($stmt);
     header("location: ../views/index.php?error=none");
     exit();
@@ -352,27 +379,34 @@ function editDepartment($conn, $department_name, $department_desc, $department_c
     }
 }
 
-function deleteDepartment($conn, $user_id, $organization_id, $department_id)
+function deleteDepartment($conn, $department_id, $organization_id)
 {
-    $sql = "DELETE FROM departments WHERE user_id=? AND organization_id=? AND department_id=?";
+    $sql_dept = "DELETE FROM departments WHERE department_id=?";
+    $sql_mem = "DELETE FROM members WHERE department_id=?";
     $stmt = mysqli_stmt_init($conn);
 
 
 
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
+    if (!mysqli_stmt_prepare($stmt, $sql_dept)) {
         header("location: ../views/pages-add-organization.php?error=stmtfailed");
         exit();
     }
-
-    mysqli_stmt_bind_param($stmt, "iii", $user_id, $organization_id, $department_id);
+    mysqli_stmt_bind_param($stmt, "i", $department_id);
     mysqli_stmt_execute($stmt);
+    if (!mysqli_stmt_prepare($stmt, $sql_mem)) {
+        header("location: ../views/pages-add-organization.php?error=stmtfailed");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, "i", $department_id);
+    mysqli_stmt_execute($stmt);
+
     mysqli_stmt_close($stmt);
     header("location: ../views/pages-my-organization.php?id=$organization_id&error=none");
     exit();
 }
 
 
-function importMembers($conn, $files, $department_id, $user_id, $organization_id)
+function importMembers($conn, $files, $department_id, $importer_id, $organization_id, $date_created)
 {
     // Allowed mime types
     $fileMimes = array(
@@ -426,40 +460,43 @@ function importMembers($conn, $files, $department_id, $user_id, $organization_id
             $user = $result->fetch_assoc();
 
             if (isset($user['email']) == $email && isset($user['department_id'])) {
-                $sql = "UPDATE members SET firstname=?, middlename=?, lastname=?, email=?, course=?, yearlevel=?, usertype=?, department_id=?, user_id=?, organization_id=? WHERE email='$email' AND department_id = '$department_id;";
+                $sql = "UPDATE members SET firstname=?, middlename=?, lastname=?, email=?, course=?, yearlevel=?, usertype=?, department_id=?, importer_id=?, organization_id=? WHERE email='$email' AND department_id = '$department_id;";
                 $stmt = mysqli_stmt_init($conn);
                 $stmt = $conn->prepare($sql);
                 if (!mysqli_stmt_prepare($stmt, $sql)) {
-                    header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id&error=stmntfailed");
+                    header("location: ../views/pages-my-department.php?user_id=$importer_id&org_id=$organization_id&dept_id=$department_id&error=stmntfailed");
                     exit();
                 }
                 mysqli_stmt_bind_param($stmt, "sssssss", $firstname, $middlename, $lastname, $email, $course, $yearlevel, $usertype);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
             } else {
+
                 $password = randomPassword();
-                $sql = "INSERT INTO members (firstname, middlename, lastname, email, password, course, yearlevel, usertype, department_id, user_id, organization_id) VALUES (?,?,?,?,?,?,?,?,?,?,?);";
+                // $subject = "Your Login Details";
+                // mailSender($email, $subject, $password);
+
+                $sql = "INSERT INTO members (firstname, middlename, lastname, email, password, course, yearlevel, usertype, department_id, importer_id, organization_id,date_created) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);";
                 $stmt = mysqli_stmt_init($conn);
 
                 if (!mysqli_stmt_prepare($stmt, $sql)) {
-                    header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id&error=stmntfailed");
+                    header("location: ../views/pages-my-department.php?user_id=$importer_id&org_id=$organization_id&dept_id=$department_id&error=stmntfailed");
                     exit();
                 }
 
-                mysqli_stmt_bind_param($stmt, "ssssssssiii", $firstname, $middlename, $lastname, $email, $password, $course, $yearlevel, $usertype, $department_id, $user_id, $organization_id);
+                $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
+                mysqli_stmt_bind_param($stmt, "ssssssssiiis", $firstname, $middlename, $lastname, $email, $hashedpassword, $course, $yearlevel, $usertype, $department_id, $importer_id, $organization_id, $date_created);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
-                $subject = "Your Login Details";
-                mailSender($email, $subject, $password);
             }
         }
         // Close opened CSV file
         fclose($files);
 
-        header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id&error=none");
+        header("location: ../views/pages-my-department.php?user_id=$importer_id&org_id=$organization_id&dept_id=$department_id&error=none");
         exit();
     } else {
-        header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id&error=stmntfailed");
+        header("location: ../views/pages-my-department.php?user_id=$importer_id&org_id=$organization_id&dept_id=$department_id&error=stmntfailed");
         exit();
     }
 }

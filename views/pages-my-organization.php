@@ -234,7 +234,7 @@
                                             <!-- item-->
                                             <a href="../views/pages-my-department.php?user_id=<?= $user; ?>&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>" class="dropdown-item"><i class="mdi mdi-account-cog me-1"></i>Manage</a>
                                             <!-- item-->
-                                            <a href="../controllers/delete.department.ctrls.php?user_id=<?= $user; ?>&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
+                                            <a href="../controllers/delete.department.ctrls.php?&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
                                         </div>
                                     </div>
                                     <!-- project title-->

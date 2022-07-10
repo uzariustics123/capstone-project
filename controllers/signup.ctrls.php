@@ -30,7 +30,7 @@ if (isset($_POST['submit'])) {
         header("location: ../views/pages-register.php?error=passwordsdontmatch");
         exit();
     }
-    if (usernameExist($conn, $username, $email) !== false) {
+    if (emailExist($conn, $username, $email) !== false) {
         header("location: ../views/pages-register.php?error=usernametaken");
         exit();
     }

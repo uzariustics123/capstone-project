@@ -174,22 +174,12 @@
             if (error === 'none') {
                 e.NotificationApp.send(
                     'Well Done!',
-                    'You successfully added an organization.',
+                    'Operation Success.',
                     'top-right',
                     'rgba(0,0,0,0.2)',
                     'success'
                 );
             }
-            if (error === 'success') {
-                e.NotificationApp.send(
-                    'Well Done!',
-                    'You successfully logged.',
-                    'top-right',
-                    'rgba(0,0,0,0.2)',
-                    'success'
-                );
-            }
-
         });
     </script>
 

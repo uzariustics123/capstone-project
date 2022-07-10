@@ -92,7 +92,7 @@
 
                                                 <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#edit-department-modal" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
                                                 <!-- item-->
-                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
+                                                <a href="../controllers/delete.department.ctrls.php?dept_id=<?= $department_id ?>&org_id=<?= $organization_id ?>" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -209,16 +209,15 @@
                                                         <th>Year Level</th>
                                                         <th>Usertype</th>
 
-                                                        <th style="width: 75px">Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <?php
-                                                    $user_id = $_GET['user_id'];
+                                                    $importer_id = $_GET['user_id'];
                                                     $organization_id = $_GET['org_id'];
                                                     $department_id = $_GET['dept_id'];
 
-                                                    $query = "SELECT * FROM members WHERE user_id = $user_id AND organization_id = $organization_id AND department_id = $department_id;";
+                                                    $query = "SELECT * FROM members WHERE importer_id = $importer_id AND organization_id = $organization_id AND department_id = $department_id;";
                                                     $results = $conn->query($query);
                                                     while ($row = $results->fetch_assoc()) {
                                                     ?>
@@ -234,12 +233,6 @@
                                                             </td>
                                                             <td><?= $row['usertype'] ?></td>
 
-                                                            <td>
-                                                                <a href="javascript:void(0);" class="action-icon">
-                                                                    <i class="mdi mdi-square-edit-outline"></i></a>
-                                                                <a href="javascript:void(0);" class="action-icon">
-                                                                    <i class="mdi mdi-delete"></i></a>
-                                                            </td>
                                                         </tr>
                                                     <?php } ?>
                                                 </tbody>
