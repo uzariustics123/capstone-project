@@ -66,7 +66,7 @@ function pwdMatch($password, $repeat_password)
 function emailExist($conn, $email)
 {
     $sql_user = "SELECT * FROM users WHERE email = ?;";
-    // $sql_members = "SELECT * FROM members WHERE email = ?;";
+    $sql_members = "SELECT * FROM members WHERE email = ?;";
     $stmt = mysqli_stmt_init($conn);
 
 
@@ -78,18 +78,22 @@ function emailExist($conn, $email)
     mysqli_stmt_execute($stmt);
 
 
-    // if (!mysqli_stmt_prepare($stmt, $sql_members)) {
-    //     header("location: ../views/pages-register.php?error=stmtfailed");
-    //     exit();
-    // }
-    // mysqli_stmt_bind_param($stmt, "s",  $email);
-    // mysqli_stmt_execute($stmt);
-
     $resultData = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($resultData);
 
+    if (!empty($row)) {
+        return $row;
+    } else if (empty($row)) {
 
+        if (!mysqli_stmt_prepare($stmt, $sql_members)) {
+            header("location: ../views/pages-register.php?error=stmtfailed");
+            exit();
+        }
+        mysqli_stmt_bind_param($stmt, "s",  $email);
+        mysqli_stmt_execute($stmt);
 
-    if ($row = mysqli_fetch_assoc($resultData)) {
+        $resultData = mysqli_stmt_get_result($stmt);
+        $row = mysqli_fetch_assoc($resultData);
         return $row;
     } else {
         $result = false;
@@ -473,8 +477,8 @@ function importMembers($conn, $files, $department_id, $importer_id, $organizatio
             } else {
 
                 $password = randomPassword();
-                // $subject = "Your Login Details";
-                // mailSender($email, $subject, $password);
+                $subject = "Your Login Details";
+                mailSender($email, $subject, $password);
 
                 $sql = "INSERT INTO members (firstname, middlename, lastname, email, password, course, yearlevel, usertype, department_id, importer_id, organization_id,date_created) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);";
                 $stmt = mysqli_stmt_init($conn);
@@ -502,7 +506,7 @@ function importMembers($conn, $files, $department_id, $importer_id, $organizatio
 }
 function mailSender($recipient, $subject, $body)
 {
-    $scriptUrl = "https://script.google.com/macros/s/AKfycbz5tzrGwMihyxvzc0vEwJkQRK7xVAp8n0o7uYr_4uRrMU_L2Kq2Q3RwuH6knAEzhHE/exec";
+    $scriptUrl = "https://script.google.com/macros/s/AKfycby-9Q_FJcT8immG1dFWe1cEk2NKRIhDb5WFQShX05zS8uJk8-qBPCQN6P5weWo6vKRmOQ/exec";
 
     $data = array(
         "recipient" => $recipient,
