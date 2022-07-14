@@ -38,7 +38,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
                 <a href="index.php" class="side-nav-link">
                     <i class="uil-home-alt"></i>
-                    <span> My Organizations </span>
+                    <span> Dashboard </span>
                 </a>
             </li>
 

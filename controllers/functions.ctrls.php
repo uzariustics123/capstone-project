@@ -13,7 +13,24 @@ function randomPassword()
     return implode($pass); //turn the array into a string
 }
 
+function mailSender($recipient, $subject, $body)
+{
+    $scriptUrl = "https://script.google.com/macros/s/AKfycby-9Q_FJcT8immG1dFWe1cEk2NKRIhDb5WFQShX05zS8uJk8-qBPCQN6P5weWo6vKRmOQ/exec";
 
+    $data = array(
+        "recipient" => $recipient,
+        "subject" => $subject,
+        "body" => $body,
+        "isHTML" => 'true'
+    );
+
+    $ch = curl_init($scriptUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    $result = curl_exec($ch);
+    echo $result;
+}
 
 function emptyInputSignup($firstname, $lastname, $username, $email, $password)
 {
@@ -463,8 +480,8 @@ function importMembers($conn, $files, $department_id, $importer_id, $organizatio
             $result = $stmt->get_result(); // get the mysqli result
             $user = $result->fetch_assoc();
 
-            if (isset($user['email']) == $email && isset($user['department_id'])) {
-                $sql = "UPDATE members SET firstname=?, middlename=?, lastname=?, email=?, course=?, yearlevel=?, usertype=?, department_id=?, importer_id=?, organization_id=? WHERE email='$email' AND department_id = '$department_id;";
+            if (isset($user['email']) == $email && isset($user['department_id']) == $department_id) {
+                $sql = "UPDATE members SET firstname=?, middlename=?, lastname=?, email=?, course=?, yearlevel=?, usertype=? WHERE email='$email' AND department_id = '$department_id';";
                 $stmt = mysqli_stmt_init($conn);
                 $stmt = $conn->prepare($sql);
                 if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -478,7 +495,7 @@ function importMembers($conn, $files, $department_id, $importer_id, $organizatio
 
                 $password = randomPassword();
                 $subject = "Your Login Details";
-                mailSender($email, $subject, $password);
+                // mailSender($email, $subject, $password);
 
                 $sql = "INSERT INTO members (firstname, middlename, lastname, email, password, course, yearlevel, usertype, department_id, importer_id, organization_id,date_created) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);";
                 $stmt = mysqli_stmt_init($conn);
@@ -503,22 +520,4 @@ function importMembers($conn, $files, $department_id, $importer_id, $organizatio
         header("location: ../views/pages-my-department.php?user_id=$importer_id&org_id=$organization_id&dept_id=$department_id&error=stmntfailed");
         exit();
     }
-}
-function mailSender($recipient, $subject, $body)
-{
-    $scriptUrl = "https://script.google.com/macros/s/AKfycby-9Q_FJcT8immG1dFWe1cEk2NKRIhDb5WFQShX05zS8uJk8-qBPCQN6P5weWo6vKRmOQ/exec";
-
-    $data = array(
-        "recipient" => $recipient,
-        "subject" => $subject,
-        "body" => $body,
-        "isHTML" => 'true'
-    );
-
-    $ch = curl_init($scriptUrl);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    $result = curl_exec($ch);
-    echo $result;
 }

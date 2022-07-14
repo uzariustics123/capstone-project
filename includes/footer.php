@@ -31,6 +31,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <script src="../assets/js/vendor/dataTables.responsive.min.js"></script>
 <script src="../assets/js/vendor/responsive.bootstrap5.min.js"></script>
 <script src="../assets/js/vendor/dataTables.checkboxes.min.js"></script>
+<script src="../assets/js/pages/demo.form-wizard.js"></script>
 
 <!-- third party js ends -->
 
