@@ -1,5 +1,10 @@
 ﻿<?php include '../includes/header.php' ?>
 <?php if (isset($_SESSION['userid'])) { ?>
+    
+
+
+
+
 
     <!-- Begin page -->
     <div class="wrapper">
@@ -16,6 +21,8 @@
                 <!-- Topbar Start -->
                 <?php include '../includes/topbar.php' ?>
                 <!-- end Topbar -->
+
+
 
                 <!-- Start Content-->
                 <div class="container-fluid">

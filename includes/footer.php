@@ -4,6 +4,11 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     exit();
 };
 ?>
+<script>
+    $(window).on('load', function() {
+        $('#preloader').delay(500).fadeOut(200);
+    });
+</script>
 <!-- bundle -->
 <script src="../assets/js/vendor.min.js"></script>
 <script src="../assets/js/app.min.js"></script>
