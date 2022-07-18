@@ -1,6 +1,9 @@
 <?php include '../includes/header.php' ?>
 <?php if (isset($_SESSION['userid'])) { ?>
-
+    <?php if (isset($_SESSION['status'])) {
+        $status = $_SESSION['status'];
+        echo "<span>$status</span>";
+    } ?>
     <!-- Begin page -->
     <div class="wrapper">
 
@@ -298,18 +301,18 @@
                                                                             <div class="mb-1 mt-1">
                                                                                 <label for="yearlevel-select" class="form-label">Year Level</label>
                                                                                 <select class="form-select" name="yearlevel-select" id="eyearlevel-select">
-                                                                                    <option>1st</option>
-                                                                                    <option>2nd</option>
-                                                                                    <option>3rd</option>
-                                                                                    <option>4th</option>
+                                                                                    <option value="1">1st</option>
+                                                                                    <option value="2">2nd</option>
+                                                                                    <option value="3">3rd</option>
+                                                                                    <option value="4">4th</option>
 
                                                                                 </select>
                                                                             </div>
                                                                             <div class="mb-1 mt-1">
                                                                                 <label for="usertype-select" class="form-label">Usertype</label>
                                                                                 <select class="form-select" name="eusertype-select" id="eusertype-select">
-                                                                                    <option>Participant</option>
-                                                                                    <option>Organizer</option>
+                                                                                    <option value="1">Member</option>
+                                                                                    <option value="2">Organizer</option>
                                                                                 </select>
                                                                             </div>
 
@@ -317,7 +320,7 @@
                                                                     </div>
                                                                     <div class="modal-footer">
                                                                         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                                                                        <button type="button" class="btn btn-primary">Save changes</button>
+                                                                        <button type="submit" name="submit" class="btn btn-primary">Save changes</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -365,6 +368,7 @@
                 var yearlevel = $('#yearlevel' + id).text();
                 var usertype = $('#usertype' + id).text();
 
+
                 $('#edit').modal('show');
                 $('#eimporter_id').val(importer_id);
                 $('#eorganization_id').val(organization_id);
@@ -374,8 +378,21 @@
                 $('#elastname').val(lastname);
                 $('#eemail').val(email);
                 $('#ecourse').val(course);
-                $('#eyearlevel-select').val(yearlevel);
-                $('#eusertype-select').val(usertype);
+                if (yearlevel == '1st') {
+                    $('#eyearlevel-select option[value="1"]').attr("selected", true);
+                } else if (yearlevel == '2nd') {
+                    $('#eyearlevel-select option[value="2"]').attr("selected", true);
+                } else if (yearlevel == '3rd') {
+                    $('#eyearlevel-select option[value="3"]').attr("selected", true);
+                } else if (yearlevel == '4th') {
+                    $('#eyearlevel-select option[value="4"]').attr("selected", true);
+                }
+
+                if (usertype == 'member') {
+                    $('#eusertype-select option[value="1"]').attr("selected", true);
+                } else if (usertype == 'organizer') {
+                    $('#eusertype-select option[value="2"]').attr("selected", true);
+                }
             });
         });
     </script>
@@ -384,3 +401,6 @@
     header("location: ../views/pages-404.php");
     exit();
 } ?>
+<?php
+unset($_SESSION['status']);
+?>

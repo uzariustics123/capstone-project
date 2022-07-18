@@ -17,6 +17,13 @@
 </head>
 
 <body class="loading" data-layout-config='{"darkMode":true}'>
+
+  <div id="preloader">
+    <div class="d-flex justify-content-center" style="margin-top:20%;">
+      <div class="spinner-grow avatar-lg text-primary" role="status"></div>
+    </div>
+  </div>
+
   <!-- NAVBAR START -->
   <nav class="navbar navbar-expand-lg py-lg-3 navbar-dark">
     <div class="container">
@@ -649,6 +656,12 @@
   <!-- bundle -->
   <script src="./assets/js/vendor.min.js"></script>
   <script src="./assets/js/app.min.js"></script>
+  <script>
+    $(window).on('load', function() {
+      $('#preloader').delay(1000).fadeOut(300);
+    });
+  </script>
+
 </body>
 
 </html>

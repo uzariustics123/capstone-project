@@ -37,7 +37,7 @@
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                             <div class="card">
-                                <form action="" method="post">
+                                <form action="../controllers/add.event.ctrls.php" method="post" enctype="multipart/form-data">
                                     <div class="card-body">
                                         <div class="mb-3">
                                             <label for="event-name" class="form-label">Event Name</label>
@@ -49,23 +49,6 @@
                                             <textarea class="form-control" id="event-description" name="event-description" rows="5"></textarea>
                                         </div>
 
-
-                                        <div class="mb-3">
-                                            <label for="example-textarea" class="form-label">Text area</label>
-                                            <textarea class="form-control" id="example-textarea" rows="5"></textarea>
-                                        </div>
-
-
-                                        <div class="mb-3">
-                                            <label for="organizer-select" class="form-label">Add Organizer</label>
-                                            <select class="form-control selectpicker" name="organizer-select" id="organizer-select" multiple data-live-search=true>
-                                                <option>1</option>
-                                                <option>2</option>
-                                                <option>3</option>
-                                                <option>4</option>
-                                                <option>5</option>
-                                            </select>
-                                        </div>
 
                                         <div class="mb-3">
                                             <label for="event-date" class="form-label"> Event Date</label>
@@ -98,7 +81,7 @@
                                             </div>
                                         </div>
 
-                                        <button type="submit" class="btn btn-primary">Primary</button>
+                                        <button type="submit" name="submit" class="btn btn-primary">Add</button>
                                     </div>
                                 </form>
 

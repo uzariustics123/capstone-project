@@ -1,10 +1,9 @@
 ﻿<?php include '../includes/header.php' ?>
 <?php if (isset($_SESSION['userid'])) { ?>
-    
-
-
-
-
+    <?php if (isset($_SESSION['status'])) {
+        $status = $_SESSION['status'];
+        echo "<span>$status</span>";
+    } ?>
 
     <!-- Begin page -->
     <div class="wrapper">
@@ -85,7 +84,9 @@
 
                                                 </div> <!-- end card-body -->
                                                 <div class="modal-footer text-center p-1">
-                                                    <div class="col"><button type="submit" name="submit" class="btn btn-primary btn-rounded">Submit</button></div>
+                                                    <div class="col">
+                                                        <button type="submit" name="submit" class="btn btn-primary">Submit</button>
+                                                    </div>
                                                 </div>
                                             </div> <!-- end card-->
                                         </div> <!-- end col-->
@@ -157,6 +158,7 @@
                 </div> <!-- container -->
             </div> <!-- content -->
 
+
         </div>
 
 
@@ -174,23 +176,13 @@
 
     <?php include '../includes/footer.php'; ?>
 
-    <script>
-        $(function(e) {
 
-            var error = `<?= $_GET['error']; ?>`;
-            if (error === 'none') {
-                e.NotificationApp.send(
-                    'Well Done!',
-                    'Operation Success.',
-                    'top-right',
-                    'rgba(0,0,0,0.2)',
-                    'success'
-                );
-            }
-        });
-    </script>
 
 <?php } else {
     header("location: ../views/pages-404.php");
     exit();
 } ?>
+
+<?php
+unset($_SESSION['status']);
+?>

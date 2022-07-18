@@ -18,6 +18,11 @@
 </head>
 
 <body class="loading authentication-bg" data-layout-config='{"leftSideBarTheme":"dark","layoutBoxed":false, "leftSidebarCondensed":false, "leftSidebarScrollable":false,"darkMode":false, "showRightSidebarOnStart": true}'>
+    <div id="preloader">
+        <div class="d-flex justify-content-center" style="margin-top:20%;">
+            <div class="spinner-grow avatar-lg text-primary" role="status"></div>
+        </div>
+    </div>
 
     <div class="account-pages pt-2 pt-sm-5 pb-4 pb-sm-5">
         <div class="container">
@@ -59,6 +64,12 @@
     <!-- bundle -->
     <script src="../assets/js/vendor.min.js"></script>
     <script src="../assets/js/app.min.js"></script>
+
+    <script>
+        $(window).on('load', function() {
+            $('#preloader').delay(1000).fadeOut(300);
+        });
+    </script>
 
 </body>
 

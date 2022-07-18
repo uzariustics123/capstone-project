@@ -1,5 +1,9 @@
 <?php include '../includes/header.php' ?>
 <?php if (isset($_SESSION['userid'])) { ?>
+    <?php if (isset($_SESSION['status'])) {
+        $status = $_SESSION['status'];
+        echo "<span>$status</span>";
+    } ?>
 
     <!-- Begin page -->
     <div class="wrapper">
@@ -11,6 +15,12 @@
         <!-- ============================================================== -->
 
         <div class="content-page">
+            <?php if (isset($_SESSION['status'])) {
+                $status = $_SESSION['status'];
+                echo "<span>$status</span>";
+            } ?>
+
+
             <div class="content">
                 <?php include '../includes/topbar.php' ?>
                 <?php $organization_id = $_GET['id']; ?>
@@ -87,7 +97,10 @@
                                                 <!-- item-->
                                                 <a href="../controllers/edit.organization.ctrls.php?id=<?= $row['organization_id'] ?>" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#organization_modal"> <i class="mdi mdi-square-edit-outline me-1"></i>Edit</a>
                                                 <!-- item-->
-                                                <a href="../controllers/delete.organization.ctrls.php?id=<?= $row['organization_id'] ?>" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
+                                                <!-- ../controllers/delete.organization.ctrls.php?id=<?= $row['organization_id'] ?> -->
+                                                <a href="javascript:void(0)" id="delete-department" class="dropdown-item delete-organization" data-org_id=<?= $organization_id ?>>
+                                                    <i class="mdi mdi-delete me-1"></i>Delete
+                                                </a>
                                             </div>
 
 
@@ -186,7 +199,7 @@
                                                 </div>
                                             </div>
                                             <div class="text-center">
-                                                <button type="submit" class="btn btn-primary" name="submit">Save</button>
+                                                <button type="submit" class="btn btn-primary add-department" name="submit">Save</button>
                                             </div>
 
                                         </form>
@@ -233,8 +246,13 @@
                                             <!-- item-->
                                             <a href="../views/pages-my-department.php?user_id=<?= $user; ?>&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>" class="dropdown-item"><i class="mdi mdi-account-cog me-1"></i>Manage</a>
                                             <!-- item-->
-                                            <a href="../controllers/delete.department.ctrls.php?&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
+
+                                            <!-- ../controllers/delete.department.ctrls.php?&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?> -->
+                                            <a href="javascript:void(0)" id="delete-department" class="dropdown-item delete-department" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?>>
+                                                <i class="mdi mdi-delete me-1"></i>Delete
+                                            </a>
                                         </div>
+
                                     </div>
                                     <!-- project title-->
                                     <!-- Thumbnail-->
@@ -255,8 +273,14 @@
                                             <b>12</b> Tasks
                                         </span>
                                         <span class="text-nowrap mb-2 d-inline-block">
-                                            <i class="mdi mdi-comment-multiple-outline text-muted"></i>
-                                            <b>482</b> Comments
+                                            <?php
+                                            $department_id = $row['department_id'];
+                                            $query = "SELECT * FROM members WHERE department_id = $department_id";
+                                            $result = $conn->query($query);
+                                            $total = $result->num_rows;
+                                            ?>
+                                            <i class="mdi mdi-account-outline text-muted"></i>
+                                            <b><?= $total ?></b> Members
                                         </span>
                                     </p>
                                     <div id="tooltip-container2">
@@ -304,40 +328,55 @@
 
     <?php include '../includes/footer.php'; ?>
     <script>
-        $(function(e) {
-            var error = `<?= $_GET['error']; ?>`;
-            if (error === 'stmtfailed') {
-                e.NotificationApp.send(
-                    'Oh snap!',
-                    'Change a few things up and try submitting again.',
-                    'top-right',
-                    'rgba(0,0,0,0.2)',
-                    'error'
-                );
-            }
-            if (error === 'editsuccess') {
-                e.NotificationApp.send(
-                    'Well Done!',
-                    'Edit Success.',
-                    'top-right',
-                    'rgba(0,0,0,0.2)',
-                    'success'
-                );
-            }
-            if (error === 'none') {
-                e.NotificationApp.send(
-                    'Well Done!',
-                    'Success',
-                    'top-right',
-                    'rgba(0,0,0,0.2)',
-                    'success'
-                );
-            }
+        $('.delete-department').click(function() {
+            var data_org_id = $(this).data('org_id');
+            var data_dept_id = $(this).data('dept_id');
+            console.log({
+                data_dept_id
+            });
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "../controllers/delete.department.ctrls.php?&org_id=" + data_org_id + "&dept_id=" + data_dept_id;
+                }
+            })
 
-        });
+        })
+
+        $('.delete-organization').click(function() {
+            var data_org_id = $(this).data('org_id');
+            console.log({
+                data_org_id
+            });
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "../controllers/delete.organization.ctrls.php?id=" + data_org_id;
+                }
+            })
+
+        })
     </script>
+
 
 <?php } else {
     header("location: ../views/pages-404.php");
     exit();
 } ?>
+<?php
+unset($_SESSION['status']);
+?>

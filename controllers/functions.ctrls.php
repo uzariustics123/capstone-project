@@ -13,6 +13,18 @@ function randomPassword()
     return implode($pass); //turn the array into a string
 }
 
+function randomName()
+{
+    $alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
+    $pass = array(); //remember to declare $pass as an array
+    $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+    for ($i = 0; $i < 30; $i++) {
+        $n = rand(0, $alphaLength);
+        $pass[] = $alphabet[$n];
+    }
+    return implode($pass); //turn the array into a string
+}
+
 function mailSender($recipient, $subject, $body)
 {
     $scriptUrl = "https://script.google.com/macros/s/AKfycby-9Q_FJcT8immG1dFWe1cEk2NKRIhDb5WFQShX05zS8uJk8-qBPCQN6P5weWo6vKRmOQ/exec";
@@ -108,7 +120,6 @@ function emailExist($conn, $email)
         }
         mysqli_stmt_bind_param($stmt, "s",  $email);
         mysqli_stmt_execute($stmt);
-
         $resultData = mysqli_stmt_get_result($stmt);
         $row = mysqli_fetch_assoc($resultData);
         return $row;
@@ -235,7 +246,7 @@ function createOrganization($conn, $organization_name, $organization_description
     $allow = array('jpg', 'jpeg', 'png');
     $exntension = explode('.', $file['name']);
     $fileActExt = strtolower(end($exntension));
-    $fileNew = rand() . "." . $fileActExt;  // rand function create the rand number 
+    $fileNew = randomName() . "." . $fileActExt;  // rand function create the rand number 
     $filePath = '../assets/uploads/' . $fileNew;
 
     if (in_array($fileActExt, $allow)) {
@@ -253,6 +264,15 @@ function createOrganization($conn, $organization_name, $organization_description
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
 
+
+                session_start();
+                $_SESSION["status"] =
+                    "<script>
+                    Swal.fire(
+                    'Added!',
+                    'An organization has been added.',
+                    'success')
+                    </script>";
                 header("location: ../views/index.php?error=none");
                 exit();
             }
@@ -287,8 +307,16 @@ function deleteOrganization($conn, $organization_id)
     }
     mysqli_stmt_bind_param($stmt, "i", $organization_id);
     mysqli_stmt_execute($stmt);
-
     mysqli_stmt_close($stmt);
+
+    session_start();
+    $_SESSION["status"] =
+        "<script>
+        Swal.fire(
+        'Deleted!',
+        'An organization has been deleted.',
+        'success')
+        </script>";
     header("location: ../views/index.php?error=none");
     exit();
 }
@@ -360,6 +388,15 @@ function createDepartment($conn, $department_name, $department_desc, $department
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
 
+
+                session_start();
+                $_SESSION["status"] =
+                    "<script>
+                    Swal.fire(
+                    'Added!',
+                    'A department has been deleted.',
+                    'success')
+                    </script>";
                 header("location: ../views/pages-my-organization.php?id=$organization_id&error=none");
                 exit();
             }
@@ -420,9 +457,17 @@ function deleteDepartment($conn, $department_id, $organization_id)
     }
     mysqli_stmt_bind_param($stmt, "i", $department_id);
     mysqli_stmt_execute($stmt);
-
     mysqli_stmt_close($stmt);
-    header("location: ../views/pages-my-organization.php?id=$organization_id&error=none");
+    session_start();
+    $_SESSION["status"] =
+        "<script>
+        Swal.fire(
+        'Deleted!',
+        'A department has been deleted.',
+        'success')
+        </script>";
+
+    header("location: ../views/pages-my-organization.php?id=$organization_id");
     exit();
 }
 
@@ -464,7 +509,7 @@ function importMembers($conn, $files, $department_id, $importer_id, $organizatio
             $email = $getData[3];
             $course = $getData[4];
             $yearlevel = $getData[5];
-            $usertype = "student";
+            $usertype = "member";
 
 
             $sql = "SELECT * FROM members WHERE email = ? AND department_id = ?;";
@@ -480,7 +525,7 @@ function importMembers($conn, $files, $department_id, $importer_id, $organizatio
             $result = $stmt->get_result(); // get the mysqli result
             $user = $result->fetch_assoc();
 
-            if (isset($user['email']) == $email && isset($user['department_id']) == $department_id) {
+            if (isset($user['email']) == $email && isset($user['department_id']) == $department_id && isset($user['importer_id']) == $importer_id) {
                 $sql = "UPDATE members SET firstname=?, middlename=?, lastname=?, email=?, course=?, yearlevel=?, usertype=? WHERE email='$email' AND department_id = '$department_id';";
                 $stmt = mysqli_stmt_init($conn);
                 $stmt = $conn->prepare($sql);
@@ -514,10 +559,33 @@ function importMembers($conn, $files, $department_id, $importer_id, $organizatio
         // Close opened CSV file
         fclose($files);
 
+        session_start();
+        $_SESSION["status"] =
+            "<script>
+                    Swal.fire(
+                    'Added!',
+                    'Import success.',
+                    'success')
+                    </script>";
         header("location: ../views/pages-my-department.php?user_id=$importer_id&org_id=$organization_id&dept_id=$department_id&error=none");
         exit();
     } else {
         header("location: ../views/pages-my-department.php?user_id=$importer_id&org_id=$organization_id&dept_id=$department_id&error=stmntfailed");
         exit();
     }
+}
+function emptyInputEditMember($firstname, $middlename, $lastname, $email, $course, $yearlevel, $usertype)
+{
+    $result = true;
+
+    if (empty($firstname) || empty($middlename) || empty($lastname) || empty($email) || empty($course) || empty($yearlevel) || empty($usertype)) {
+        $result = true;
+    } else {
+        $result = false;
+    }
+    return $result;
+}
+
+function emptyInputEvent()
+{
 }
