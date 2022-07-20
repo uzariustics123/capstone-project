@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,15 +17,17 @@
   <link href="../assets/css/icons.min.css" rel="stylesheet" type="text/css" />
   <link href="../assets/css/app.min.css" rel="stylesheet" type="text/css" id="light-style" />
   <link href="../assets/css/app-dark.min.css" rel="stylesheet" type="text/css" id="dark-style" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.slim.min.js" integrity="sha512-6ORWJX/LrnSjBzwefdNUyLCMTIsGoNP6NftMy2UAm1JBm6PRZCO1d7OHBStWpVFZLO+RerTvqX/Z9mBFfCJZ4A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="../assets/css/sweetalert2.min.css">
+  <script src="../assets/js/sweetalert2.min.js"></script>
 </head>
 
 <body class="loading authentication-bg" data-layout-config='{"leftSideBarTheme":"dark","layoutBoxed":false, "leftSidebarCondensed":false, "leftSidebarScrollable":false,"darkMode":false, "showRightSidebarOnStart": true}'>
-
-  <div id="preloader">
-    <div class="d-flex justify-content-center" style="margin-top:20%;">
-      <div class="spinner-grow avatar-lg text-primary" role="status"></div>
-    </div>
-  </div>
+  <?php if (isset($_SESSION['status'])) {
+    $status = $_SESSION['status'];
+    echo "<span>$status</span>";
+  } ?>
 
   <div class="account-pages pt-2 pt-sm-5 pb-4 pb-sm-5">
     <div class="container">
@@ -50,9 +55,8 @@
                   <label for="emailaddress" class="form-label">Email address</label>
                   <input class="form-control" type="email" id="emailaddress" required="" placeholder="Enter your username or email" name="email" />
                 </div>
-
                 <div class="mb-3">
-                  <a href="pages-recoverpw.html" class="text-muted float-end"><small>Forgot your password?</small></a>
+                  <a href="pages-password-recovery.php" class="text-muted float-end"><small>Forgot your password?</small></a>
                   <label for="password" class="form-label">Password</label>
                   <div class="input-group input-group-merge">
                     <input type="password" id="password" class="form-control" placeholder="Enter your password" name="password" />
@@ -99,33 +103,8 @@
 
   <script src="../assets/js/pages/demo.toastr.js"></script>
   <!-- end demo js-->
-  <script>
-    $(function(e) {
-      var error = `<?= $_GET['error']; ?>`;
-      if (error === 'wrongpassword' || error === 'wronglogin') {
-        e.NotificationApp.send(
-          'Oh snap!',
-          'Change a few things up and try submitting again.',
-          'top-right',
-          'rgba(0,0,0,0.2)',
-          'error'
-        );
-      } else if (error === 'none') {
-        e.NotificationApp.send(
-          'Well Done!',
-          'You successfully read this important alert message',
-          'top-right',
-          'rgba(0,0,0,0.2)',
-          'success'
-        );
-      }
-    });
-
-    $(window).on('load', function() {
-      $('#preloader').delay(1000).fadeOut(300);
-    });
-  </script>
 
 </body>
 
 </html>
+<?php unset($_SESSION['status']); ?>

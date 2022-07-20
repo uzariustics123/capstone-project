@@ -15,23 +15,89 @@ if (isset($_POST['submit'])) {
 
 
     if (emptyInputSignup($firstname, $lastname, $username, $email, $password) !== false) {
-        header("location: ../views/pages-register.php?error=emptyinput");
+        session_start();
+        $_SESSION['status'] = "
+        <script>const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      })
+  
+      Toast.fire({
+        icon: 'warning',
+        title: 'Some fields are empty'
+      })</script>";
+        header("location: ../views/pages-register.php");
         exit();
     }
     if (invalidUid($username) !== false) {
-        header("location: ../views/pages-register.php?error=invalidusername");
+        session_start();
+        $_SESSION['status'] = "
+        <script>const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      })
+  
+      Toast.fire({
+        icon: 'warning',
+        title: 'Invalid Username'
+      })</script>";
+        header("location: ../views/pages-register.php");
         exit();
     }
     if (invalidEmail($email) !== false) {
-        header("location: ../views/pages-register.php?error=invalidemail");
+        session_start();
+        $_SESSION['status'] = "
+        <script>const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      })
+  
+      Toast.fire({
+        icon: 'warning',
+        title: 'Invalid email address'
+      })</script>";
+        header("location: ../views/pages-register.php");
         exit();
     }
     if (pwdMatch($password, $repeat_password) !== false) {
-        header("location: ../views/pages-register.php?error=passwordsdontmatch");
+        session_start();
+        $_SESSION['status'] = "
+        <script>const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      })
+  
+      Toast.fire({
+        icon: 'warning',
+        title: 'Passwords do not match'
+      })</script>";
+        header("location: ../views/pages-register.php");
         exit();
     }
-    if (emailExist($conn, $username, $email) !== false) {
-        header("location: ../views/pages-register.php?error=usernametaken");
+
+    if (emailExist($conn, $email) == true) {
+        session_start();
+        $_SESSION['status'] = "
+        <script>const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      })
+  
+      Toast.fire({
+        icon: 'warning',
+        title: 'Username Taken'
+      })</script>";
+        header("location: ../views/pages-register.php");
         exit();
     }
 

@@ -97,7 +97,7 @@
                                                 <!-- item-->
                                                 <a href="../controllers/edit.organization.ctrls.php?id=<?= $row['organization_id'] ?>" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#organization_modal"> <i class="mdi mdi-square-edit-outline me-1"></i>Edit</a>
                                                 <!-- item-->
-                                                <!-- ../controllers/delete.organization.ctrls.php?id=<?= $row['organization_id'] ?> -->
+
                                                 <a href="javascript:void(0)" id="delete-department" class="dropdown-item delete-organization" data-org_id=<?= $organization_id ?>>
                                                     <i class="mdi mdi-delete me-1"></i>Delete
                                                 </a>
@@ -138,33 +138,6 @@
                                                     </div>
                                                 </div>
                                             <?php } ?>
-                                        </div>
-
-                                        <div id="tooltip-container">
-                                            <h5>Team Members:</h5>
-                                            <a href="javascript:void(0);" data-bs-container="#tooltip-container" data-bs-toggle="tooltip" data-bs-placement="top" title="Mat Helme" class="d-inline-block">
-                                                <img src="../assets/images/users/avatar-6.jpg" class="rounded-circle img-thumbnail avatar-sm" alt="friend">
-                                            </a>
-
-                                            <a href="javascript:void(0);" data-bs-container="#tooltip-container" data-bs-toggle="tooltip" data-bs-placement="top" title="Michael Zenaty" class="d-inline-block">
-                                                <img src="../assets/images/users/avatar-7.jpg" class="rounded-circle img-thumbnail avatar-sm" alt="friend">
-                                            </a>
-
-                                            <a href="javascript:void(0);" data-bs-container="#tooltip-container" data-bs-toggle="tooltip" data-bs-placement="top" title="James Anderson" class="d-inline-block">
-                                                <img src="../assets/images/users/avatar-8.jpg" class="rounded-circle img-thumbnail avatar-sm" alt="friend">
-                                            </a>
-
-                                            <a href="javascript:void(0);" data-bs-container="#tooltip-container" data-bs-toggle="tooltip" data-bs-placement="top" title="Mat Helme" class="d-inline-block">
-                                                <img src="../assets/images/users/avatar-4.jpg" class="rounded-circle img-thumbnail avatar-sm" alt="friend">
-                                            </a>
-
-                                            <a href="javascript:void(0);" data-bs-container="#tooltip-container" data-bs-toggle="tooltip" data-bs-placement="top" title="Michael Zenaty" class="d-inline-block">
-                                                <img src="../assets/images/users/avatar-5.jpg" class="rounded-circle img-thumbnail avatar-sm" alt="friend">
-                                            </a>
-
-                                            <a href="javascript:void(0);" data-bs-container="#tooltip-container" data-bs-toggle="tooltip" data-bs-placement="top" title="James Anderson" class="d-inline-block">
-                                                <img src="../assets/images/users/avatar-3.jpg" class="rounded-circle img-thumbnail avatar-sm" alt="friend">
-                                            </a>
                                         </div>
 
                                     </div> <!-- end card-body-->
@@ -233,7 +206,6 @@
                         $results = $conn->query($query);
                         while ($row = $results->fetch_assoc()) {
                     ?>
-
                         <div class="col-md-6 col-xxl-3">
                             <!-- project card -->
                             <div class="card d-block">
@@ -247,7 +219,7 @@
                                             <a href="../views/pages-my-department.php?user_id=<?= $user; ?>&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>" class="dropdown-item"><i class="mdi mdi-account-cog me-1"></i>Manage</a>
                                             <!-- item-->
 
-                                            <!-- ../controllers/delete.department.ctrls.php?&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?> -->
+
                                             <a href="javascript:void(0)" id="delete-department" class="dropdown-item delete-department" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?>>
                                                 <i class="mdi mdi-delete me-1"></i>Delete
                                             </a>
@@ -256,10 +228,13 @@
                                     </div>
                                     <!-- project title-->
                                     <!-- Thumbnail-->
-                                    <div class="text-center"><img src="<?= $row['department_image'] ?>" alt="image" class="img-fluid rounded mt-2" width="250" /></div>
+                                    <a href="../views/pages-my-department.php?user_id=<?= $user; ?>&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>">
+                                        <div class="text-center"><img src="<?= $row['department_image'] ?>" alt="image" class="img-fluid rounded mt-2" width="250" /></div>
+                                    </a>
+
 
                                     <h2 class="mt-3">
-                                        <a href="apps-projects-details.html" class="text-title"><?= $row['department_name'] ?></a>
+                                        <a href="../views/pages-my-department.php?user_id=<?= $user; ?>&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>" class="text-title"><?= $row['department_name'] ?></a>
                                     </h2>
                                     <div class="badge bg-secondary text-light mb-3"><?= $row['department_code'] ?></div>
 
@@ -283,26 +258,8 @@
                                             <b><?= $total ?></b> Members
                                         </span>
                                     </p>
-                                    <div id="tooltip-container2">
-                                        <a href="javascript:void(0);" data-bs-container="#tooltip-container2" data-bs-toggle="tooltip" data-bs-placement="top" title="Mat Helme" class="d-inline-block">
-                                            <img src="../assets/images/users/avatar-4.jpg" class="rounded-circle avatar-xs" alt="friend">
-                                        </a>
 
-                                        <a href="javascript:void(0);" data-bs-container="#tooltip-container2" data-bs-toggle="tooltip" data-bs-placement="top" title="Michael Zenaty" class="d-inline-block">
-                                            <img src="../assets/images/users/avatar-5.jpg" class="rounded-circle avatar-xs" alt="friend">
-                                        </a>
-                                    </div>
                                 </div> <!-- end card-body-->
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item p-3">
-                                        <!-- project progress-->
-                                        <p class="mb-2 fw-bold">Progress <span class="float-end">63%</span></p>
-                                        <div class="progress progress-sm">
-                                            <div class="progress-bar" role="progressbar" aria-valuenow="63" aria-valuemin="0" aria-valuemax="100" style="width: 63%;">
-                                            </div><!-- /.progress-bar -->
-                                        </div><!-- /.progress -->
-                                    </li>
-                                </ul>
                             </div> <!-- end card-->
                         </div>
 

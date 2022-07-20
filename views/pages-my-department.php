@@ -45,9 +45,81 @@
                     </div>
                     <!-- end page title -->
 
-                    <div class="row mb-3">
-                        <div class="col-sm-4">
-                            <a href="pages-create-event.php" class="btn btn-primary type=" button" class="btn btn-primary"><i class="mdi mdi-plus"></i> Add Event</a>
+
+                    <div class="modal fade" id="centermodal" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="myCenterModalLabel">Add Event Details</h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                            <div class="card">
+                                                <form action="../controllers/add.event.ctrls.php" method="post" enctype="multipart/form-data">
+                                                    <div class="card-body">
+                                                        <div class="mb-3">
+                                                            <label for="event-name" class="form-label">Event Name</label>
+                                                            <input type="text" id="event-name" name="event-name" class="form-control">
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="event-description" class="form-label">Event Desciption</label>
+                                                            <textarea class="form-control" id="event-description" name="event-description" rows="5"></textarea>
+                                                        </div>
+
+
+                                                        <div class="mb-3">
+                                                            <label for="event-date" class="form-label"> Event Date</label>
+                                                            <input class="form-control" name="event-date" id="event-date" type="date" name="date">
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="event-start-time" class="form-label">Start Time</label>
+                                                            <input class="form-control" name="event-start-time" id="example-start-time" type="time" name="time">
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="event-end-time" class="form-label">End Time</label>
+                                                            <input class="form-control" name="event-end-time" id="example-end-time" type="time" name="time">
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="attendance-duration-select" class="form-label">Attendance Duration (mins)</label>
+                                                            <select class="form-select" name="attendance-duration-select" id="attendance-duration-select">
+                                                                <option>15</option>
+                                                                <option>20</option>
+                                                                <option>25</option>
+                                                                <option>30</option>
+
+                                                            </select>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <div class="form-check form-switch">
+                                                                <input type="checkbox" class="form-check-input" id="event-duration-select" name="event-duration-select">
+                                                                <label class=" form-check-label" for="customSwitch1">Toggle this switch if event is whole day</label>
+                                                            </div>
+                                                        </div>
+
+                                                        <button type="submit" name="submit" class="btn btn-primary">Add</button>
+                                                    </div>
+                                                </form>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
+
+
+                    <div class="row">
+                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6 mb-3 d-grid">
+                            <button class="btn btn-lg font-16 btn-danger" id="btn-new-event" data-bs-toggle="modal" data-bs-target="#centermodal">
+                                <i class="mdi mdi-plus-circle-outline"></i> Create
+                                New Event
+                            </button>
                         </div>
                     </div>
 
@@ -93,94 +165,89 @@
                                     </div><!-- /.modal-dialog -->
                                 </form>
                             </div><!-- /.modal -->
-                            <div class="col-12">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="dropdown card-widgets">
-                                            <a href="#" class="dropdown-toggle arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class="dripicons-gear"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-end">
-                                                <!-- item-->
-
-                                                <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#edit-department-modal" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
-                                                <!-- item-->
-                                                <a href="../controllers/delete.department.ctrls.php?dept_id=<?= $department_id ?>&org_id=<?= $organization_id ?>" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-5">
-                                                <!-- Product image -->
-                                                <a href="javascript: void(0);" class="text-center d-block mb-4">
-                                                    <img src="<?= $row['department_image']; ?>" class="img-fluid" style="max-width: 580px; min-width: 200px" alt="Product-img">
-                                                </a>
-                                            </div> <!-- end col -->
-                                            <div class="col-lg-7">
-                                                <form class="ps-lg-4">
-                                                    <!-- Product title -->
-                                                    <h1 class="mt-0"><?= $row['department_name']; ?></h1>
-                                                    <p class="mb-1">Date Created: <b><?= $row['date_created']; ?></b></p>
-
-                                                    <!-- Product stock -->
-                                                    <div class="mt-3">
-                                                        <h4><span class="badge badge-success-lighten"><?= $row['department_code']; ?></span></h4>
-                                                    </div>
-
-                                                    <!-- Product description -->
-                                                    <div class="mt-4">
-                                                        <h6 class="font-14">Description:</h6>
-                                                        <p><?= $row['department_description']; ?></p>
-                                                    </div>
-                                                <?php } ?>
-
-                                                <!-- Department information -->
-
-                                                <div class="mt-4">
-                                                    <div class="row">
-                                                        <div class="col-md-4">
-                                                            <h6 class="font-14">Total Number of Members:</h6>
-                                                            <?php
-                                                            $query = "SELECT * FROM members WHERE importer_id = $user_id AND organization_id = $organization_id AND department_id = $department_id;";
-                                                            $results = $conn->query($query);
-                                                            $total = $results->num_rows;
-
-                                                            ?>
-                                                            <p class="text-sm lh-150"><?= $total; ?></p>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <h6 class="font-14">Total Number of Organizers:</h6>
-                                                            <?php
-                                                            $query = "SELECT * FROM members WHERE importer_id = $user_id AND organization_id = $organization_id AND department_id = $department_id AND usertype = 'organizer';";
-                                                            $results = $conn->query($query);
-                                                            $total = $results->num_rows;
-
-                                                            ?>
-                                                            <p class="text-sm lh-150"><?= $total; ?></p>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <h6 class="font-14">Total Number of Students:</h6>
-                                                            <?php
-                                                            $query = "SELECT * FROM members WHERE importer_id = $user_id AND organization_id = $organization_id AND department_id = $department_id AND usertype = 'student';";
-                                                            $results = $conn->query($query);
-                                                            $total = $results->num_rows;
-                                                            ?>
-                                                            <p class="text-sm lh-150"><?= $total; ?></p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                </form>
-                                            </div> <!-- end col -->
-                                        </div> <!-- end row-->
-
-
-
-                                    </div> <!-- end card-body-->
-                                </div> <!-- end card-->
-                            </div> <!-- end col-->
-
                             <div class="row">
-                                <div class="col-md-auto">
+                                <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="dropdown card-widgets">
+                                                <a href="#" class="dropdown-toggle arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="dripicons-gear"></i>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#edit-department-modal" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
+                                                    <!-- item-->
+                                                    <a href="../controllers/delete.department.ctrls.php?dept_id=<?= $department_id ?>&org_id=<?= $organization_id ?>" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-5">
+                                                    <!-- Product image -->
+                                                    <a href="javascript: void(0);" class="text-center d-block mb-4">
+                                                        <img src="<?= $row['department_image']; ?>" class="img-fluid rounded" alt="Product-img">
+                                                    </a>
+                                                </div> <!-- end col -->
+                                                <div class="col-lg-7">
+                                                    <form class="ps-lg-4">
+                                                        <!-- Product title -->
+                                                        <h1 class="mt-0"><?= $row['department_name']; ?></h1>
+                                                        <p class="mb-1">Date Created: <b><?= $row['date_created']; ?></b></p>
+
+                                                        <!-- Product stock -->
+                                                        <div class="mt-3">
+                                                            <h4><span class="badge badge-success-lighten"><?= $row['department_code']; ?></span></h4>
+                                                        </div>
+
+                                                        <!-- Product description -->
+                                                        <div class="mt-4">
+                                                            <h6 class="font-14">Description:</h6>
+                                                            <p><?= $row['department_description']; ?></p>
+                                                        </div>
+                                                    <?php } ?>
+
+                                                    <!-- Department information -->
+
+                                                    <div class="mt-4">
+                                                        <div class="row">
+                                                            <div class="col-md-4">
+                                                                <h6 class="font-14">Members:</h6>
+                                                                <?php
+                                                                $query = "SELECT * FROM members WHERE importer_id = $user_id AND organization_id = $organization_id AND department_id = $department_id;";
+                                                                $results = $conn->query($query);
+                                                                $total = $results->num_rows;
+
+                                                                ?>
+                                                                <p class="text-sm lh-150"><?= $total; ?></p>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <h6 class="font-14">Organizers:</h6>
+                                                                <?php
+                                                                $query = "SELECT * FROM members WHERE importer_id = $user_id AND organization_id = $organization_id AND department_id = $department_id AND usertype = 'organizer';";
+                                                                $results = $conn->query($query);
+                                                                $total = $results->num_rows;
+
+                                                                ?>
+                                                                <p class="text-sm lh-150"><?= $total; ?></p>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <h6 class="font-14">Students:</h6>
+                                                                <?php
+                                                                $query = "SELECT * FROM members WHERE importer_id = $user_id AND organization_id = $organization_id AND department_id = $department_id AND usertype = 'student';";
+                                                                $results = $conn->query($query);
+                                                                $total = $results->num_rows;
+                                                                ?>
+                                                                <span class="text-sm lh-150"><?= $total; ?></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    </form>
+                                                </div> <!-- end col -->
+                                            </div> <!-- end row-->
+                                        </div> <!-- end card-body-->
+                                    </div> <!-- end card-->
+                                </div> <!-- end col-->
+                                <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
                                     <div class="card  p-3">
                                         <div class="mb-5 mt-3 mt-xl-0">
                                             <form action="../controllers/import.members.ctrls.php?" method="post" enctype="multipart/form-data">
@@ -205,12 +272,12 @@
 
             </div> <!-- content -->
 
-            <div class="content">
+            <div class="content" id="members-list">
                 <div class="row">
                     <div class="col-12">
                         <div class="row">
                             <div class="col-12">
-                                <h3 class="page-title mt-5">Members</h3>
+                                <h4 class="page-title mt-3">Members</h4>
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="table-responsive">
@@ -239,28 +306,28 @@
                                                     ?>
                                                         <tr>
                                                             <td class="table-user">
-                                                                <span hidden id="importer_id<?php echo $row['user_id']; ?>"><?php echo $row['importer_id']; ?></span>
-                                                                <span hidden id="organization_id<?php echo $row['user_id']; ?>"><?php echo $row['organization_id']; ?></span>
-                                                                <span hidden id="department_id<?php echo $row['user_id']; ?>"><?php echo $row['department_id']; ?></span>
+                                                                <span hidden id="importer_id<?= $row['user_id']; ?>"><?= $row['importer_id']; ?></span>
+                                                                <span hidden id="organization_id<?= $row['user_id']; ?>"><?= $row['organization_id']; ?></span>
+                                                                <span hidden id="department_id<?= $row['user_id']; ?>"><?= $row['department_id']; ?></span>
 
                                                                 <img src="../assets/images/users/avatar-4.jpg" alt="table-user" class="me-2 rounded-circle" />
                                                                 <a href="javascript:void(0);" class="text-body fw-semibold">
-                                                                    <span id="firstname<?php echo $row['user_id']; ?>"><?php echo $row['firstname']; ?></span>
-                                                                    <span id="middlename<?php echo $row['user_id']; ?>"><?php echo $row['middlename']; ?></span>
-                                                                    <span id="lastname<?php echo $row['user_id']; ?>"><?php echo $row['lastname']; ?></span>
+                                                                    <span id="firstname<?= $row['user_id']; ?>"><?= $row['firstname']; ?></span>
+                                                                    <span id="middlename<?= $row['user_id']; ?>"><?= $row['middlename']; ?></span>
+                                                                    <span id="lastname<?= $row['user_id']; ?>"><?= $row['lastname']; ?></span>
                                                                 </a>
                                                             </td>
-                                                            <td><span id="email<?php echo $row['user_id']; ?>"><?php echo $row['email']; ?></span></td>
-                                                            <td><span id="course<?php echo $row['user_id']; ?>"><?php echo $row['course']; ?></span></td>
-                                                            <td><span id="yearlevel<?php echo $row['user_id']; ?>"><?php echo $row['yearlevel']; ?></span></td>
+                                                            <td><span id="email<?= $row['user_id']; ?>"><?= $row['email']; ?></span></td>
+                                                            <td><span id="course<?= $row['user_id']; ?>"><?= $row['course']; ?></span></td>
+                                                            <td><span id="yearlevel<?= $row['user_id']; ?>"><?= $row['yearlevel']; ?></span></td>
 
-                                                            <td><span id="usertype<?php echo $row['user_id']; ?>"><?php if ($row['usertype'] == 'organizer') { ?>
+                                                            <td><span id="usertype<?= $row['user_id']; ?>"><?php if ($row['usertype'] == 'Organizer') { ?>
                                                                         <span class="badge bg-primary">Organizer</span>
                                                                     <?php } else { ?>
                                                                         <span class="badge bg-success">Member</span>
                                                                     <?php } ?></span></td>
                                                             <td class="table-action">
-                                                                <button data-bs-toggle="modal" data-bs-target="#edit-member-modal" class="action-icon edit-custom btn btn-success btn-light" value="<?php echo $row['user_id']; ?>">
+                                                                <button data-bs-toggle="modal" data-bs-target="#edit-member-modal" class="action-icon edit-custom btn btn-success btn-light" value="<?= $row['user_id']; ?>">
                                                                     <i class="mdi mdi-square-edit-outline"></i>
                                                                 </button>
                                                             </td>
@@ -273,11 +340,13 @@
                                                                     <div class="modal-header">
                                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                                                                     </div>
-                                                                    <div class="modal-body">
-                                                                        <form method="post" action="#" enctype="multipart/form-data">
+                                                                    <form method="post" action="../controllers/edit.member.ctrls.php" enctype="multipart/form-data">
+                                                                        <div class="modal-body">
+
                                                                             <input type="hidden" id="eimporter_id" name="importer_id">
                                                                             <input type="hidden" id="eorganization_id" name="organization_id">
                                                                             <input type="hidden" id="edepartment_id" name="department_id">
+                                                                            <input type="hidden" id="euser_id" name="user_id">
                                                                             <div class="mb-1 mt-1">
                                                                                 <label for="firstname" class="form-label">Firstname</label>
                                                                                 <input type="input" name="firstname" class="form-control" id="efirstname" required>
@@ -296,32 +365,31 @@
                                                                             </div>
                                                                             <div class="mb-1 mt-1">
                                                                                 <label for="ecourse" class="form-label">Course</label>
-                                                                                <input type="input" name="ecourse" class="form-control" id="ecourse" required>
+                                                                                <input type="input" name="course" class="form-control" id="ecourse" required>
                                                                             </div>
                                                                             <div class="mb-1 mt-1">
                                                                                 <label for="yearlevel-select" class="form-label">Year Level</label>
                                                                                 <select class="form-select" name="yearlevel-select" id="eyearlevel-select">
-                                                                                    <option value="1">1st</option>
-                                                                                    <option value="2">2nd</option>
-                                                                                    <option value="3">3rd</option>
-                                                                                    <option value="4">4th</option>
+                                                                                    <option value="1st">1st</option>
+                                                                                    <option value="2nd">2nd</option>
+                                                                                    <option value="3rd">3rd</option>
+                                                                                    <option value="4th">4th</option>
 
                                                                                 </select>
                                                                             </div>
                                                                             <div class="mb-1 mt-1">
                                                                                 <label for="usertype-select" class="form-label">Usertype</label>
-                                                                                <select class="form-select" name="eusertype-select" id="eusertype-select">
-                                                                                    <option value="1">Member</option>
-                                                                                    <option value="2">Organizer</option>
+                                                                                <select class="form-select" name="usertype-select" id="eusertype-select">
+                                                                                    <option value="Member">Member</option>
+                                                                                    <option value="Organizer">Organizer</option>
                                                                                 </select>
                                                                             </div>
-
-                                                                        </form>
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                                                                        <button type="submit" name="submit" class="btn btn-primary">Save changes</button>
-                                                                    </div>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                                                                            <button type="submit" name="submit" class="btn btn-primary">Save changes</button>
+                                                                        </div>
+                                                                    </form>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -370,6 +438,7 @@
 
 
                 $('#edit').modal('show');
+                $('#euser_id').val(id);
                 $('#eimporter_id').val(importer_id);
                 $('#eorganization_id').val(organization_id);
                 $('#edepartment_id').val(department_id);
@@ -379,19 +448,19 @@
                 $('#eemail').val(email);
                 $('#ecourse').val(course);
                 if (yearlevel == '1st') {
-                    $('#eyearlevel-select option[value="1"]').attr("selected", true);
+                    $('#eyearlevel-select option[value="1st"]').attr("selected", true);
                 } else if (yearlevel == '2nd') {
-                    $('#eyearlevel-select option[value="2"]').attr("selected", true);
+                    $('#eyearlevel-select option[value="2nd"]').attr("selected", true);
                 } else if (yearlevel == '3rd') {
-                    $('#eyearlevel-select option[value="3"]').attr("selected", true);
+                    $('#eyearlevel-select option[value="3rd"]').attr("selected", true);
                 } else if (yearlevel == '4th') {
-                    $('#eyearlevel-select option[value="4"]').attr("selected", true);
+                    $('#eyearlevel-select option[value="4th"]').attr("selected", true);
                 }
 
-                if (usertype == 'member') {
-                    $('#eusertype-select option[value="1"]').attr("selected", true);
-                } else if (usertype == 'organizer') {
-                    $('#eusertype-select option[value="2"]').attr("selected", true);
+                if (usertype == 'Member') {
+                    $('#eusertype-select option[value="Member"]').attr("selected", true);
+                } else if (usertype == 'Organizer') {
+                    $('#eusertype-select option[value="Organizer"]').attr("selected", true);
                 }
             });
         });
