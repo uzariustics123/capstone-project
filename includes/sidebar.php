@@ -38,11 +38,16 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
                 <a href="index.php" class="side-nav-link">
                     <i class="uil-home-alt"></i>
-                    <span> Dashboard </span>
+                    <span> My Dashboard </span>
                 </a>
             </li>
-
-            <li class="side-nav-title side-nav-item">Apps</li>
+            <?php if (isset($_SESSION['importerid'])) { ?>
+                <li class="side-nav-title side-nav-item">Apps</li>
+                <a href="javascript:void(0);" class="side-nav-link">
+                    <i class="uil-suitcase-alt"></i>
+                    <span> My Departments </span>
+                </a>
+            <?php } ?>
         </ul>
 
         <!-- End Sidebar -->

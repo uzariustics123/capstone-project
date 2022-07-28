@@ -25,18 +25,13 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                 <span class="noti-icon-badge"></span>
             </a>
             <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg">
-
                 <!-- item-->
                 <div class="dropdown-item noti-title">
                     <h5 class="m-0">
                         <span class="float-end">
-                            <a href="javascript: void(0);" class="text-dark">
-                                <small>Clear All</small>
-                            </a>
                         </span>Notification
                     </h5>
                 </div>
-
                 <div style="max-height: 230px;" data-simplebar="">
                     <!-- item-->
                     <a href="javascript:void(0);" class="dropdown-item notify-item">
@@ -48,12 +43,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                         </p>
                     </a>
                 </div>
-
                 <!-- All-->
                 <a href="javascript:void(0);" class="dropdown-item text-center text-primary notify-item notify-all">
                     View All
                 </a>
-
             </div>
         </li>
 
@@ -63,22 +56,21 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             </a>
         </li>
 
-
-
         <li class="dropdown notification-list">
             <a class="nav-link dropdown-toggle nav-user arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                 <span class="account-user-avatar">
                     <?php
                     $user = $_SESSION['userid'];
                     include_once('../config/db.php');
-                    $query = "SELECT * FROM users WHERE user_id = $user;";
+                    $query = "SELECT * FROM users WHERE userid = $user;";
                     $results = $conn->query($query);
-                    while ($row = $results->fetch_assoc()) {
+                    $row = $results->fetch_assoc();
+                    if ($row) {
                     ?>
-                        <img src="<?php if (is_null($row['image'])) {
+                        <img src="<?php if (empty($row['photourl'])) {
                                         echo '../assets/images/users/avatar-1.jpg';
                                     } else {
-                                        echo $row['image'];
+                                        echo $row['photourl'];
                                     }
                                     ?>" alt="user-image" class="rounded-circle">
                 </span>

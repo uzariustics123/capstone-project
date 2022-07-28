@@ -40,8 +40,3 @@ session_start();
 </head>
 
 <body class="loading" data-layout-config='{"leftSideBarTheme":"dark","layoutBoxed":false, "leftSidebarCondensed":false, "leftSidebarScrollable":false,"darkMode":false, "showRightSidebarOnStart": false}'>
-    <!-- <div id="preloader">
-        <div class="d-flex justify-content-center" style="margin-top:20%;">
-            <div class="spinner-grow avatar-lg text-primary" role="status"></div>
-        </div>
-    </div> -->

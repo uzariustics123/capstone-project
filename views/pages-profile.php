@@ -23,9 +23,10 @@
                                 <?php
                                 $user = $_SESSION['userid'];
                                 include_once('../config/db.php');
-                                $query = "SELECT * FROM users WHERE user_id = $user;";
+                                $query = "SELECT * FROM users WHERE userid = $user;";
                                 $results = $conn->query($query);
-                                while ($row = $results->fetch_assoc()) {
+                                $row = $results->fetch_assoc();
+                                if (!empty($row)) {
                                 ?>
 
                                     <!-- Standard modal -->
@@ -114,10 +115,10 @@
                                             </div>
                                         </div>
 
-                                        <img src="<?php if (is_null($row['image'])) {
+                                        <img src="<?php if (is_null($row['photourl'])) {
                                                         echo '../assets/images/users/avatar-1.jpg';
                                                     } else {
-                                                        echo $row['image'];
+                                                        echo $row['photourl'];
                                                     }
                                                     ?>" class="rounded-circle avatar-lg img-thumbnail" alt="profile-image" />
 
@@ -171,6 +172,28 @@
                                             </li>
                                         </ul>
                                     </div>
+                                    <div class="modal fade" id="centermodal" tabindex="-1" role="dialog" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content text-center">
+                                                <div class="modal-body text-center">
+                                                    <?php
+                                                    include "../assets/phpqrcode/qrlib.php";
+                                                    $PNG_TEMP_DIR = 'temp/';
+                                                    if (!file_exists($PNG_TEMP_DIR))
+                                                        mkdir($PNG_TEMP_DIR);
+                                                    $filename = $PNG_TEMP_DIR . 'test.png';
+                                                    $codeString = $row['userid'];
+                                                    $hexed = bin2hex($codeString);
+                                                    $filename = $PNG_TEMP_DIR . 'test' . md5($hexed) . '.png';
+                                                    QRcode::png($hexed, $filename);
+                                                    echo '<img src="' . $PNG_TEMP_DIR . basename($filename) . '" alt="" height="200">';
+                                                    ?>
+
+                                                </div>
+                                            </div><!-- /.modal-content -->
+                                        </div><!-- /.modal-dialog -->
+                                    </div><!-- /.modal -->
+                                    <button type="button" class="btn btn-success" name="submit" data-bs-toggle="modal" data-bs-target="#centermodal">View QR Code</button>
                                     <!-- end card-body -->
                             </div>
                             <!-- end card -->

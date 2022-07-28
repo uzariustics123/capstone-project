@@ -16,5 +16,5 @@ $_SESSION['status'] = "
         icon: 'success',
         title: 'Logged out successfully'
       })</script>";
-header("location: ../views/pages-logout.php");
+header("location: ../views/pages-login.php");
 exit();

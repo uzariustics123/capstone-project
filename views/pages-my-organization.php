@@ -61,12 +61,12 @@
                                             <input type="hidden" class="form-control" name="organization_id" value="<?= $row['organization_id']; ?>">
                                             <div class="mb-3">
                                                 <label for="projectname" class="form-label">Name</label>
-                                                <input type="text" id="projectname" class="form-control" name="organization_name" placeholder="Enter organization name" value="<?= $row['organization_name'] ?>" required>
+                                                <input type="text" id="projectname" class="form-control" name="organization_name" placeholder="Enter organization name" value="<?= $row['org_name'] ?>" required>
                                             </div>
 
                                             <div class="mb-3">
                                                 <label for="project-overview" class="form-label">Organization Details</label>
-                                                <textarea class="form-control" name="organization_description" id="project-overview" rows="6" placeholder="Enter some brief details about the organization.." required><?= $row['organization_description'] ?></textarea>
+                                                <textarea class="form-control" name="organization_description" id="project-overview" rows="6" placeholder="Enter some brief details about the organization.." required><?= $row['org_description'] ?></textarea>
                                             </div>
                                             <div class="mb-1 mt-3">
                                                 <label for="exampleInputPassword1" class="form-label">Image</label>
@@ -107,16 +107,16 @@
 
                                         </div>
                                         <!-- project title-->
-                                        <img src="<?= $row['image'] ?>" class="img-fluid rounded" alt="background image">
+                                        <img src="<?= $row['org_imgurl'] ?>" class="img-fluid rounded" alt="background image">
                                         <h2 class="mt-3">
-                                            <?= $row['organization_name'] ?>
+                                            <?= $row['org_name'] ?>
                                         </h2>
                                         <div class="badge bg-danger mb-3">Organization</div>
 
                                         <h3>Organization Details:</h3>
 
                                         <p class="text-muted mb-2">
-                                            <?= $row['organization_description'] ?>
+                                            <?= $row['org_description'] ?>
                                         </p>
 
                                         <div class="row">
@@ -127,7 +127,7 @@
                                                 </div>
                                             </div>
                                             <?php
-                                            $query = "SELECT * FROM users WHERE user_id = $user;";
+                                            $query = "SELECT * FROM users WHERE userid = $user;";
                                             $results = $conn->query($query);
                                             while ($row = $results->fetch_assoc()) {
                                             ?>
@@ -229,16 +229,16 @@
                                     <!-- project title-->
                                     <!-- Thumbnail-->
                                     <a href="../views/pages-my-department.php?user_id=<?= $user; ?>&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>">
-                                        <div class="text-center"><img src="<?= $row['department_image'] ?>" alt="image" class="img-fluid rounded mt-2" width="250" /></div>
+                                        <div class="text-center"><img src="<?= $row['dept_imgurl'] ?>" alt="image" class="img-fluid rounded mt-2" width="250" /></div>
                                     </a>
 
 
                                     <h2 class="mt-3">
-                                        <a href="../views/pages-my-department.php?user_id=<?= $user; ?>&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>" class="text-title"><?= $row['department_name'] ?></a>
+                                        <a href="../views/pages-my-department.php?user_id=<?= $user; ?>&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>" class="text-title"><?= $row['dept_name'] ?></a>
                                     </h2>
-                                    <div class="badge bg-secondary text-light mb-3"><?= $row['department_code'] ?></div>
+                                    <div class="badge bg-secondary text-light mb-3"><?= $row['dept_code'] ?></div>
 
-                                    <p class="text-muted font-13 mb-3"><?= $row['department_description'] ?>
+                                    <p class="text-muted font-13 mb-3"><?= $row['dept_description'] ?>
                                     </p>
 
                                     <!-- project detail-->

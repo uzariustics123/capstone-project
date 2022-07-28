@@ -110,10 +110,10 @@
                                 <!-- project card -->
                                 <div class="card d-block">
                                     <!-- project-thumbnail -->
-                                    <img class="card-img-top img-fluid" src="<?php if (is_null($row['image'])) {
+                                    <img class="card-img-top img-fluid" src="<?php if (is_null($row['org_imgurl'])) {
                                                                                     echo '../assets/images/projects/project-1.jpg';
                                                                                 } else {
-                                                                                    echo $row['image'];
+                                                                                    echo $row['org_imgurl'];
                                                                                 }
                                                                                 ?>" alt="project image cap">
                                     <div class="card-img-overlay">
@@ -123,7 +123,7 @@
                                     <div class="card-body position-relative">
                                         <!-- project title-->
                                         <h4 class="mt-0">
-                                            <a href="apps-projects-details.html" class="text-title"><?= $row['organization_name'] ?></a>
+                                            <a href="apps-projects-details.html" class="text-title"><?= $row['org_name'] ?></a>
                                         </h4>
                                         <!-- project detail-->
                                         <p class="mb-3">
