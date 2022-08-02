@@ -1,5 +1,5 @@
 <?php include '../includes/header.php' ?>
-<?php if (isset($_SESSION['userid'])) { ?>
+<?php if (isset($user)) { ?>
     <?php if (isset($_SESSION['status'])) {
         $status = $_SESSION['status'];
         echo "<span>$status</span>";
@@ -284,50 +284,6 @@
 
 
     <?php include '../includes/footer.php'; ?>
-    <script>
-        $('.delete-department').click(function() {
-            var data_org_id = $(this).data('org_id');
-            var data_dept_id = $(this).data('dept_id');
-            console.log({
-                data_dept_id
-            });
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "../controllers/delete.department.ctrls.php?&org_id=" + data_org_id + "&dept_id=" + data_dept_id;
-                }
-            })
-
-        })
-
-        $('.delete-organization').click(function() {
-            var data_org_id = $(this).data('org_id');
-            console.log({
-                data_org_id
-            });
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "../controllers/delete.organization.ctrls.php?id=" + data_org_id;
-                }
-            })
-
-        })
-    </script>
 
 
 <?php } else {

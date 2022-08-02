@@ -1,5 +1,6 @@
 ﻿<?php include '../includes/header.php' ?>
-<?php if (isset($_SESSION['userid'])) { ?>
+<?php if (isset($user)) { ?>
+
     <?php if (isset($_SESSION['status'])) {
         $status = $_SESSION['status'];
         echo "<span>$status</span>";
@@ -193,3 +194,4 @@
 <?php
 unset($_SESSION['status']);
 ?>
+<!-- tG3usjApEK -->

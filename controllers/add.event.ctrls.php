@@ -17,16 +17,16 @@ if (isset($_POST['submit'])) {
         $all_day = "no";
     }
     $all_day;
-    $status = "Approved";
     $user_id = $_POST['user-id'];
     $organization_id = $_POST['organization-id'];
     $department_id = $_POST['department-id'];
-    if ($_POST['importer-id'] != 0) {
-        $importer_id = $_POST['importer-id'];
+    $importer_id = $_POST['importer-id'];
+    $usertype = $_POST['usertype'];
+    if ($usertype == 'Administrator') {
+        $status = "Approved";
+    } else if ($usertype == 'Organizer') {
         $status = "Pending";
     }
-
-
     if (emptyEventInput($event_name, $event_description, $event_date, $date_created, $event_start, $event_end, $attendance_duration, $all_day)) {
 
         session_start();
@@ -41,7 +41,7 @@ if (isset($_POST['submit'])) {
         exit();
     }
 
-    createEvent($conn, $event_name, $event_description, $event_date, $date_created, $event_start, $event_end, $attendance_duration, $all_day, $status, $user_id, $organization_id, $department_id, $importer_id);
+    createEvent($conn, $event_name, $event_description, $event_date, $date_created, $event_start, $event_end, $attendance_duration, $all_day, $status, $user_id, $organization_id, $department_id, $importer_id, $usertype);
 } else {
     header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id");
     exit();

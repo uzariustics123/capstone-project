@@ -41,7 +41,7 @@ function mailSender($recipient, $subject, $body)
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     $result = curl_exec($ch);
-    echo $result;
+    return $result;
 }
 
 function emptyInputSignup($firstname, $lastname, $username, $email, $password)
@@ -92,9 +92,9 @@ function pwdMatch($password, $repeat_password)
     return $result;
 }
 
-function createUser($conn, $firstname, $lastname, $username, $email, $password, $date_created)
+function createUser($conn, $firstname, $lastname, $username, $email, $password, $date_created, $usertype)
 {
-    $sql = "INSERT INTO users (firstname, lastname, username, email, password, date_created) VALUES (?,?,?,?,?,?);";
+    $sql = "INSERT INTO users (firstname, lastname, username, email, password, date_created, usertype) VALUES (?,?,?,?,?,?,?);";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -103,7 +103,7 @@ function createUser($conn, $firstname, $lastname, $username, $email, $password, 
     }
 
     $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
-    mysqli_stmt_bind_param($stmt, "ssssss", $firstname, $lastname, $username, $email, $hashedpassword, $date_created);
+    mysqli_stmt_bind_param($stmt, "sssssss", $firstname, $lastname, $username, $email, $hashedpassword, $date_created, $usertype);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
 
@@ -224,8 +224,14 @@ function loginUser($conn, $email, $password)
         exit();
     } else if ($checkPassword == true) {
         session_start();
-        $_SESSION["userid"] = $emailExist["userid"];
-        $_SESSION["importerid"] = $emailExist["importer_id"];
+        if ($emailExist["userid"]) {
+            $_SESSION["userid"] = $emailExist["userid"];
+        } else {
+            $_SESSION["userid"] = $emailExist["member_id"];
+        }
+        $_SESSION["member_id"] = $emailExist["member_id"];
+        $_SESSION["importer_id"] = $emailExist["importer_id"];
+        $_SESSION["usertype"] = $emailExist["usertype"];
         $_SESSION['status'] = "
         <script>const Toast = Swal.mixin({
         toast: true,
@@ -340,6 +346,7 @@ function deleteOrganization($conn, $organization_id)
     $sql_org = "DELETE FROM organizations WHERE organization_id=?";
     $sql_dept = "DELETE FROM departments WHERE organization_id=?";
     $sql_mem = "DELETE FROM members WHERE organization_id=?";
+    $sql_event = "DELETE FROM events WHERE organization_id=?";
 
     $stmt = mysqli_stmt_init($conn);
 
@@ -358,6 +365,12 @@ function deleteOrganization($conn, $organization_id)
     mysqli_stmt_execute($stmt);
 
     if (!mysqli_stmt_prepare($stmt, $sql_mem)) {
+        header("location: ../views/pages-add-organization.php?error=mysqlierror");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, "i", $organization_id);
+    mysqli_stmt_execute($stmt);
+    if (!mysqli_stmt_prepare($stmt, $sql_event)) {
         header("location: ../views/pages-add-organization.php?error=mysqlierror");
         exit();
     }
@@ -388,7 +401,7 @@ function editOrganization($conn, $organization_name, $organization_description, 
     if (in_array($fileActExt, $allow)) {
         if ($file['size'] > 0 && $file['error'] == 0) {
             if (move_uploaded_file($file['tmp_name'], $filePath)) {
-                $sql = "UPDATE organizations SET organization_name=?, organization_description=?, image=? WHERE user_id= $user_id AND organization_id= $organization_id;";
+                $sql = "UPDATE organizations SET org_name=?, org_description=?, org_imgurl=? WHERE user_id= $user_id AND organization_id= $organization_id;";
 
                 $stmt = mysqli_stmt_init($conn);
 
@@ -430,7 +443,7 @@ function emptyInputDepartment($department_name, $department_desc, $department_co
 }
 function departmentExists($conn, $department_name, $organization_id)
 {
-    $sql = "SELECT * FROM departments WHERE department_name = ? AND organization_id = ?;";
+    $sql = "SELECT * FROM departments WHERE dept_name = ? AND organization_id = ?;";
     $stmt = mysqli_stmt_init($conn);
 
 
@@ -454,6 +467,23 @@ function departmentExists($conn, $department_name, $organization_id)
 }
 function createDepartment($conn, $department_name, $department_desc, $department_code, $file, $user_id, $organization_id, $date_created)
 {
+    $departmentExist = departmentExists($conn, $department_name, $organization_id);
+
+    if ($departmentExist == true) {
+
+        session_start();
+        $_SESSION["status"] =
+            "<script>
+        Swal.fire(
+        'Warning!',
+        'A deparment already exist.',
+        'warning')
+        </script>";
+
+        header("location: ../views/pages-my-organization.php?id=$organization_id");
+        exit();
+    }
+
 
 
     $allow = array('jpg', 'jpeg', 'png');
@@ -616,7 +646,7 @@ function importMembers($conn, $files, $department_id, $importer_id, $organizatio
             $email = $getData[3];
             $course = $getData[4];
             $yearlevel = $getData[5];
-            $usertype = "member";
+            $usertype = "Member";
 
             if (!isset($firstname) || !isset($middlename) || !isset($lastname) || !isset($course) || !isset($yearlevel)) {
                 session_start();
@@ -631,28 +661,30 @@ function importMembers($conn, $files, $department_id, $importer_id, $organizatio
                 exit();
             }
 
-            $sql = "SELECT * FROM members WHERE email = ? AND department_id = ?;";
+            $sql = "SELECT * FROM members WHERE email = ?;";
             $stmt = mysqli_stmt_init($conn);
 
             if (!mysqli_stmt_prepare($stmt, $sql)) {
                 header("location: ../views/pages-register.php?error=stmtfailed");
                 exit();
             }
-            mysqli_stmt_bind_param($stmt, "ss", $email, $department_id);
+            mysqli_stmt_bind_param($stmt, "s", $email);
             mysqli_stmt_execute($stmt);
 
             $result = $stmt->get_result();
             $user = $result->fetch_assoc();
 
-            if (isset($user['email']) == $email && isset($user['department_id']) == $department_id && isset($user['importer_id']) == $importer_id) {
-                $sql = "UPDATE members SET firstname=?, middlename=?, lastname=?, email=?, course=?, yearlevel=?, usertype=? WHERE email='$email' AND department_id = '$department_id';";
+            if (isset($user['email']) == $email) {
+                echo "do nothing";
+            } else if (isset($user['department_id']) == $department_id && isset($user['importer_id']) == $importer_id) {
+                $sql = "UPDATE members SET firstname=?, middlename=?, lastname=?, course=?, yearlevel=?, usertype=? WHERE email='$email' AND department_id = '$department_id';";
                 $stmt = mysqli_stmt_init($conn);
                 $stmt = $conn->prepare($sql);
                 if (!mysqli_stmt_prepare($stmt, $sql)) {
                     header("location: ../views/pages-my-department.php?user_id=$importer_id&org_id=$organization_id&dept_id=$department_id&error=stmntfailed");
                     exit();
                 }
-                mysqli_stmt_bind_param($stmt, "sssssss", $firstname, $middlename, $lastname, $email, $course, $yearlevel, $usertype);
+                mysqli_stmt_bind_param($stmt, "ssssss", $firstname, $middlename, $lastname, $course, $yearlevel, $usertype);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
             } else {
@@ -666,7 +698,7 @@ function importMembers($conn, $files, $department_id, $importer_id, $organizatio
 
                 $password = randomPassword();
                 $subject = "Your Login Details";
-                // mailSender($email, $subject, $password);
+                mailSender($email, $subject, $password);
 
                 $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
                 mysqli_stmt_bind_param($stmt, "ssssssssiiis", $firstname, $middlename, $lastname, $email, $hashedpassword, $course, $yearlevel, $usertype, $department_id, $importer_id, $organization_id, $date_created);
@@ -741,7 +773,7 @@ function emptyEventInput($event_name, $event_description, $event_date, $date_cre
     }
     return $result;
 }
-function createEvent($conn, $event_name, $event_description, $event_date, $date_created, $event_start, $event_end, $attendance_duration, $all_day, $status, $user_id, $organization_id, $department_id, $importer_id)
+function createEvent($conn, $event_name, $event_description, $event_date, $date_created, $event_start, $event_end, $attendance_duration, $all_day, $status, $user_id, $organization_id, $department_id, $importer_id, $usertype)
 {
     $sql = "INSERT INTO events (event_name, event_description, event_date, date_created, event_start, event_end, attendance_duration, all_day, status, user_id,organization_id, department_id, importer_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
@@ -763,21 +795,34 @@ function createEvent($conn, $event_name, $event_description, $event_date, $date_
     mysqli_stmt_bind_param($stmt, "sssssssssiiii", $event_name, $event_description, $event_date, $date_created, $event_start, $event_end, $attendance_duration, $all_day, $status, $user_id, $organization_id, $department_id, $importer_id);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
-    session_start();
-    $_SESSION["status"] =
-        "<script>
+
+    if ($usertype == "Organizer") {
+        session_start();
+        $_SESSION["status"] =
+            "<script>
         Swal.fire(
         'Added!',
         'Added an event!',
         'success')
         </script>";
-
-    header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id#events");
-    exit();
+        header("location: ../views/pages-member-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id#events");
+        exit();
+    } else if ($usertype == "Administrator") {
+        session_start();
+        $_SESSION["status"] =
+            "<script>
+        Swal.fire(
+        'Added!',
+        'Added an event!',
+        'success')
+        </script>";
+        header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id#events");
+        exit();
+    }
 }
 function deleteEvent($conn, $event_id)
 {
-    $sql = "DELETE FROM events WHERE event_id=?";
+    $sql = "DELETE FROM events SET status=?;";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -797,5 +842,29 @@ function deleteEvent($conn, $event_id)
         </script>";
 
     header("location: ../views/index.php");
+    exit();
+}
+function approveEvent($conn, $event_id)
+{
+    $sql = "UPDATE events SET status = ? WHERE event_id=$event_id";
+    $stmt = mysqli_stmt_init($conn);
+    $status = "Approved";
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        header("location: ../views/pages-add-organization.php?error=stmtfailed");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, "s", $status);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    session_start();
+    $_SESSION["status"] =
+        "<script>
+        Swal.fire(
+        'Approved!',
+        'Event Approved.',
+        'success')
+        </script>";
+
+    header("location: ../views/pages-view-event-details.php?event_id=$event_id");
     exit();
 }

@@ -33,15 +33,21 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                     </h5>
                 </div>
                 <div style="max-height: 230px;" data-simplebar="">
-                    <!-- item-->
-                    <a href="javascript:void(0);" class="dropdown-item notify-item">
-                        <div class="notify-icon bg-info">
-                            <i class="mdi mdi-account-plus"></i>
-                        </div>
-                        <p class="notify-details">New user registered.
+
+                    <?php
+                    $query = "SELECT * FROM events WHERE importer_id = $user AND status = 'Pending';";
+                    $results = $conn->query($query);
+                    while ($row = $results->fetch_assoc()) {
+                    ?>
+                        <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>" class="dropdown-item notify-item">
+                            <div class="notify-icon bg-info">
+                                <i class="mdi mdi-account-plus"></i>
+                            </div>
+                            <p class="notify-details"><?= $row['event_name'] ?></p>
                             <small class="text-muted">5 hours ago</small>
-                        </p>
-                    </a>
+                            </p>
+                        </a>
+                    <?php } ?>
                 </div>
                 <!-- All-->
                 <a href="javascript:void(0);" class="dropdown-item text-center text-primary notify-item notify-all">
@@ -57,32 +63,57 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         </li>
 
         <li class="dropdown notification-list">
+
             <a class="nav-link dropdown-toggle nav-user arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                <span class="account-user-avatar">
+                <div class="topbar-profile">
                     <?php
-                    $user = $_SESSION['userid'];
-                    include_once('../config/db.php');
                     $query = "SELECT * FROM users WHERE userid = $user;";
                     $results = $conn->query($query);
                     $row = $results->fetch_assoc();
-                    if ($row) {
+                    if (!empty($row)) {
                     ?>
-                        <img src="<?php if (empty($row['photourl'])) {
-                                        echo '../assets/images/users/avatar-1.jpg';
-                                    } else {
-                                        echo $row['photourl'];
-                                    }
-                                    ?>" alt="user-image" class="rounded-circle">
-                </span>
-                <span>
+                        <span class="account-user-avatar">
 
-                    <span class="account-user-name"><?= $row['firstname'] ?> <?php echo $row['lastname'] ?></span>
-                    <span class="account-position">Administrator</span>
-                <?php
+                            <img src="<?php if (empty($row['photourl'])) {
+                                            echo '../assets/images/users/avatar-1.jpg';
+                                        } else {
+                                            echo $row['photourl'];
+                                        }
+                                        ?>" alt="user-image" class="rounded-circle">
+                        </span>
+                        <span>
+
+                            <span class="account-user-name"><?= $row['firstname'] ?> <?php echo $row['lastname'] ?></span>
+                            <span class="account-position">Administrator</span>
+
+                        </span>
+                        <?php
+                    } else if (empty($row)) {
+                        $query = "SELECT * FROM members WHERE member_id = $user;";
+                        $results = $conn->query($query);
+                        $row = $results->fetch_assoc();
+                        if (!empty($row)) { ?>
+                            <span class="account-user-avatar">
+
+                                <img src="<?php if (empty($row['image'])) {
+                                                echo '../assets/images/users/avatar-1.jpg';
+                                            } else {
+                                                echo $row['image'];
+                                            }
+                                            ?>" alt="user-image" class="rounded-circle">
+                            </span>
+                            <span>
+                                <span class="account-user-name"><?= $row['firstname'] ?> <?= $row['lastname'] ?></span>
+                                <span class="account-position"><?= $row['usertype'] ?></span>
+
+                            </span>
+                    <?php
+                        }
                     }
-                ?>
-                </span>
+                    ?>
+                </div>
             </a>
+
             <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated topbar-dropdown-menu profile-dropdown">
                 <!-- item-->
                 <div class=" dropdown-header noti-title">
@@ -96,7 +127,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                 </a>
 
                 <!-- item-->
-                <a href="../controllers/logout.ctrls.php" class="dropdown-item notify-item">
+                <a href="javascript:void(0)" class="dropdown-item notify-item" id="logout">
                     <i class="mdi mdi-logout me-1"></i>
                     <span>Logout</span>
                 </a>

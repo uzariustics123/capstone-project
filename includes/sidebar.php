@@ -8,7 +8,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <div class="leftside-menu">
 
     <!-- LOGO -->
-    <a href="index.html" class="logo text-center logo-light">
+    <a href="../views/index.php" class="logo text-center logo-light">
         <span class="logo-lg">
             <img src="../assets/images/logo.png" alt="" height="16">
         </span>
@@ -18,7 +18,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     </a>
 
     <!-- LOGO -->
-    <a href="index.html" class="logo text-center logo-dark">
+    <a href="../views/index.php" class="logo text-center logo-dark">
         <span class="logo-lg">
             <img src="../assets/images/logo-dark.png" alt="" height="16">
         </span>
@@ -31,9 +31,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
         <!--- Sidemenu -->
         <ul class="side-nav">
-
             <li class="side-nav-title side-nav-item">Home</li>
-
             <li class="side-nav-item">
 
                 <a href="index.php" class="side-nav-link">
@@ -41,12 +39,19 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                     <span> My Dashboard </span>
                 </a>
             </li>
-            <?php if (isset($_SESSION['importerid'])) { ?>
+            <?php
+            $member_id = $_SESSION['member_id'];
+            if (isset($member_id)) {
+                $query = "SELECT * FROM members WHERE member_id = $member_id;";
+                $results = $conn->query($query);
+                $row = $results->fetch_array(); ?>
                 <li class="side-nav-title side-nav-item">Apps</li>
-                <a href="javascript:void(0);" class="side-nav-link">
-                    <i class="uil-suitcase-alt"></i>
-                    <span> My Departments </span>
-                </a>
+                <li class="side-nav-item">
+                    <a href="pages-member-department.php?user_id=<?= $row['member_id'] ?>&org_id=<?= $row['organization_id'] ?>&dept_id=<?= $row['department_id'] ?>" class="side-nav-link">
+                        <i class="uil-suitcase-alt"></i>
+                        <span> My Departments </span>
+                    </a>
+                </li>
             <?php } ?>
         </ul>
 

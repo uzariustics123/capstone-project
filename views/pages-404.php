@@ -48,7 +48,7 @@
                                     happens to the best of us. Here's a
                                     little tip that might help you get back on track.</p>
 
-                                <a class="btn btn-info mt-3" href="pages-login.php"><i class="mdi mdi-reply"></i> Return Home</a>
+                                <a class="btn btn-info mt-3" href="pages-login.php"><i class="mdi mdi-reply"></i> Return To Login</a>
                             </div>
                         </div> <!-- end card-body-->
                     </div>

@@ -1,5 +1,5 @@
 <?php include '../includes/header.php' ?>
-<?php if (isset($_SESSION['userid'])) { ?>
+<?php if (isset($user)) { ?>
 
     <?php if (isset($_SESSION['status'])) {
         $status = $_SESSION['status'];
@@ -16,7 +16,6 @@
             <div class="content">
                 <?php include '../includes/topbar.php' ?>
                 <?php
-                $user_id = $_GET['user_id'];
                 $organization_id = $_GET['org_id'];
                 $department_id = $_GET['dept_id'];
                 ?>
@@ -30,7 +29,7 @@
                                     <ol class="breadcrumb m-0">
                                         <li class="breadcrumb-item"><a href="index.php">Home</a></li>
                                         <li class="breadcrumb-item active"><a href="pages-my-organization.php?id=<?= $organization_id ?>">My Organization</a></li>
-                                        <li class="breadcrumb-item active"><a href="pages-my-department.php?user_id=<?= $user_id ?>&org_id=<?= $organization_id ?>&dept_id=<?= $department_id ?>">My Department</a></li>
+                                        <li class="breadcrumb-item active"><a href="pages-my-department.php?user_id=<?= $user ?>&org_id=<?= $organization_id ?>&dept_id=<?= $department_id ?>">My Department</a></li>
                                     </ol>
                                 </div>
                                 <h4 class="page-title">My Department</h4>
@@ -53,7 +52,7 @@
                     </div>
                     <div class="row">
                         <?php
-                        $query = "SELECT * FROM departments WHERE user_id = $user_id AND organization_id = $organization_id AND department_id = $department_id;";
+                        $query = "SELECT * FROM departments WHERE user_id = $user AND organization_id = $organization_id AND department_id = $department_id;";
                         $results = $conn->query($query);
                         while ($row = $results->fetch_assoc()) {
                         ?>
@@ -63,7 +62,7 @@
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-body">
-                                                <input type="hidden" name="user_id" value="<?= $user_id ?>">
+                                                <input type="hidden" name="user_id" value="<?= $user ?>">
                                                 <input type="hidden" name="organization_id" value="<?= $organization_id ?>">
                                                 <input type="hidden" name="department_id" value="<?= $department_id ?>">
                                                 <div class="mb-3">
@@ -143,7 +142,7 @@
                                                             <div class="col-md-4">
                                                                 <h6 class="font-14">Organizers:</h6>
                                                                 <?php
-                                                                $query = "SELECT * FROM members WHERE importer_id = $user_id AND organization_id = $organization_id AND department_id = $department_id AND usertype = 'Organizer';";
+                                                                $query = "SELECT * FROM members WHERE importer_id = $user AND organization_id = $organization_id AND department_id = $department_id AND usertype = 'Organizer';";
                                                                 $results = $conn->query($query);
                                                                 $total = $results->num_rows;
                                                                 ?>
@@ -152,7 +151,7 @@
                                                             <div class="col-md-4">
                                                                 <h6 class="font-14">Students:</h6>
                                                                 <?php
-                                                                $query = "SELECT * FROM members WHERE importer_id = $user_id AND organization_id = $organization_id AND department_id = $department_id AND usertype = 'member';";
+                                                                $query = "SELECT * FROM members WHERE importer_id = $user AND organization_id = $organization_id AND department_id = $department_id AND usertype = 'member';";
                                                                 $results = $conn->query($query);
                                                                 $total = $results->num_rows;
                                                                 ?>
@@ -173,7 +172,7 @@
                                                 <h4 class="mb-2">Import CSV</h4>
                                                 <p class="text-muted font-14">Import your CSV file here format should be Firstname, Middlename, Lastname, Course, Yearlevel</p>
                                                 <input type="hidden" name="department_id" value="<?= $department_id; ?>">
-                                                <input type="hidden" name="user_id" value="<?= $user_id; ?>">
+                                                <input type="hidden" name="user_id" value="<?= $user; ?>">
                                                 <input type="hidden" name="organization_id" value="<?= $organization_id; ?>">
                                                 <div class="mb-2">
                                                     <input type="file" class="form-control" name="file" id="file" rows="6" required></input>
@@ -210,11 +209,11 @@
                                                 </thead>
                                                 <tbody>
                                                     <?php
-                                                    $importer_id = $_GET['user_id'];
+
                                                     $organization_id = $_GET['org_id'];
                                                     $department_id = $_GET['dept_id'];
 
-                                                    $query = "SELECT * FROM members WHERE importer_id = $importer_id AND organization_id = $organization_id AND department_id = $department_id;";
+                                                    $query = "SELECT * FROM members WHERE importer_id = $user AND organization_id = $organization_id AND department_id = $department_id;";
                                                     $results = $conn->query($query);
                                                     while ($row = $results->fetch_assoc()) {
                                                     ?>
@@ -234,12 +233,7 @@
                                                             <td><span id="email<?= $row['member_id']; ?>"><?= $row['email']; ?></span></td>
                                                             <td><span id="course<?= $row['member_id']; ?>"><?= $row['course']; ?></span></td>
                                                             <td><span id="yearlevel<?= $row['member_id']; ?>"><?= $row['yearlevel']; ?></span></td>
-
-                                                            <td><span id="usertype<?= $row['member_id']; ?>"><?php if ($row['usertype'] == 'Organizer') { ?>
-                                                                        <span class="badge bg-primary">Organizer</span>
-                                                                    <?php } else { ?>
-                                                                        <span class="badge bg-success">Member</span>
-                                                                    <?php } ?></span></td>
+                                                            <td><span id="usertype<?= $row['member_id']; ?>"><? $row['usertype']; ?><span class="badge bg-primary"><?= $row['usertype'] ?></span></span></td>
                                                             <td class="table-action">
                                                                 <button data-bs-toggle="modal" data-bs-target="#edit-member-modal" class="action-icon edit-custom btn btn-success btn-light" value="<?= $row['member_id']; ?>">
                                                                     <i class="mdi mdi-square-edit-outline"></i>
@@ -331,19 +325,20 @@
                                     <div class="card">
                                         <form action="../controllers/add.event.ctrls.php" method="post" enctype="multipart/form-data">
                                             <?php
-                                            $user_id = $_GET['user_id'];
                                             $organization_id = $_GET['org_id'];
                                             $department_id = $_GET['dept_id'];
-                                            if (isset($_SESSION['importerid'])) {
-                                                $importer_id = $_SESSION['importerid'];
+                                            if (isset($_SESSION['importer_id'])) {
+                                                $importer_id = $_SESSION['importer_id'];
                                             } else {
                                                 $importer_id = 0;
                                             }
+
                                             ?>
-                                            <input type="hidden" name="user-id" value=<?= $user_id; ?>>
+                                            <input type="hidden" name="user-id" value=<?= $user; ?>>
                                             <input type="hidden" name="organization-id" value=<?= $organization_id; ?>>
                                             <input type="hidden" name="department-id" value=<?= $department_id; ?>>
                                             <input type="hidden" name="importer-id" value=<?= $importer_id; ?>>
+                                            <input type="hidden" name="usertype" value=<?= $usertype; ?>>
                                             <div class="card-body">
                                                 <div class="mb-3">
                                                     <label for="event-name" class="form-label">Event Name</label>
@@ -409,11 +404,10 @@
                                 <h5 class="mt-0 task-header">FOR APPROVAL (1)</h5>
                                 <div id="task-list-one" class="task-list-items">
                                     <?php
-                                    $user_id = $_SESSION['userid'];
                                     $organization_id = $_GET['org_id'];
                                     $department_id = $_GET['dept_id'];
-                                    $importer_id = $_SESSION['importerid'];
-                                    $query = "SELECT * FROM events WHERE user_id = $user_id AND organization_id = $organization_id AND department_id = $department_id AND status = 'Pending';";
+
+                                    $query = "SELECT * FROM events WHERE status = 'Pending' AND organization_id = $organization_id AND department_id = $department_id;";
                                     $results = $conn->query($query);
                                     while ($row = $results->fetch_assoc()) {
                                     ?>
@@ -468,11 +462,11 @@
                                 <div id="task-list-two" class="task-list-items">
                                     <!-- Task Item -->
                                     <?php
-                                    $user_id = $_GET['user_id'];
+
                                     $organization_id = $_GET['org_id'];
                                     $department_id = $_GET['dept_id'];
 
-                                    $query = "SELECT * FROM events WHERE user_id = $user_id AND organization_id = $organization_id AND department_id = $department_id AND status = 'Approved';";
+                                    $query = "SELECT * FROM events WHERE status = 'Approved' AND organization_id = $organization_id AND department_id = $department_id;";
                                     $results = $conn->query($query);
                                     while ($row = $results->fetch_assoc()) {
                                     ?>
@@ -524,10 +518,10 @@
                                 <h5 class="mt-0 task-header text-uppercase">UPCOMING (1)</h5>
                                 <div id="task-list-three" class="task-list-items">
                                     <?php
-                                    $user_id = $_GET['user_id'];
+
                                     $organization_id = $_GET['org_id'];
                                     $department_id = $_GET['dept_id'];
-                                    $query = "SELECT * FROM events WHERE user_id = $user_id AND organization_id = $organization_id AND department_id = $department_id AND status = 'upcoming';";
+                                    $query = "SELECT * FROM events WHERE user_id = $user AND organization_id = $organization_id AND department_id = $department_id AND status = 'upcoming';";
                                     $results = $conn->query($query);
                                     while ($row = $results->fetch_assoc()) {
                                     ?>
@@ -579,10 +573,10 @@
                                 <h5 class="mt-0 task-header text-uppercase">Done (1)</h5>
                                 <div id="task-list-four" class="task-list-items">
                                     <?php
-                                    $user_id = $_GET['user_id'];
+                                    $user = $_GET['user_id'];
                                     $organization_id = $_GET['org_id'];
                                     $department_id = $_GET['dept_id'];
-                                    $query = "SELECT * FROM events WHERE user_id = $user_id AND organization_id = $organization_id AND department_id = $department_id AND status = 'done';";
+                                    $query = "SELECT * FROM events WHERE user_id = $user AND organization_id = $organization_id AND department_id = $department_id AND status = 'done';";
                                     $results = $conn->query($query);
                                     while ($row = $results->fetch_assoc()) {
                                     ?>
@@ -627,89 +621,7 @@
     <div class="rightbar-overlay"></div>
     <!-- /End-bar -->
     <?php include '../includes/footer.php'; ?>
-    <script>
-        $(document).ready(function() {
-            $(document).on('click', '.edit-custom', function() {
-                var id = $(this).val();
-                var importer_id = $('#importer_id' + id).text();
-                var organization_id = $('#organization_id' + id).text();
-                var department_id = $('#department_id' + id).text();
-                var firstname = $('#firstname' + id).text();
-                var middlename = $('#middlename' + id).text();
-                var lastname = $('#lastname' + id).text();
-                var email = $('#email' + id).text();
-                var course = $('#course' + id).text();
-                var yearlevel = $('#yearlevel' + id).text();
-                var usertype = $('#usertype' + id).text();
-                $('#edit').modal('show');
-                $('#emember_id').val(id);
-                $('#eimporter_id').val(importer_id);
-                $('#eorganization_id').val(organization_id);
-                $('#edepartment_id').val(department_id);
-                $('#efirstname').val(firstname);
-                $('#emiddlename').val(middlename);
-                $('#elastname').val(lastname);
-                $('#eemail').val(email);
-                $('#ecourse').val(course);
-                if (yearlevel == '1st') {
-                    $('#eyearlevel-select option[value="1st"]').attr("selected", true);
-                } else if (yearlevel == '2nd') {
-                    $('#eyearlevel-select option[value="2nd"]').attr("selected", true);
-                } else if (yearlevel == '3rd') {
-                    $('#eyearlevel-select option[value="3rd"]').attr("selected", true);
-                } else if (yearlevel == '4th') {
-                    $('#eyearlevel-select option[value="4th"]').attr("selected", true);
-                }
-                if (usertype == 'Member') {
-                    $('#eusertype-select option[value="Member"]').attr("selected", true);
-                } else if (usertype == 'Organizer') {
-                    $('#eusertype-select option[value="Organizer"]').attr("selected", true);
-                }
-            });
-        });
 
-        $('#delete-department').click(function() {
-            var data_org_id = $(this).data('org_id');
-            var data_dept_id = $(this).data('dept_id');
-
-            console.log({
-                data_dept_id
-            });
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "../controllers/delete.department.ctrls.php?&org_id=" + data_org_id + "&dept_id=" + data_dept_id;
-                }
-            })
-
-        })
-
-        $('#delete-event').click(function() {
-            var data_event_id = $(this).data('event_id');
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "../controllers/delete.event.ctrls.php?&event_id=" + data_event_id;
-                }
-            })
-
-        })
-    </script>
 <?php } else {
     header("location: ../views/pages-404.php");
     exit();

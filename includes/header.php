@@ -6,6 +6,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 ?>
 <?php
 session_start();
+$user = $_SESSION['userid'];
+$member_id = $_SESSION['member_id'];
+$usertype = $_SESSION['usertype'];
+include_once('../config/db.php');
 ?>
 
 <!DOCTYPE html>
