@@ -17,8 +17,6 @@ if (isset($_POST['submit'])) {
 
     require_once '../config/db.php';
     require_once 'functions.ctrls.php';
-
-    updateUser($conn, $firstname, $lastname, $username, $bio, $address, $mobile, $facebook, $gmail, $twitter, $github, $instagram, $user_id);
 } else {
     header("location: ../views/pages-profile.php?error=stmtfailed");
     exit();

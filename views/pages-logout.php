@@ -81,7 +81,7 @@
     <!-- end page -->
 
     <footer class="footer footer-alt">
-        2018 - 2021 © Hyper - Coderthemes.com
+        2022 © Emapp - Events Management Application System
     </footer>
 
     <!-- bundle -->

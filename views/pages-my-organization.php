@@ -1,5 +1,5 @@
 <?php include '../includes/header.php' ?>
-<?php if (isset($user)) { ?>
+<?php if (isset($user) && $usertype == 'Administrator') { ?>
     <?php if (isset($_SESSION['status'])) {
         $status = $_SESSION['status'];
         echo "<span>$status</span>";
@@ -50,7 +50,6 @@
 
                     while ($row = $results->fetch_assoc()) {
                     ?>
-
                         <!-- Standard modal -->
                         <div id="organization_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
                             <form action="../controllers/edit.organization.ctrls.php" method="post" enctype="multipart/form-data">
@@ -59,6 +58,7 @@
                                         <div class="modal-body">
                                             <input type="hidden" class="form-control" name="user_id" value="<?= $user; ?>">
                                             <input type="hidden" class="form-control" name="organization_id" value="<?= $row['organization_id']; ?>">
+                                            <input type="hidden" class="form-control" name="org_imgurl" value="<?= $row['org_imgurl']; ?>">
                                             <div class="mb-3">
                                                 <label for="projectname" class="form-label">Name</label>
                                                 <input type="text" id="projectname" class="form-control" name="organization_name" placeholder="Enter organization name" value="<?= $row['org_name'] ?>" required>
@@ -178,19 +178,12 @@
                                         </form>
                                     </div>
                                 </div>
-
                             </div>
-
                         </div><!-- end col -->
-
                 </div>
                 <!-- end row -->
 
             </div>
-
-
-
-
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-12">

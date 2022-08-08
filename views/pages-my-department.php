@@ -65,6 +65,7 @@
                                                 <input type="hidden" name="user_id" value="<?= $user ?>">
                                                 <input type="hidden" name="organization_id" value="<?= $organization_id ?>">
                                                 <input type="hidden" name="department_id" value="<?= $department_id ?>">
+                                                <input type="hidden" name="dept_imgurl" value="<?= $row['dept_imgurl'] ?>">
                                                 <div class="mb-3">
                                                     <label for="department_name" class="form-label">Department Name</label>
                                                     <input type="text" class="form-control" name="department_name" id="department_name" aria-describedby="emailHelp" placeholder="Enter department name" value="<?= $row['dept_name'] ?>">
@@ -413,11 +414,70 @@
                                     ?>
                                         <!-- Task Item -->
                                         <div class="card mb-0">
+                                            <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>">
+                                                <div class="card-body p-3">
+                                                    <!-- Date Created -->
+                                                    <small class="float-end text-muted"><?= $row['date_created'] ?></small>
+                                                    <span class="badge bg-danger"><?= $row['status'] ?></span>
+                                                    <h5 class="mt-2 mb-2">
+                                                        <!-- Event Name -->
+                                                        <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body"><?= $row['event_name'] ?></a>
+                                                    </h5>
+                                                    <p class="mb-0">
+                                                        <span class="pe-2 text-nowrap mb-2 d-inline-block">
+                                                            <i class="mdi mdi-account-check-outline text-muted"></i>
+                                                            Confirmed
+                                                        </span>
+                                                        <span class="text-nowrap mb-2 d-inline-block">
+                                                            <i class="mdi mdi-account-clock-outline text-muted"></i>
+                                                            <b>74</b> Unconfirmed
+                                                        </span>
+                                                    </p>
+                                                    <div class="dropdown float-end">
+                                                        <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="mdi mdi-dots-vertical font-18"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item" id="delete-event" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?> data-user_id=<?= $row['user_id'] ?> data-event_id=<?= $row['event_id'] ?> data-usertype=<?= $usertype ?>><i class="mdi mdi-delete me-1"></i>Delete</a>
+                                                            <!-- item-->
+                                                            <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>" class="dropdown-item"><i class="mdi mdi-eye-circle-outline me-1"></i>View</a>
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
+                                                        </div>
+                                                    </div>
+                                                    <p class="mb-0">
+                                                        <img src="../assets/images/users/avatar-2.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
+                                                        <span class="align-middle">Robert Carlile</span>
+                                                    </p>
+                                                </div> <!-- end card-body -->
+                                        </div>
+                                        <!-- Task Item End -->
+                                    <?php } ?>
+                                </div> <!-- end company-list-1-->
+                            </div>
+                            <div class="tasks">
+                                <h5 class="mt-0 task-header text-uppercase">APPROVED</h5>
+                                <div id="task-list-two" class="task-list-items">
+                                    <!-- Task Item -->
+                                    <?php
+
+                                    $organization_id = $_GET['org_id'];
+                                    $department_id = $_GET['dept_id'];
+
+                                    $query = "SELECT * FROM events WHERE status = 'Approved' AND organization_id = $organization_id AND department_id = $department_id;";
+                                    $results = $conn->query($query);
+                                    while ($row = $results->fetch_assoc()) {
+                                    ?>
+                                        <!-- Task Item -->
+                                        <div class="card mb-0">
+
                                             <div class="card-body p-3">
                                                 <!-- Date Created -->
                                                 <small class="float-end text-muted"><?= $row['date_created'] ?></small>
-                                                <span class="badge bg-danger"><?= $row['status'] ?></span>
-
+                                                <span class="badge bg-success"><?= $row['status'] ?></span>
                                                 <h5 class="mt-2 mb-2">
                                                     <!-- Event Name -->
                                                     <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body"><?= $row['event_name'] ?></a>
@@ -437,76 +497,22 @@
                                                         <i class="mdi mdi-dots-vertical font-18"></i>
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-end">
-                                                        <!-- item-->
+
                                                         <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
-                                                        <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item" id="delete-event" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?> data-user_id=<?= $row['user_id'] ?> data-event_id=<?= $row['event_id'] ?>><i class="mdi mdi-delete me-1"></i>Delete</a>
-                                                        <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-plus-circle-outline me-1"></i>Add People</a>
-                                                        <!-- item-->
+
+                                                        <a href="javascript:void(0);" class="dropdown-item delete-event" id="delete-event" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?> data-user_id=<?= $row['user_id'] ?> data-event_id=<?= $row['event_id'] ?> data-usertype=<?= $usertype ?>>
+                                                            <i class="mdi mdi-delete me-1"></i>
+                                                            Delete
+                                                        </a>
+
+                                                        <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>" class="dropdown-item"><i class="mdi mdi-eye-circle-outline me-1"></i>View</a>
+
                                                         <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
                                                     </div>
                                                 </div>
                                                 <p class="mb-0">
                                                     <img src="../assets/images/users/avatar-2.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
                                                     <span class="align-middle">Robert Carlile</span>
-                                                </p>
-                                            </div> <!-- end card-body -->
-                                        </div>
-                                        <!-- Task Item End -->
-                                    <?php } ?>
-                                </div> <!-- end company-list-1-->
-                            </div>
-                            <div class="tasks">
-                                <h5 class="mt-0 task-header text-uppercase">APPROVED</h5>
-                                <div id="task-list-two" class="task-list-items">
-                                    <!-- Task Item -->
-                                    <?php
-
-                                    $organization_id = $_GET['org_id'];
-                                    $department_id = $_GET['dept_id'];
-
-                                    $query = "SELECT * FROM events WHERE status = 'Approved' AND organization_id = $organization_id AND department_id = $department_id;";
-                                    $results = $conn->query($query);
-                                    while ($row = $results->fetch_assoc()) {
-                                    ?>
-                                        <div class="card mb-0">
-                                            <div class="card-body p-3">
-                                                <small class="float-end text-muted">19 Jun 2018</small>
-                                                <span class="badge bg-success"><?= $row['status'] ?></span>
-
-                                                <h5 class="mt-2 mb-2">
-                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body">Enable analytics tracking</a>
-                                                </h5>
-                                                <p class="mb-0">
-                                                    <span class="pe-2 text-nowrap mb-2 d-inline-block">
-                                                        <i class="mdi mdi-briefcase-outline text-muted"></i>
-                                                        CRM
-                                                    </span>
-                                                    <span class="text-nowrap mb-2 d-inline-block">
-                                                        <i class="mdi mdi-comment-multiple-outline text-muted"></i>
-                                                        <b>48</b> Comments
-                                                    </span>
-                                                </p>
-                                                <div class="dropdown float-end">
-                                                    <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <i class="mdi mdi-dots-vertical font-18"></i>
-                                                    </a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
-                                                        <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
-                                                        <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-plus-circle-outline me-1"></i>Add People</a>
-                                                        <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
-                                                    </div>
-                                                </div>
-
-                                                <p class="mb-0">
-                                                    <img src="../assets/images/users/avatar-6.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
-                                                    <span class="align-middle">Louis Allen</span>
                                                 </p>
                                             </div> <!-- end card-body -->
                                         </div>

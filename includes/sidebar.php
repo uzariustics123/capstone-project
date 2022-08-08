@@ -31,16 +31,21 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
         <!--- Sidemenu -->
         <ul class="side-nav">
-            <li class="side-nav-title side-nav-item">Home</li>
-            <li class="side-nav-item">
-
-                <a href="index.php" class="side-nav-link">
-                    <i class="uil-home-alt"></i>
-                    <span> My Dashboard </span>
-                </a>
-            </li>
             <?php
-            $member_id = $_SESSION['member_id'];
+            $query = "SELECT * FROM users WHERE usertype = 'Administrator' AND userid = $user;";
+            $results = $conn->query($query);
+            while ($row = $results->fetch_assoc()) {
+            ?>
+                <li class="side-nav-title side-nav-item">Home</li>
+                <li class="side-nav-item">
+
+                    <a href="index.php" class="side-nav-link">
+                        <i class="uil-home-alt"></i>
+                        <span> My Dashboard </span>
+                    </a>
+                </li>
+            <?php } ?>
+            <?php
             if (isset($member_id)) {
                 $query = "SELECT * FROM members WHERE member_id = $member_id;";
                 $results = $conn->query($query);

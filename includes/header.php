@@ -9,6 +9,8 @@ session_start();
 $user = $_SESSION['userid'];
 $member_id = $_SESSION['member_id'];
 $usertype = $_SESSION['usertype'];
+$importer_id = $_SESSION['importer_id'];
+$temp_pass = $_SESSION['temp_pass'];
 include_once('../config/db.php');
 ?>
 

@@ -33,7 +33,19 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <!-- demo app -->
 <script src="../assets/js/pages/demo.sellers.js"></script>
 <script src="../assets/js/pages/demo.toastr.js"></script>
+<script src="../assets/js/pages/demo.form-wizard.js"></script>
 <!-- end demo js-->
+
+<!-- Showing update profile after import for members -->
+<?php if (isset($temp_pass)) {
+?>
+    <script>
+        $(document).ready(function() {
+            $('#update-profile').modal('show');
+        });
+    </script>
+<?php } ?>
+
 
 <script>
     $('#logout').click(function() {
@@ -160,9 +172,12 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
     })
 
-    $('#delete-event').click(function() {
-        var data_event_id = $(this).data('event_id');
-
+    $('.delete-event').click(function() {
+        var event_id = $(this).data('event_id');
+        var organization_id = $(this).data('org_id');
+        var department_id = $(this).data('dept_id');
+        var user_id = $(this).data('user_id');
+        var usertype = $(this).data('usertype');
         Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -173,13 +188,17 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "../controllers/delete.event.ctrls.php?&event_id=" + data_event_id;
+                window.location.href = "../controllers/delete.event.ctrls.php?user_id=" + user_id + "&org_id=" + organization_id + "&dept_id=" + department_id + "&event_id=" + event_id + "&usertype=" + usertype;
             }
         })
 
     })
-    $('#approve-event').click(function() {
-        var data_event_id = $(this).data('event_id');
+    $('#approve-event').click(function(e) {
+        e.preventDefault();
+        var event_id = $(this).data('event_id');
+        var organization_id = $(this).data('org_id');
+        var department_id = $(this).data('dept_id');
+        var user_id = $(this).data('user_id');
 
         Swal.fire({
             title: 'Are you sure?',
@@ -191,12 +210,44 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             confirmButtonText: 'Yes, approve it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "../controllers/approve.event.ctrls.php?&event_id=" + data_event_id;
+                window.location.href = "../controllers/approve.event.ctrls.php?user_id=" + user_id + "&org_id=" + organization_id + "&dept_id=" + department_id + "&event_id=" + event_id;
             }
         })
 
     })
+
+    $('#deleteqr').click(function() {
+        var image = $(this).data('image');
+        window.location.href = "../controllers/delete.qr.ctrls.php?image=" + image;
+    })
+
+
+    $(document).ready(function() {
+        $("#edit-profile").click(function() {
+            password = $("#password").val();
+            confirm = $("#confirm").val();
+            firstname = $("#firstname").val();
+            lastname = $("#lastname").val();
+
+            $.ajax({
+                type: "POST",
+                url: '../controllers/edit.profile.ctrls.php',
+                data: {
+                    password,
+                    confirm,
+                    firstname,
+                    lastname
+                },
+                success: function(result) {
+
+                }
+            })
+
+        })
+    })
 </script>
+
+
 
 </body>
 

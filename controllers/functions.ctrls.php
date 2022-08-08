@@ -199,15 +199,71 @@ function loginUser($conn, $email, $password)
 
         header("location: ../views/pages-login.php?");
         exit();
-    }
+    } else if (!empty($emailExist['temp_pass'])) {
+        $temp_pass = $emailExist['temp_pass'];
+        if ($temp_pass != $password) {
+            session_start();
+            $_SESSION['status'] = "
+        <script>const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      })
+  
+      Toast.fire({
+        icon: 'warning',
+        title: 'Incorrect Password check your email for password'
+      })</script>";
 
-    $passwordHashed = $emailExist["password"];
-    $checkPassword = password_verify($password, $passwordHashed);
+            header("location: ../views/pages-login.php?");
+            exit();
+        } else if ($temp_pass == $password) {
+            session_start();
+            if ($emailExist["userid"]) {
+                $_SESSION["userid"] = $emailExist["userid"];
+            } else {
+                $_SESSION["userid"] = $emailExist["member_id"];
+            }
+            $_SESSION["member_id"] = $emailExist["member_id"];
+            $_SESSION["importer_id"] = $emailExist["importer_id"];
+            $_SESSION["usertype"] = $emailExist["usertype"];
+            $_SESSION["temp_pass"] = $emailExist["temp_pass"];
+            $_SESSION['status'] = "
+        <script>const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      })
+  
+      Toast.fire({
+        icon: 'success',
+        title: 'Logged in successfully'
+      })</script>";
 
-    if ($checkPassword == false) {
+            if ($_SESSION["userid"] == $emailExist["userid"]) {
+                header("location: ../views/index.php");
+                exit();
+            } else if ($_SESSION["userid"] == $emailExist["member_id"]) {
+                $member_id = $emailExist['member_id'];
+                $query = "SELECT * FROM members WHERE member_id = $member_id;";
+                $results = $conn->query($query);
+                while ($row = $results->fetch_assoc()) {
+                    header("location: ../views/pages-member-department.php?user_id=" . $member_id . "&org_id=" . $row['organization_id'] . "&dept_id=" . $row['department_id']);
+                    exit();
+                }
+            }
+        }
+    } else {
 
-        session_start();
-        $_SESSION['status'] = "
+        $passwordHashed = $emailExist["password"];
+        $checkPassword = password_verify($password, $passwordHashed);
+
+        if ($checkPassword == false) {
+
+            session_start();
+            $_SESSION['status'] = "
         <script>const Toast = Swal.mixin({
         toast: true,
         position: 'top-end',
@@ -220,19 +276,20 @@ function loginUser($conn, $email, $password)
         title: 'Incorrect Password'
       })</script>";
 
-        header("location: ../views/pages-login.php?");
-        exit();
-    } else if ($checkPassword == true) {
-        session_start();
-        if ($emailExist["userid"]) {
-            $_SESSION["userid"] = $emailExist["userid"];
-        } else {
-            $_SESSION["userid"] = $emailExist["member_id"];
-        }
-        $_SESSION["member_id"] = $emailExist["member_id"];
-        $_SESSION["importer_id"] = $emailExist["importer_id"];
-        $_SESSION["usertype"] = $emailExist["usertype"];
-        $_SESSION['status'] = "
+            header("location: ../views/pages-login.php?");
+            exit();
+        } else if ($checkPassword == true) {
+            session_start();
+            if ($emailExist["userid"]) {
+                $_SESSION["userid"] = $emailExist["userid"];
+            } else {
+                $_SESSION["userid"] = $emailExist["member_id"];
+            }
+            $_SESSION["member_id"] = $emailExist["member_id"];
+            $_SESSION["importer_id"] = $emailExist["importer_id"];
+            $_SESSION["usertype"] = $emailExist["usertype"];
+            $_SESSION["temp_pass"] = $emailExist["temp_pass"];
+            $_SESSION['status'] = "
         <script>const Toast = Swal.mixin({
         toast: true,
         position: 'top-end',
@@ -244,8 +301,19 @@ function loginUser($conn, $email, $password)
         icon: 'success',
         title: 'Logged in successfully'
       })</script>";
-        header("location: ../views/index.php?");
-        exit();
+            if ($_SESSION["userid"] == $emailExist["userid"]) {
+                header("location: ../views/index.php");
+                exit();
+            } else if ($_SESSION["userid"] == $emailExist["member_id"]) {
+                $member_id = $emailExist['member_id'];
+                $query = "SELECT * FROM members WHERE member_id = $member_id;";
+                $results = $conn->query($query);
+                while ($row = $results->fetch_assoc()) {
+                    header("location: ../views/pages-member-department.php?user_id=" . $member_id . "&org_id=" . $row['organization_id'] . "&dept_id=" . $row['department_id']);
+                    exit();
+                }
+            }
+        }
     }
 }
 function emptyInputUserProfile($firstname, $lastname)
@@ -259,8 +327,22 @@ function emptyInputUserProfile($firstname, $lastname)
     }
     return $result;
 }
-function editUserProfile($conn, $user_id, $firstname, $lastname, $file, $mobile, $bio, $address, $facebook, $gmail, $twitter, $github, $instagram)
-{
+function editUserProfile(
+    $conn,
+    $user_id,
+    $organization_id,
+    $department_id,
+    $firstname,
+    $lastname,
+    $password,
+    $temp_pass,
+    $file,
+    $mobile,
+    $bio,
+    $address,
+    $usertype,
+    $image
+) {
     $allow = array('jpg', 'jpeg', 'png');
     $exntension = explode('.', $file['name']);
     $fileActExt = strtolower(end($exntension));
@@ -270,7 +352,13 @@ function editUserProfile($conn, $user_id, $firstname, $lastname, $file, $mobile,
     if (in_array($fileActExt, $allow)) {
         if ($file['size'] > 0 && $file['error'] == 0) {
             if (move_uploaded_file($file['tmp_name'], $filePath)) {
-                $sql = "UPDATE users SET firstname=?, lastname=?, photourl=?,mobile=?, bio=?, address=?, facebook=?, gmail=?, twitter=?, github=?, instagram=? WHERE userid=$user_id;";
+                if ($usertype == 'Administrator') {
+                    $sql = "UPDATE users SET firstname=?, lastname=?, photourl=?,mobile=?, bio=?, address=? WHERE userid=$user_id;";
+                } else if ($temp_pass == 'testpass') {
+                    $sql = "UPDATE members SET firstname=?, lastname=?, image=?, password = ?, temp_pass = ? WHERE member_id=$user_id;";
+                } else {
+                    $sql = "UPDATE members SET firstname=?, lastname=?, image=? WHERE member_id=$user_id";
+                }
 
                 $stmt = mysqli_stmt_init($conn);
 
@@ -279,7 +367,16 @@ function editUserProfile($conn, $user_id, $firstname, $lastname, $file, $mobile,
                     exit();
                 }
 
-                mysqli_stmt_bind_param($stmt, "sssssssssss", $firstname, $lastname, $filePath, $mobile, $bio, $address, $facebook, $gmail, $twitter, $github, $instagram);
+                if ($usertype == 'Administrator') {
+                    mysqli_stmt_bind_param($stmt, "ssssss", $firstname, $lastname, $filePath, $mobile, $bio, $address,);
+                } else if ($temp_pass == 'testpass') {
+                    $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
+                    $temp_pass = null;
+                    mysqli_stmt_bind_param($stmt, "sssss", $firstname, $lastname, $filePath, $hashedpassword, $temp_pass);
+                } else {
+                    mysqli_stmt_bind_param($stmt, "sss", $firstname, $lastname, $filePath);
+                }
+                unlink($image);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
 
@@ -390,7 +487,7 @@ function deleteOrganization($conn, $organization_id)
     exit();
 }
 
-function editOrganization($conn, $organization_name, $organization_description, $file, $user_id, $organization_id)
+function editOrganization($conn, $organization_name, $organization_description, $file, $user_id, $organization_id, $imgurl)
 {
 
     $allow = array('jpg', 'jpeg', 'png');
@@ -405,7 +502,6 @@ function editOrganization($conn, $organization_name, $organization_description, 
 
                 $stmt = mysqli_stmt_init($conn);
 
-
                 if (!mysqli_stmt_prepare($stmt, $sql)) {
                     header("location: ../views/pages-my-organization.php?error=stmtfailed");
                     exit();
@@ -414,7 +510,7 @@ function editOrganization($conn, $organization_name, $organization_description, 
                 mysqli_stmt_bind_param($stmt, "sss", $organization_name, $organization_description, $filePath);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
-
+                unlink($imgurl);
 
                 session_start();
                 $_SESSION["status"] =
@@ -530,7 +626,7 @@ function createDepartment($conn, $department_name, $department_desc, $department
     }
 }
 
-function editDepartment($conn, $department_name, $department_desc, $department_code, $file, $user_id, $organization_id, $department_id)
+function editDepartment($conn, $department_name, $department_desc, $department_code, $file, $user_id, $organization_id, $department_id, $imgurl)
 {
 
 
@@ -555,7 +651,7 @@ function editDepartment($conn, $department_name, $department_desc, $department_c
                 mysqli_stmt_bind_param($stmt, "ssss", $department_name, $department_desc, $department_code, $filePath);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
-
+                unlink($imgurl);
                 session_start();
                 $_SESSION["status"] =
                     "<script>
@@ -688,7 +784,7 @@ function importMembers($conn, $files, $department_id, $importer_id, $organizatio
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
             } else {
-                $sql = "INSERT INTO members (firstname, middlename, lastname, email, password, course, yearlevel, usertype, department_id, importer_id,organization_id,date_created) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);";
+                $sql = "INSERT INTO members (firstname, middlename, lastname, email, temp_pass, course, yearlevel, usertype, department_id, importer_id,organization_id,date_created) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);";
                 $stmt = mysqli_stmt_init($conn);
 
                 if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -696,12 +792,12 @@ function importMembers($conn, $files, $department_id, $importer_id, $organizatio
                     exit();
                 }
 
-                $password = randomPassword();
+                $password = 'testpass';
                 $subject = "Your Login Details";
                 mailSender($email, $subject, $password);
 
                 $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
-                mysqli_stmt_bind_param($stmt, "ssssssssiiis", $firstname, $middlename, $lastname, $email, $hashedpassword, $course, $yearlevel, $usertype, $department_id, $importer_id, $organization_id, $date_created);
+                mysqli_stmt_bind_param($stmt, "ssssssssiiis", $firstname, $middlename, $lastname, $email, $password, $course, $yearlevel, $usertype, $department_id, $importer_id, $organization_id, $date_created);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
             }
@@ -820,9 +916,11 @@ function createEvent($conn, $event_name, $event_description, $event_date, $date_
         exit();
     }
 }
-function deleteEvent($conn, $event_id)
+
+
+function deleteEvent($conn, $event_id, $user_id, $organization_id, $department_id, $usertype)
 {
-    $sql = "DELETE FROM events SET status=?;";
+    $sql = "DELETE FROM events WHERE event_id = ?;";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -837,14 +935,19 @@ function deleteEvent($conn, $event_id)
         "<script>
         Swal.fire(
         'Deleted!',
-        'A department has been deleted.',
+        'Event deleted.',
         'success')
         </script>";
-
-    header("location: ../views/index.php");
-    exit();
+    if ($usertype == 'Administrator') {
+        header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id#events");
+        exit();
+    } else if ($usertype == 'Organizer') {
+        header("location: ../views/pages-member-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id#events");
+        exit();
+    }
 }
-function approveEvent($conn, $event_id)
+
+function approveEvent($conn, $event_id, $user_id, $organization_id, $department_id)
 {
     $sql = "UPDATE events SET status = ? WHERE event_id=$event_id";
     $stmt = mysqli_stmt_init($conn);
@@ -865,6 +968,6 @@ function approveEvent($conn, $event_id)
         'success')
         </script>";
 
-    header("location: ../views/pages-view-event-details.php?event_id=$event_id");
+    header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id#events");
     exit();
 }

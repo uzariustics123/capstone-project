@@ -46,7 +46,6 @@
     scroll-behavior: smooth;
   }
 }
-
 body {
   margin: 0;
   font-family: Nunito, sans-serif;
@@ -57,15 +56,6 @@ body {
   background-color: #fafbfe;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
-  max-height: 100vh;
-  overflow-y: scroll;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;
-}
-body::-webkit-scrollbar {
-  /* WebKit */
-  width: 0;
-  height: 0;
 }
 hr {
   margin: 1rem 0;
@@ -19045,13 +19035,3 @@ div.table-responsive
   display: none;
 }
 /*# sourceMappingURL=app.min.css.map */
-.active {
-  color: #fff !important;
-}
-.wrapper {
-  -ms-overflow-style: none !important; /* Internet Explorer 10+ */
-  scrollbar-width: none !important; /* Firefox */
-}
-.wrapper::-webkit-scrollbar {
-  display: none !important; /* Safari and Chrome */
-}

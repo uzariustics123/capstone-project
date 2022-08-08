@@ -1,23 +1,14 @@
 <?php include '../includes/header.php' ?>
 <?php if (isset($user)) { ?>
 
-    <!-- Begin page -->
     <div class="wrapper">
 
-        <!-- ========== Left Sidebar Start ========== -->
         <?php include '../includes/sidebar.php' ?>
-        <!-- Left Sidebar End -->
-
-        <!-- ============================================================== -->
-        <!-- Start Page Content here -->
-        <!-- ============================================================== -->
         <div class="content-page">
             <div class="content">
-                <!-- Topbar Start -->
-                <?php include '../includes/topbar.php' ?>
-                <!-- end Topbar -->
 
-                <!-- Start Content-->
+                <?php include '../includes/topbar.php' ?>
+
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-12">
@@ -89,22 +80,14 @@
                         </div>
                     </div>
                 </div>
-            </div> <!-- content -->
+            </div>
 
         </div>
 
-
-        <!-- ============================================================== -->
-        <!-- End Page content -->
-        <!-- ============================================================== -->
-
     </div>
-    <!-- END wrapper -->
-
     <?php include '../includes/endbar.php' ?>
 
     <div class="rightbar-overlay"></div>
-    <!-- /End-bar -->
 
     <?php include '../includes/footer.php'; ?>
 

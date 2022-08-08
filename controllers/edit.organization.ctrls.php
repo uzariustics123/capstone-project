@@ -9,6 +9,7 @@ if (isset($_POST['submit'])) {
     $organization_name = $_POST['organization_name'];
     $organization_description = $_POST['organization_description'];
     $file = $_FILES['image'];
+    $imgurl = $_POST['org_imgurl'];
 
 
     if (emptyInputOrganization($organization_name, $organization_description, $user_id, $organization_id) !== false) {
@@ -16,7 +17,7 @@ if (isset($_POST['submit'])) {
         exit();
     }
 
-    editOrganization($conn, $organization_name, $organization_description, $file, $user_id, $organization_id);
+    editOrganization($conn, $organization_name, $organization_description, $file, $user_id, $organization_id, $imgurl);
 } else {
     header("location: ../views/pages-my-organization.php");
     exit();

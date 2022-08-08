@@ -32,6 +32,8 @@
                             </a>
                         </div>
                     </div>
+
+
                     <?php
                     $department_id = $_GET['dept_id'];
                     $query = "SELECT * FROM departments WHERE department_id = $department_id;";
@@ -144,6 +146,150 @@
                             </div><!-- /.modal-content -->
                         </div><!-- /.modal-dialog -->
                     </div><!-- /.modal -->
+
+                    <div class="modal fade" id="update-profile" tabindex="-1" role="dialog" aria-hidden="false">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <?php
+                                        $query = "SELECT * FROM members WHERE member_id = $user;";
+                                        $results = $conn->query($query);
+                                        while ($row = $results->fetch_assoc()) {
+                                        ?>
+                                            <form action="../controllers/edit.profile.ctrls.php" method="post" enctype="multipart/form-data">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <h4 class="header-title mb-3">Wizard With Progress Bar</h4>
+                                                        <div class="edit-profile-custom">
+                                                            <div id="progressbarwizard">
+                                                                <input type="hidden" name="user_id" value="<?= $user ?>">
+                                                                <input type="hidden" name="org_id" value="<?= $row['organization_id'] ?>">
+                                                                <input type="hidden" name="dept_id" value="<?= $row['department_id'] ?>">
+                                                                <input type="hidden" name="temp_pass" value="<?= $temp_pass ?>">
+                                                                <input type="hidden" name="usertype" value="<?= $usertype ?>">
+                                                                <ul class="nav nav-pills nav-justified form-wizard-header mb-3">
+                                                                    <li class="nav-item">
+                                                                        <a href="#account-2" data-bs-toggle="tab" data-toggle="tab" class="nav-link rounded-0 pt-2 pb-2">
+                                                                            <i class="mdi mdi-account-circle me-1"></i>
+                                                                            <span class="d-none d-sm-inline">Account</span>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li class="nav-item">
+                                                                        <a href="#profile-tab-2" data-bs-toggle="tab" data-toggle="tab" class="nav-link rounded-0 pt-2 pb-2">
+                                                                            <i class="mdi mdi-face-profile me-1"></i>
+                                                                            <span class="d-none d-sm-inline">Profile</span>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li class="nav-item">
+                                                                        <a href="#finish-2" data-bs-toggle="tab" data-toggle="tab" class="nav-link rounded-0 pt-2 pb-2">
+                                                                            <i class="mdi mdi-checkbox-marked-circle-outline me-1"></i>
+                                                                            <span class="d-none d-sm-inline">Finish</span>
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+
+                                                                <div class="tab-content b-0 mb-0">
+
+                                                                    <div id="bar" class="progress mb-3" style="height: 7px;">
+                                                                        <div class="bar progress-bar progress-bar-striped progress-bar-animated bg-success"></div>
+                                                                    </div>
+
+                                                                    <div class="tab-pane" id="account-2">
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <div class="row mb-3">
+                                                                                    <label class="col-md-3 col-form-label" for="email">Email</label>
+                                                                                    <div class="col-md-9">
+                                                                                        <input type="text" class="form-control" id="email" name="email" value="<?= $row['email'] ?>" disabled>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="row mb-3">
+                                                                                    <label class="col-md-3 col-form-label" for="password">Create New Password</label>
+                                                                                    <div class="col-md-9">
+                                                                                        <input type="password" id="password" name="password" class="form-control">
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                <div class="row mb-3">
+                                                                                    <label class="col-md-3 col-form-label" for="confirm">Confirm New Password</label>
+                                                                                    <div class="col-md-9">
+                                                                                        <input type="password" id="confirm" name="confirm" class="form-control">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div> <!-- end col -->
+                                                                        </div> <!-- end row -->
+                                                                    </div>
+
+                                                                    <div class="tab-pane" id="profile-tab-2">
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <div class="row mb-3">
+                                                                                    <label class="col-md-3 col-form-label" for="firstname"> First Name</label>
+                                                                                    <div class="col-md-9">
+                                                                                        <input type="text" id="firstname" name="firstname" class="form-control" value="<?= $row['firstname'] ?>" data-firstname="<?= $row['firstname'] ?>">
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="row mb-3">
+                                                                                    <label class="col-md-3 col-form-label" for="lastname"> Last Name</label>
+                                                                                    <div class="col-md-9">
+                                                                                        <input type="text" id="lastname" name="lastname" class="form-control" value="<?= $row['lastname'] ?>">
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="row mb-3">
+                                                                                    <label class="col-md-3 col-form-label" for="image"> Image</label>
+                                                                                    <div class="col-md-9">
+                                                                                        <input type="file" id="image" name="image" class="form-control">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div> <!-- end col -->
+                                                                        </div> <!-- end row -->
+                                                                    </div>
+
+                                                                    <div class="tab-pane" id="finish-2">
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <div class="text-center">
+                                                                                    <h2 class="mt-0"><i class="mdi mdi-check-all"></i></h2>
+                                                                                    <h3 class="mt-0">Thank you !</h3>
+
+                                                                                    <div class="mb-3">
+                                                                                        <div class="form-check d-inline-block">
+                                                                                            <input type="checkbox" class="form-check-input" id="customCheck3" required>
+                                                                                            <label class="form-check-label" for="customCheck3">I agree with the Terms and Conditions</label>
+                                                                                        </div>
+                                                                                        <p class="w-75 mb-2 mx-auto">Quisque nec turpis at urna dictum luctus. Suspendisse convallis dignissim eros at volutpat. In egestas mattis dui. Aliquam
+                                                                                            mattis dictum aliquet.</p>
+                                                                                    </div>
+                                                                                    <button name="submit" id="edit-profile" class="btn btn-primary">Submit</button>
+                                                                                </div>
+                                                                            </div> <!-- end col -->
+                                                                        </div> <!-- end row -->
+                                                                    </div>
+
+                                                                    <ul class="list-inline mb-0 wizard">
+                                                                        <li class="previous list-inline-item">
+                                                                            <a href="#" class="btn btn-info">Previous</a>
+                                                                        </li>
+                                                                        <li class="next list-inline-item float-end">
+                                                                            <a href="#" class="btn btn-info">Next</a>
+                                                                        </li>
+                                                                    </ul>
+
+                                                                </div> <!-- tab-content -->
+                                                            </div> <!-- end #progressbarwizard-->
+                                                        </div>
+
+                                                    </div> <!-- end card-body -->
+                                                </div> <!-- end card-->
+                                            </form>
+                                        <?php } ?>
+                                    </div>
+                                </div> <!-- end card-->
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal-dialog -->
+
                     <section class="container-fluid" id="events">
                         <!-- start page title -->
                         <div class="row">
@@ -161,6 +307,7 @@
                                 </div>
                             </div>
                         </div>
+
 
                         <!-- end page title -->
                         <div class="row">
@@ -206,11 +353,8 @@
                                                                 <!-- item-->
                                                                 <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
                                                                 <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item" id="delete-event" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?> data-user_id=<?= $row['user_id'] ?> data-event_id=<?= $row['event_id'] ?>><i class="mdi mdi-delete me-1"></i>Delete</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-plus-circle-outline me-1"></i>Add People</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
+                                                                <a href="javascript:void(0);" class="dropdown-item" id="delete-event" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?> data-user_id=<?= $row['user_id'] ?> data-event_id=<?= $row['event_id'] ?> data-usertype=<?= $usertype ?>><i class="mdi mdi-delete me-1"></i>Delete</a>
+
                                                             </div>
                                                         </div>
                                                         <p class="mb-0">
@@ -252,21 +396,7 @@
                                                                 <b>48</b> Comments
                                                             </span>
                                                         </p>
-                                                        <div class="dropdown float-end">
-                                                            <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <i class="mdi mdi-dots-vertical font-18"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-plus-circle-outline me-1"></i>Add People</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
-                                                            </div>
-                                                        </div>
+
 
                                                         <p class="mb-0">
                                                             <img src="../assets/images/users/avatar-6.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
@@ -365,8 +495,10 @@
                         <!-- end row-->
                     </section>
                 </div>
+                <!-- Center modal -->
             </div>
         </div>
+
     </div>
     <?php include '../includes/endbar.php' ?>
     <div class="rightbar-overlay"></div>
@@ -377,4 +509,5 @@
 } ?>
 <?php
 unset($_SESSION['status']);
+unset($_SESSION['temp_pass']);
 ?>

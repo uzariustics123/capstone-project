@@ -18,44 +18,47 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             </div>
         </li>
 
-
-        <li class="dropdown notification-list">
-            <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                <i class="dripicons-bell noti-icon"></i>
-                <span class="noti-icon-badge"></span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg">
-                <!-- item-->
-                <div class="dropdown-item noti-title">
-                    <h5 class="m-0">
-                        <span class="float-end">
-                        </span>Notification
-                    </h5>
-                </div>
-                <div style="max-height: 230px;" data-simplebar="">
-
-                    <?php
-                    $query = "SELECT * FROM events WHERE importer_id = $user AND status = 'Pending';";
-                    $results = $conn->query($query);
-                    while ($row = $results->fetch_assoc()) {
-                    ?>
-                        <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>" class="dropdown-item notify-item">
-                            <div class="notify-icon bg-info">
-                                <i class="mdi mdi-account-plus"></i>
-                            </div>
-                            <p class="notify-details"><?= $row['event_name'] ?></p>
-                            <small class="text-muted">5 hours ago</small>
-                            </p>
-                        </a>
-                    <?php } ?>
-                </div>
-                <!-- All-->
-                <a href="javascript:void(0);" class="dropdown-item text-center text-primary notify-item notify-all">
-                    View All
+        <?php
+        if ($usertype == 'Administrator') {
+        ?>
+            <li class="dropdown notification-list">
+                <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                    <i class="dripicons-bell noti-icon"></i>
+                    <span class="noti-icon-badge"></span>
                 </a>
-            </div>
-        </li>
+                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg">
+                    <!-- item-->
+                    <div class="dropdown-item noti-title">
+                        <h5 class="m-0">
+                            <span class="float-end">
+                            </span>Notification
+                        </h5>
+                    </div>
+                    <div style="max-height: 230px;" data-simplebar="">
 
+                        <?php
+                        $query = "SELECT * FROM events WHERE importer_id = $user AND status = 'Pending';";
+                        $results = $conn->query($query);
+                        while ($row = $results->fetch_assoc()) {
+                        ?>
+                            <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>" class="dropdown-item notify-item">
+                                <div class="notify-icon bg-info">
+                                    <i class="mdi mdi-account-plus"></i>
+                                </div>
+                                <p class="notify-details"><?= $row['event_name'] ?></p>
+                                <small class="text-muted">5 hours ago</small>
+                                </p>
+                            </a>
+                        <?php } ?>
+                    </div>
+                    <!-- All-->
+                    <a href="javascript:void(0);" class="dropdown-item text-center text-primary notify-item notify-all">
+                        View All
+                    </a>
+                </div>
+            </li>
+        <?php }
+        ?>
         <li class="notification-list">
             <a class="nav-link end-bar-toggle" href="javascript: void(0);">
                 <i class="dripicons-gear noti-icon"></i>

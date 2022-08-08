@@ -32,11 +32,11 @@
                     </div>
                     <!-- end page title -->
                     <?php
-                    include_once('../config/db.php');
+
                     $event_id = $_GET['event_id'];
                     $query = "SELECT * FROM events WHERE event_id = $event_id;";
                     $results = $conn->query($query);
-                    if ($row = $results->fetch_assoc()) {
+                    while ($row = $results->fetch_assoc()) {
                     ?>
                         <div class="row">
                             <div class="col-xxl-8 col-xl-7">
@@ -54,7 +54,7 @@
                                                     <i class='uil uil-edit me-1'></i>Edit
                                                 </a>
                                                 <!-- item-->
-                                                <a href="javascript:void(0);" class="dropdown-item" id="approve-event" data-event_id=<?= $event_id ?>>
+                                                <a href="javascript:void(0);" class="dropdown-item" id="approve-event" data-org_id=<?= $row['organization_id'] ?> data-dept_id=<?= $row['department_id'] ?> data-user_id=<?= $row['user_id'] ?> data-event_id=<?= $row['event_id'] ?>>
                                                     <i class='uil uil-file-copy-alt me-1'></i>Approve Event
                                                 </a>
                                                 <div class="dropdown-divider"></div>
@@ -75,75 +75,6 @@
                                             <?= $row['event_description'] ?>
                                         </p>
 
-                                        <div class="row">
-                                            <div class="col-4">
-                                                <!-- assignee -->
-                                                <p class="mt-2 mb-1 text-muted fw-bold font-12 text-uppercase">Created By</p>
-                                                <div class="d-flex">
-                                                    <?php
-                                                    $user_id = $row['user_id'];
-                                                    $sql = "SELECT * FROM members WHERE member_id = $user_id;";
-                                                    $result = $conn->query($sql);
-                                                    $rows = $result->fetch_assoc();
-                                                    if (!empty($rows)) {
-
-                                                    ?>
-                                                        <img src="<?php if (!empty($rows['photourl'])) {
-                                                                        echo $rows['photourl'];
-                                                                    } else {
-                                                                    ?>
-                                                                    ../assets/images/users/avatar-9.jpg
-                                                                    <?php
-                                                                    } ?>" alt="Arya S" class="rounded-circle me-2" height="24">
-                                                        <div>
-
-                                                            <h5 class="mt-1 font-14">
-                                                                <?= $rows['firstname'] ?> <?= $rows['lastname'] ?>
-                                                            </h5>
-                                                            <?php  } else if (empty($rows)) {
-                                                            $user_id = $row['user_id'];
-                                                            $sql = "SELECT * FROM users WHERE user_id = $user_id;";
-                                                            $result = $conn->query($sql);
-                                                            $rows = $result->fetch_assoc();
-                                                            if (!empty($rows)) {
-                                                            ?>
-                                                                <h5 class="mt-1 font-14">
-                                                                    <?= $rows['firstname'] ?> <?= $rows['lastname'] ?>
-                                                                </h5>
-                                                        <?php  }
-                                                        } ?>
-                                                        </div>
-                                                </div>
-                                                <!-- end assignee -->
-                                            </div> <!-- end col -->
-
-                                            <div class="col-4">
-                                                <!-- start due date -->
-                                                <p class="mt-2 mb-1 text-muted fw-bold font-12 text-uppercase">Event Date</p>
-                                                <div class="d-flex">
-                                                    <i class='uil uil-schedule font-18 text-success me-1'></i>
-                                                    <div>
-                                                        <h5 class="mt-1 font-14">
-                                                            <?= $row['event_date'] ?>
-                                                        </h5>
-                                                    </div>
-                                                </div>
-                                                <!-- end due date -->
-                                            </div> <!-- end col -->
-                                            <div class="col-4">
-                                                <!-- start due date -->
-                                                <p class="mt-2 mb-1 text-muted fw-bold font-12 text-uppercase">Date Created</p>
-                                                <div class="d-flex">
-                                                    <i class='uil uil-schedule font-18 text-success me-1'></i>
-                                                    <div>
-                                                        <h5 class="mt-1 font-14">
-                                                            <?= $row['date_created'] ?>
-                                                        </h5>
-                                                    </div>
-                                                </div>
-                                                <!-- end due date -->
-                                            </div> <!-- end col -->
-                                        </div>
                                         <div class="row">
                                             <div class="col-4">
                                                 <!-- assignee -->
