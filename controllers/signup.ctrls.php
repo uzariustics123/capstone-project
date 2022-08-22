@@ -5,17 +5,15 @@ if (isset($_POST['submit'])) {
 
   $firstname = $_POST['firstname'];
   $lastname = $_POST['lastname'];
-  $username = $_POST['username'];
   $email = $_POST['email'];
   $password = $_POST['password'];
   $repeat_password = $_POST['repeat_password'];
-  $date_created = date('Y-m-d');
-  $usertype = 'Administrator';
+  $registration_status = $_POST['registration_status'];
   require_once '../config/db.php';
   require_once 'functions.ctrls.php';
 
 
-  if (emptyInputSignup($firstname, $lastname, $username, $email, $password) !== false) {
+  if (emptyInputSignup($firstname, $lastname, $email, $password, $registration_status) !== false) {
     session_start();
     $_SESSION['status'] = "
         <script>const Toast = Swal.mixin({
@@ -24,7 +22,7 @@ if (isset($_POST['submit'])) {
         showConfirmButton: false,
         timer: 3000
       })
-  
+
       Toast.fire({
         icon: 'warning',
         title: 'Some fields are empty'
@@ -32,7 +30,7 @@ if (isset($_POST['submit'])) {
     header("location: ../views/pages-register.php");
     exit();
   }
-  if (invalidUid($username) !== false) {
+  if (strlen($password) < 6 && strlen($repeat_password) < 6) {
     session_start();
     $_SESSION['status'] = "
         <script>const Toast = Swal.mixin({
@@ -41,14 +39,15 @@ if (isset($_POST['submit'])) {
         showConfirmButton: false,
         timer: 3000
       })
-  
+
       Toast.fire({
         icon: 'warning',
-        title: 'Invalid Username'
+        title: 'Password must be at least 6 characters'
       })</script>";
     header("location: ../views/pages-register.php");
     exit();
   }
+
   if (invalidEmail($email) !== false) {
     session_start();
     $_SESSION['status'] = "
@@ -58,7 +57,7 @@ if (isset($_POST['submit'])) {
         showConfirmButton: false,
         timer: 3000
       })
-  
+
       Toast.fire({
         icon: 'warning',
         title: 'Invalid email address'
@@ -93,7 +92,6 @@ if (isset($_POST['submit'])) {
         showConfirmButton: false,
         timer: 3000
       })
-  
       Toast.fire({
         icon: 'warning',
         title: 'Email Taken'
@@ -102,7 +100,7 @@ if (isset($_POST['submit'])) {
     exit();
   }
 
-  createUser($conn, $firstname, $lastname, $username, $email, $password, $date_created, $usertype);
+  createUser($conn, $firstname, $lastname, $email, $password, $registration_status);
 } else {
   header("location: ../index.php");
   exit();

@@ -4,20 +4,21 @@ if (isset($_POST['submit'])) {
     require_once 'functions.ctrls.php';
 
 
-    $user_id = $_POST['user_id'];
+
     $organization_id = $_POST['organization_id'];
     $organization_name = $_POST['organization_name'];
     $organization_description = $_POST['organization_description'];
+    $organization_address = $_POST['address'];
     $file = $_FILES['image'];
     $imgurl = $_POST['org_imgurl'];
 
 
-    if (emptyInputOrganization($organization_name, $organization_description, $user_id, $organization_id) !== false) {
-        header("location: ../views/pages-add-organization.php?error=emptyfields");
+    if (emptyInputOrganization($organization_name, $organization_description, $organization_id, $file) !== false) {
+        header("location: ../views/pages-my-organization.php?id=$organization_id");
         exit();
     }
 
-    editOrganization($conn, $organization_name, $organization_description, $file, $user_id, $organization_id, $imgurl);
+    editOrganization($conn, $organization_id, $organization_name, $organization_description, $organization_address, $file, $imgurl);
 } else {
     header("location: ../views/pages-my-organization.php");
     exit();

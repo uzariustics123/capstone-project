@@ -1,5 +1,7 @@
 <?php
 session_start();
-echo $admin = $_SESSION['admin'];
-echo $org = $_SESSION['organization'];
-echo $dept = $_SESSION['department'];
+echo $user = $_SESSION['userid'];
+echo $email = $_SESSION['email'];
+echo $registration_status = $_SESSION['registration_status'];
+echo $organization = $_SESSION['member_id'];
+echo $organization = $_SESSION['member_id'];

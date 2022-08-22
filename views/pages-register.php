@@ -53,6 +53,7 @@
               </div>
 
               <form action="../controllers/signup.ctrls.php" method="post">
+                <input type="hidden" name="registration_status" value="registered">
                 <div class="mb-3">
                   <label for="firstname" class="form-label">First Name</label>
                   <input class="form-control" type="text" id="firstname" placeholder="Enter your first name" name="firstname" required />
@@ -60,10 +61,6 @@
                 <div class="mb-3">
                   <label for="lastname" class="form-label">Last Name</label>
                   <input class="form-control" type="text" id="lastname" placeholder="Enter your last name" name="lastname" required />
-                </div>
-                <div class="mb-3">
-                  <label for="username" class="form-label">UserName</label>
-                  <input class="form-control" type="text" id="username" placeholder="Enter your username" name="username" required />
                 </div>
 
                 <div class="mb-3">
@@ -90,7 +87,7 @@
                   </div>
                 </div>
 
-                <div class="modal fade" id="bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                <div class="modal fade" id="terms_conditions" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                   <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                       <div class="modal-header">
@@ -162,7 +159,7 @@
                   <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="checkbox-signup" required />
                     <label class="form-check-label" for="checkbox-signup">I accept
-                      <a href="#" class="text-muted" data-bs-toggle="modal" data-bs-target="#bs-example-modal-lg">Terms and Conditions</a></label>
+                      <a href="#" class="text-muted" data-bs-toggle="modal" data-bs-target="#terms_conditions">Terms and Conditions</a></label>
                   </div>
                 </div>
 

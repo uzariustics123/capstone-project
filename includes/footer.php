@@ -20,24 +20,34 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <script src="../assets/js/pages/demo.project-detail.js"></script>
 <!-- end demo js-->
 
+
 <!-- third party js -->
 <script src="../assets/js/vendor/jquery.dataTables.min.js"></script>
 <script src="../assets/js/vendor/dataTables.bootstrap5.js"></script>
 <script src="../assets/js/vendor/dataTables.responsive.min.js"></script>
 <script src="../assets/js/vendor/responsive.bootstrap5.min.js"></script>
-<script src="../assets/js/vendor/dataTables.checkboxes.min.js"></script>
-<script src="../assets/js/pages/demo.form-wizard.js"></script>
-
+<script src="../assets/js/vendor/dataTables.buttons.min.js"></script>
+<script src="../assets/js/vendor/buttons.bootstrap5.min.js"></script>
+<script src="../assets/js/vendor/buttons.html5.min.js"></script>
+<script src="../assets/js/vendor/buttons.flash.min.js"></script>
+<script src="../assets/js/vendor/buttons.print.min.js"></script>
+<script src="../assets/js/vendor/dataTables.keyTable.min.js"></script>
+<script src="../assets/js/vendor/dataTables.select.min.js"></script>
 <!-- third party js ends -->
 
 <!-- demo app -->
-<script src="../assets/js/pages/demo.sellers.js"></script>
+<script src="../assets/js/pages/demo.datatable-init.js"></script>
+<!-- end demo js-->
+
+<!-- third party js ends -->
+
+
 <script src="../assets/js/pages/demo.toastr.js"></script>
 <script src="../assets/js/pages/demo.form-wizard.js"></script>
 <!-- end demo js-->
 
 <!-- Showing update profile after import for members -->
-<?php if (isset($temp_pass)) {
+<?php if ($registration_status == 'pending') {
 ?>
     <script>
         $(document).ready(function() {
@@ -110,44 +120,37 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     $(document).ready(function() {
         $(document).on('click', '.edit-custom', function() {
             var id = $(this).val();
-            var importer_id = $('#importer_id' + id).text();
-            var organization_id = $('#organization_id' + id).text();
-            var department_id = $('#department_id' + id).text();
-            var firstname = $('#firstname' + id).text();
-            var middlename = $('#middlename' + id).text();
-            var lastname = $('#lastname' + id).text();
-            var email = $('#email' + id).text();
-            var course = $('#course' + id).text();
-            var yearlevel = $('#yearlevel' + id).text();
+            var member_id = $('#member_id' + id).text();
             var usertype = $('#usertype' + id).text();
+
+
             $('#edit').modal('show');
-            $('#emember_id').val(id);
-            $('#eimporter_id').val(importer_id);
-            $('#eorganization_id').val(organization_id);
-            $('#edepartment_id').val(department_id);
-            $('#efirstname').val(firstname);
-            $('#emiddlename').val(middlename);
-            $('#elastname').val(lastname);
-            $('#eemail').val(email);
-            $('#ecourse').val(course);
 
-            if (yearlevel == '1st') {
-                $('#eyearlevel-select option[value="1st"]').attr("selected", true);
-            } else if (yearlevel == '2nd') {
-                $('#eyearlevel-select option[value="2nd"]').attr("selected", true);
-            } else if (yearlevel == '3rd') {
-                $('#eyearlevel-select option[value="3rd"]').attr("selected", true);
-            } else if (yearlevel == '4th') {
-                $('#eyearlevel-select option[value="4th"]').attr("selected", true);
-            }
-
-            if (usertype == 'Member') {
-                $('#eusertype-select option[value="Member"]').attr("selected", true);
-            } else if (usertype == 'Organizer') {
-                $('#eusertype-select option[value="Organizer"]').attr("selected", true);
+            $('#emember_id').val(member_id);
+            if (usertype == 'member') {
+                $('#eusertype-select option[value="member"]').attr("selected", true);
+            } else if (usertype == 'organizer') {
+                $('#eusertype-select option[value="organizer"]').attr("selected", true);
             }
         });
     });
+
+    $(document).ready(function() {
+        $(document).on('click', '.edit-participant-role-modal', function() {
+            var id = $(this).val();
+            var accesstype = $('#accesstype' + id).text();
+            var participant_id = $('#participant_id' + id).text();
+
+
+            $('#eparticipant_id').val(id);
+            if (accesstype == 'attendee') {
+                $('#eparticipant_role_select option[value="attendee"]').attr("selected", true);
+            } else if (accesstype == 'attendance-checker') {
+                $('#eparticipant_role_select option[value="attendance-checker"]').attr("selected", true);
+            }
+        });
+    });
+
 
     $('#delete-department').click(function() {
         var data_org_id = $(this).data('org_id');
@@ -196,9 +199,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     $('#approve-event').click(function(e) {
         e.preventDefault();
         var event_id = $(this).data('event_id');
-        var organization_id = $(this).data('org_id');
-        var department_id = $(this).data('dept_id');
-        var user_id = $(this).data('user_id');
+
 
         Swal.fire({
             title: 'Are you sure?',
@@ -210,7 +211,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             confirmButtonText: 'Yes, approve it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "../controllers/approve.event.ctrls.php?user_id=" + user_id + "&org_id=" + organization_id + "&dept_id=" + department_id + "&event_id=" + event_id;
+                window.location.href = "../controllers/approve.event.ctrls.php?event_id=" + event_id;
             }
         })
 
@@ -244,6 +245,51 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             })
 
         })
+    })
+
+    $("#event_all_day1").change(function() {
+        if (this.checked) {
+            $('#label1').text("Start Time");
+            $('#label2').text("End Time");
+            $("#event-start-time-afternoon").attr('type', 'hidden');
+            $("#event-end-time-afternoon").attr('type', 'hidden');
+            $("#label3").attr('hidden', true);
+            $("#label4").attr('hidden', true);
+        } else if (!this.checked) {
+            $('#label1').text("Start Time Morning");
+            $('#label2').text("End Time Morning");
+            $("#event-start-time-afternoon").attr('type', 'time');
+            $("#event-end-time-afternoon").attr('type', 'time');
+            $("#label3").attr('hidden', false);
+            $("#label4").attr('hidden', false);
+        }
+    });
+    $("#event_all_day2").change(function() {
+        if (this.checked) {
+            $('#label1').text("Start Time");
+            $('#label2').text("End Time");
+            $("#event-start-time-afternoon").attr('type', 'hidden');
+            $("#event-end-time-afternoon").attr('type', 'hidden');
+            $("#label3").attr('hidden', true);
+            $("#label4").attr('hidden', true);
+        } else if (!this.checked) {
+            $('#label1').text("Start Time Morning");
+            $('#label2').text("End Time Morning");
+            $("#event-start-time-afternoon").attr('type', 'time');
+            $("#event-end-time-afternoon").attr('type', 'time');
+            $("#label3").attr('hidden', false);
+            $("#label4").attr('hidden', false);
+        }
+    });
+
+    $('#edit-event-modal-button').click(function() {
+        if (document.getElementById("event_all_day1").value = 'no') {
+            $("#label3").attr('hidden', true);
+            $("#label4").attr('hidden', true);
+            $("#event-start-time-afternoon").attr('type', 'hidden');
+            $("#event-end-time-afternoon").attr('type', 'hidden');
+        }
+
     })
 </script>
 

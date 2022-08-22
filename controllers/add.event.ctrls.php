@@ -4,44 +4,61 @@ if (isset($_POST['submit'])) {
     require_once '../config/db.php';
     require_once 'functions.ctrls.php';
 
-    $event_name = $_POST['event-name'];
-    $event_description = $_POST['event-description'];
-    $event_date = $_POST['event-date'];
-    $date_created = date('Y-m-d');
-    $event_start = $_POST['event-start'];
-    $event_end = $_POST['event-end'];
-    $attendance_duration = $_POST['attendance-duration-select'];
-    if (isset($_POST['all-day'])) {
-        $all_day = "yes";
-    } else {
-        $all_day = "no";
-    }
-    $all_day;
-    $user_id = $_POST['user-id'];
-    $organization_id = $_POST['organization-id'];
-    $department_id = $_POST['department-id'];
-    $importer_id = $_POST['importer-id'];
-    $usertype = $_POST['usertype'];
-    if ($usertype == 'Administrator') {
-        $status = "Approved";
-    } else if ($usertype == 'Organizer') {
-        $status = "Pending";
-    }
-    if (emptyEventInput($event_name, $event_description, $event_date, $date_created, $event_start, $event_end, $attendance_duration, $all_day)) {
 
+    $event_name = $_POST['event_name'];
+    $event_description = $_POST['event_description'];
+    $event_location = $_POST['event_location'];
+    $event_date = $_POST['event_date'];
+    $event_start_time_am = $_POST['event_start_time_am'];
+    $event_end_time_am = $_POST['event_end_time_am'];
+    if ($event_start_time_am >= $event_end_time_am) {
         session_start();
         $_SESSION["status"] =
             "<script>
         Swal.fire(
-        'Error!',
-        'Empty Input',
-        'danger')
+        'Warning',
+        'Time Values must be valid',
+        'warning')
         </script>";
-        header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id");
+        header("location: ../views/pages-view-event-details.php?event_id=$event_id");
         exit();
     }
+    $event_attendance_duration = $_POST['attendance_duration'];
+    if (isset($_POST['event_all_day'])) {
+        $event_all_day = 'no';
+        $event_start_time_pm = null;
+        $event_end_time_pm = null;
+    } else {
+        $event_all_day = 'yes';
+        $event_start_time_pm = $_POST['event_start_time_pm'];
+        $event_end_time_pm = $_POST['event_end_time_pm'];
+        if ($event_start_time_pm >= $event_end_time_pm) {
+            session_start();
+            $_SESSION["status"] =
+                "<script>
+        Swal.fire(
+        'Warning',
+        'Time Values must be valid',
+        'warning')
+        </script>";
+            header("location: ../views/pages-view-event-details.php?event_id=$event_id");
+            exit();
+        }
+    }
+    $department_id = $_POST['department_id'];
+    $organization_id = $_POST['organization_id'];
+    if ($_POST['usertype'] == 'admin') {
+        $event_status = 'approved';
+    } else if ($_POST['usertype'] == 'organizer') {
+        $event_status = 'pending';
+    }
 
-    createEvent($conn, $event_name, $event_description, $event_date, $date_created, $event_start, $event_end, $attendance_duration, $all_day, $status, $user_id, $organization_id, $department_id, $importer_id, $usertype);
+    $event_datetime_created = date("M d,Y");
+    $newdate = date("M d, Y", strtotime($event_date));
+    $publisher_id = $_POST['publisher_id'];
+
+
+    createEvent($conn, $event_name, $event_description, $event_location, $department_id, $event_datetime_created, $newdate, $event_attendance_duration, $event_start_time_am, $event_end_time_am, $event_start_time_pm, $event_end_time_pm, $event_all_day, $event_status, $publisher_id, $organization_id);
 } else {
     header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id");
     exit();

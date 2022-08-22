@@ -1,5 +1,5 @@
 <?php include '../includes/header.php' ?>
-<?php if (isset($user) && $usertype == 'Administrator') { ?>
+<?php if (isset($user)) { ?>
     <?php if (isset($_SESSION['status'])) {
         $status = $_SESSION['status'];
         echo "<span>$status</span>";
@@ -56,12 +56,16 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-body">
-                                            <input type="hidden" class="form-control" name="user_id" value="<?= $user; ?>">
-                                            <input type="hidden" class="form-control" name="organization_id" value="<?= $row['organization_id']; ?>">
+
+                                            <input type="hidden" class="form-control" name="organization_id" value="<?= $organization_id ?>">
                                             <input type="hidden" class="form-control" name="org_imgurl" value="<?= $row['org_imgurl']; ?>">
                                             <div class="mb-3">
                                                 <label for="projectname" class="form-label">Name</label>
                                                 <input type="text" id="projectname" class="form-control" name="organization_name" placeholder="Enter organization name" value="<?= $row['org_name'] ?>" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="address" class="form-label">Address</label>
+                                                <input type="text" id="address" class="form-control" name="address" placeholder="Enter organization name" value="<?= $row['org_address'] ?>" required>
                                             </div>
 
                                             <div class="mb-3">
@@ -98,13 +102,10 @@
                                                 <a href="../controllers/edit.organization.ctrls.php?id=<?= $row['organization_id'] ?>" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#organization_modal"> <i class="mdi mdi-square-edit-outline me-1"></i>Edit</a>
                                                 <!-- item-->
 
-                                                <a href="javascript:void(0)" id="delete-department" class="dropdown-item delete-organization" data-org_id=<?= $organization_id ?>>
+                                                <a href="javascript:void(0)" id="delete-organization" class="dropdown-item delete-organization" data-org_id=<?= $organization_id ?>>
                                                     <i class="mdi mdi-delete me-1"></i>Delete
                                                 </a>
                                             </div>
-
-
-
                                         </div>
                                         <!-- project title-->
                                         <img src="<?= $row['org_imgurl'] ?>" class="img-fluid rounded" alt="background image">
@@ -195,7 +196,8 @@
 
                 <div class="row">
                     <?php
-                        $query = "SELECT * FROM departments WHERE user_id = $user AND organization_id = $organization_id;";
+                        $query = "SELECT * FROM departments WHERE organization_id = $organization_id;";
+
                         $results = $conn->query($query);
                         while ($row = $results->fetch_assoc()) {
                     ?>
@@ -209,7 +211,7 @@
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-end">
                                             <!-- item-->
-                                            <a href="../views/pages-my-department.php?user_id=<?= $user; ?>&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>" class="dropdown-item"><i class="mdi mdi-account-cog me-1"></i>Manage</a>
+                                            <a href="../views/pages-my-department.php?org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>" class="dropdown-item"><i class="mdi mdi-account-cog me-1"></i>Manage</a>
                                             <!-- item-->
 
 
@@ -229,29 +231,10 @@
                                     <h2 class="mt-3">
                                         <a href="../views/pages-my-department.php?user_id=<?= $user; ?>&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>" class="text-title"><?= $row['dept_name'] ?></a>
                                     </h2>
-                                    <div class="badge bg-secondary text-light mb-3"><?= $row['dept_code'] ?></div>
+                                    <div class="badge bg-success text-light mb-3"><?= $row['dept_code'] ?></div>
 
                                     <p class="text-muted font-13 mb-3"><?= $row['dept_description'] ?>
                                     </p>
-
-                                    <!-- project detail-->
-                                    <p class="mb-1">
-                                        <span class="pe-2 text-nowrap mb-2 d-inline-block">
-                                            <i class="mdi mdi-format-list-bulleted-type text-muted"></i>
-                                            <b>12</b> Tasks
-                                        </span>
-                                        <span class="text-nowrap mb-2 d-inline-block">
-                                            <?php
-                                            $department_id = $row['department_id'];
-                                            $query = "SELECT * FROM members WHERE department_id = $department_id";
-                                            $result = $conn->query($query);
-                                            $total = $result->num_rows;
-                                            ?>
-                                            <i class="mdi mdi-account-outline text-muted"></i>
-                                            <b><?= $total ?></b> Members
-                                        </span>
-                                    </p>
-
                                 </div> <!-- end card-body-->
                             </div> <!-- end card-->
                         </div>

@@ -7,10 +7,14 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <?php
 session_start();
 $user = $_SESSION['userid'];
-$member_id = $_SESSION['member_id'];
-$usertype = $_SESSION['usertype'];
-$importer_id = $_SESSION['importer_id'];
-$temp_pass = $_SESSION['temp_pass'];
+$email = $_SESSION['email'];
+$registration_status = $_SESSION['registration_status'];
+if (isset($_SESSION['usertype'])) {
+    $usertype = $_SESSION['usertype'];
+} else {
+    $usertype = 0;
+}
+
 include_once('../config/db.php');
 ?>
 
@@ -28,8 +32,12 @@ include_once('../config/db.php');
 
     <!-- third party css -->
     <link href="../assets/css/vendor/jquery-jvectormap-1.2.2.css" rel="stylesheet" type="text/css" />
+    <!-- third party css -->
     <link href="../assets/css/vendor/dataTables.bootstrap5.css" rel="stylesheet" type="text/css">
     <link href="../assets/css/vendor/responsive.bootstrap5.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/vendor/buttons.bootstrap5.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/vendor/select.bootstrap5.css" rel="stylesheet" type="text/css">
+    <!-- third party css end -->
     <!-- third party css end -->
 
 

@@ -14,10 +14,6 @@ if (isset($_POST['save'])) {
     $file = $_FILES['image'];
     $imgurl = $_POST['dept_imgurl'];
 
-    if (emptyInputDepartment($department_name, $department_desc, $department_code, $user_id, $organization_id) !== false) {
-        header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id&error=emptyfields");
-        exit();
-    }
 
     editDepartment($conn, $department_name, $department_desc, $department_code, $file, $user_id, $organization_id, $department_id, $imgurl);
 } else {

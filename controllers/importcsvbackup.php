@@ -61,7 +61,7 @@ if (isset($_POST['import'])) {
 
 
 // Prepated Statement Backup
-function importMembers($conn, $files, $department_id, $user_id, $organization_id)
+function importMembers($conn, $department_id, $files)
 {
     // Allowed mime types
     $fileMimes = array(
@@ -93,8 +93,8 @@ function importMembers($conn, $files, $department_id, $user_id, $organization_id
         while (($getData = fgetcsv($files, 10000, ",")) !== FALSE) {
             // Get row data
             $firstname = $getData[0];
-            $middlename = $getData[1];
-            $lastname = $getData[2];
+            $lastname = $getData[1];
+            $email = $getData[2];
             $email = $getData[3];
             $course = $getData[4];
             $yearlevel = $getData[5];

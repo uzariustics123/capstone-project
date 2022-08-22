@@ -1,5 +1,8 @@
 <?php include '../includes/header.php' ?>
-<?php if (isset($user)) { ?>
+<?php if (isset($user)) {
+    $organization = $_GET['org_id'];
+    $department = $_GET['dept_id'];
+?>
 
     <?php if (isset($_SESSION['status'])) {
         $status = $_SESSION['status'];
@@ -29,7 +32,7 @@
                                     <ol class="breadcrumb m-0">
                                         <li class="breadcrumb-item"><a href="index.php">Home</a></li>
                                         <li class="breadcrumb-item active"><a href="pages-my-organization.php?id=<?= $organization_id ?>">My Organization</a></li>
-                                        <li class="breadcrumb-item active"><a href="pages-my-department.php?user_id=<?= $user ?>&org_id=<?= $organization_id ?>&dept_id=<?= $department_id ?>">My Department</a></li>
+                                        <li class="breadcrumb-item active"><a href="pages-my-department.php?id=<?= $department_id ?>">My Department</a></li>
                                     </ol>
                                 </div>
                                 <h4 class="page-title">My Department</h4>
@@ -52,7 +55,7 @@
                     </div>
                     <div class="row">
                         <?php
-                        $query = "SELECT * FROM departments WHERE user_id = $user AND organization_id = $organization_id AND department_id = $department_id;";
+                        $query = "SELECT * FROM departments WHERE department_id = $department_id;";
                         $results = $conn->query($query);
                         while ($row = $results->fetch_assoc()) {
                         ?>
@@ -103,7 +106,7 @@
                                                     <!-- item-->
                                                     <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#edit-department-modal" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
                                                     <!-- item-->
-                                                    <a href="javascript:void(0);" id="delete-department" class="dropdown-item" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?>><i class="mdi mdi-delete me-1"></i>Delete</a>
+                                                    <a href="javascript:void(0);" id="delete-department" class="dropdown-item" data-dept_id=<?= $row['department_id'] ?>><i class="mdi mdi-delete me-1"></i>Delete</a>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -115,14 +118,13 @@
                                                 </div> <!-- end col -->
                                                 <div class="col-lg-7">
                                                     <form class="ps-lg-4">
-                                                        <!-- Product title -->
+
                                                         <h1 class="mt-0"><?= $row['dept_name']; ?></h1>
-                                                        <p class="mb-1">Date Created: <b><?= $row['date_created']; ?></b></p>
-                                                        <!-- Product stock -->
+
                                                         <div class="mt-3">
                                                             <h4><span class="badge badge-success-lighten"><?= $row['dept_code']; ?></span></h4>
                                                         </div>
-                                                        <!-- Product description -->
+
                                                         <div class="mt-4">
                                                             <h6 class="font-14">Description:</h6>
                                                             <p><?= $row['dept_description']; ?></p>
@@ -134,30 +136,13 @@
                                                             <div class="col-md-4">
                                                                 <h6 class="font-14">Members:</h6>
                                                                 <?php
-                                                                $query = "SELECT * FROM members WHERE department_id = $department_id and usertype = 'member';";
+                                                                $query = "SELECT * FROM members WHERE department_id = $department_id;";
                                                                 $results = $conn->query($query);
                                                                 $total = $results->num_rows;
                                                                 ?>
                                                                 <p class="text-sm lh-150"><?= $total; ?></p>
                                                             </div>
-                                                            <div class="col-md-4">
-                                                                <h6 class="font-14">Organizers:</h6>
-                                                                <?php
-                                                                $query = "SELECT * FROM members WHERE importer_id = $user AND organization_id = $organization_id AND department_id = $department_id AND usertype = 'Organizer';";
-                                                                $results = $conn->query($query);
-                                                                $total = $results->num_rows;
-                                                                ?>
-                                                                <p class="text-sm lh-150"><?= $total; ?></p>
-                                                            </div>
-                                                            <div class="col-md-4">
-                                                                <h6 class="font-14">Students:</h6>
-                                                                <?php
-                                                                $query = "SELECT * FROM members WHERE importer_id = $user AND organization_id = $organization_id AND department_id = $department_id AND usertype = 'member';";
-                                                                $results = $conn->query($query);
-                                                                $total = $results->num_rows;
-                                                                ?>
-                                                                <span class="text-sm lh-150"><?= $total; ?></span>
-                                                            </div>
+
                                                         </div>
                                                     </div>
                                                     </form>
@@ -166,237 +151,207 @@
                                         </div> <!-- end card-body-->
                                     </div> <!-- end card-->
                                 </div> <!-- end col-->
-                                <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
-                                    <div class="card  p-3">
-                                        <div class="mb-5 mt-3 mt-xl-0">
-                                            <form action="../controllers/import.members.ctrls.php?" method="post" enctype="multipart/form-data">
-                                                <h4 class="mb-2">Import CSV</h4>
-                                                <p class="text-muted font-14">Import your CSV file here format should be Firstname, Middlename, Lastname, Course, Yearlevel</p>
-                                                <input type="hidden" name="department_id" value="<?= $department_id; ?>">
-                                                <input type="hidden" name="user_id" value="<?= $user; ?>">
-                                                <input type="hidden" name="organization_id" value="<?= $organization_id; ?>">
-                                                <div class="mb-2">
-                                                    <input type="file" class="form-control" name="file" id="file" rows="6" required></input>
+                                <?php
+                                if (isset($_GET['usertype'])) {
+                                    $usertype = base64_decode($encoded = $_GET['usertype']);
+                                }
+                                if ($usertype == 'organizer' || $usertype == 'admin') {
+                                ?>
+                                    <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
+                                        <div class="card  p-3">
+                                            <div class="mb-5 mt-3 mt-xl-0">
+                                                <form action="../controllers/import.members.ctrls.php?" method="post" enctype="multipart/form-data">
+                                                    <h4 class="mb-2">Import CSV</h4>
+                                                    <p class="text-muted font-14">Import your CSV file here format should be Firstname, Lastname, Email</p>
+                                                    <input type="hidden" name="department_id" value="<?= $department_id; ?>">
+                                                    <input type="hidden" name="organization_id" value="<?= $organization_id; ?>">
+                                                    <div class="mb-2">
+                                                        <input type="file" class="form-control" name="file" id="file" rows="6" required></input>
+                                                    </div>
+                                                    <div class="text-center"><button type="submit" name="import" class="btn btn-primary">Import</button></div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                        <?php } ?>
+                    </div>
+                    <!-- end row-->
+                </div> <!-- container -->
+            </div> <!-- content -->
+            <?php
+            if ($usertype == 'organizer' || $usertype == 'admin') {
+            ?>
+                <div class="container-fluid" id="members-list">
+                    <div class="row">
+                        <table id="row-callback-datatable" class="table dt-responsive nowrap">
+                            <thead>
+                                <tr>
+                                    <th>Member ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Registration Status</th>
+                                    <th>Usertype</th>
+                                    <th style="width: 75px;">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <?php
+                                $query = "SELECT * FROM users 
+                                                    RIGHT OUTER JOIN members ON members.user_reference_id = users.userid 
+                                                    LEFT OUTER JOIN departments ON members.department_id = departments.department_id WHERE members.department_id = $department_id";
+                                $results = $conn->query($query);
+                                while ($row = $results->fetch_assoc()) {
+                                ?>
+                                    <tr>
+                                        <td><span id="member_id<?= $row['userid']; ?>"><?= $row['member_id'] ?></span></td>
+                                        <td>
+                                            <span id="firstname<?= $row['userid']; ?>"><?= $row['firstname'] ?></span>
+                                            <span id="lastname<?= $row['userid']; ?>"><?= $row['lastname'] ?></span>
+
+                                        </td>
+                                        <td><span id="email<?= $row['userid']; ?>"><?= $row['email'] ?></span></td>
+                                        <td><span id="registration_status<?= $row['userid']; ?>"><?= $row['registration_status'] ?></span></td>
+
+                                        <td>
+                                            <span class="badge bg-primary" id="usertype<?= $row['userid']; ?>"><?= $row['usertype'] ?></span>
+                                        </td>
+                                        <td class="table-action">
+                                            <button data-bs-toggle="modal" data-bs-target="#edit-member-modal" class="action-icon edit-custom btn btn-success btn-light" value="<?= $row['userid']; ?>">
+                                                <i class="mdi mdi-square-edit-outline"></i>
+                                            </button>
+                                            <a href="javascript:void(0);" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Standard modal -->
+                                    <div class="modal fade" id="edit-member-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title" id="standard-modalLabel">Edit Member Details</h4>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                                                 </div>
-                                                <div class="text-center"><button type="submit" name="import" class="btn btn-primary">Import</button></div>
+                                                <form method="post" action="../controllers/edit.member.ctrls.php" enctype="multipart/form-data">
+                                                    <div class="modal-body">
+
+                                                        <input type="hidden" name="organization_id" value="<?= $organization_id ?>" />
+                                                        <input type="hidden" name="department_id" value="<?= $department_id ?>" />
+                                                        <input type="hidden" name="member_id" class="form-control" id="emember_id">
+                                                        <div class="mb-1 mt-1">
+                                                            <label for="usertype-select" class="form-label">Change Usertype</label>
+                                                            <select class="form-select" name="usertype-select" id="eusertype-select">
+                                                                <option value="member">Member</option>
+                                                                <option value="organizer">Organizer</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" name="submit" class="btn btn-primary">Save changes</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="centermodal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="myCenterModalLabel">Add Event Details</h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <div class="card">
+                                            <form action="../controllers/add.event.ctrls.php" method="post" enctype="multipart/form-data">
+
+                                                <input type="hidden" name="publisher_id" value="<?= $user; ?>">
+                                                <input type="hidden" name="department_id" value="<?= $department_id; ?>">
+                                                <input type="hidden" name="organization_id" value="<?= $organization_id; ?>">
+
+                                                <input type="hidden" name="usertype" value="<?= $usertype; ?>">
+
+                                                <div class="card-body">
+                                                    <div class="mb-3">
+                                                        <label for="event-name" class="form-label">Event Name</label>
+                                                        <input type="text" id="event-name" name="event_name" class="form-control">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="event-description" class="form-label">Event Desciption</label>
+                                                        <textarea class="form-control" id="event-description" name="event_description" rows="5"></textarea>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="event_location" class="form-label">Event Venue</label>
+                                                        <input type="text" class="form-control" id="event_location" name="event_location"></input>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="event-date" class="form-label"> Event Date</label>
+                                                        <input class="form-control" name="event_date" id="event-date" type="date">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="event-start-time-morning" class="form-label" id="label1">Start Time Morning</label>
+                                                        <input class="form-control" name="event_start_time_am" id="event-start-time-morning" type="time" name="time">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="event-end-time-morning" class="form-label" id="label2">End Time Morning</label>
+                                                        <input class="form-control" name="event_end_time_am" id="event-end-time-morning" type="time" name="time">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="event-start-time-afternoon" class="form-label" id='label3'>Start Time Afternoon</label>
+                                                        <input class="form-control" name="event_start_time_pm" id="event-start-time-afternoon" type="time">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="event-end-time-afternoon" class="form-label" id='label4'>End Time Afternoon</label>
+                                                        <input class="form-control" name="event_end_time_pm" id="event-end-time-afternoon" type="time">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="attendance-duration-select" class="form-label">Attendance Duration (mins)</label>
+                                                        <select class="form-select" name="attendance_duration" id="attendance-duration-select">
+                                                            <option value="1500">15</option>
+                                                            <option value="2000">20</option>
+                                                            <option value="2500">25</option>
+                                                            <option value="3000">30</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <div class="form-check form-switch">
+                                                            <input type="checkbox" class="form-check-input" id="event_all_day1" name="event_all_day">
+                                                            <label class=" form-check-label" for="event_all_day">Toggle this switch if event is half day</label>
+                                                        </div>
+                                                    </div>
+                                                    <button type="submit" name="submit" class="btn btn-primary">Publish</button>
+                                                </div>
                                             </form>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                    </div>
-                    <!-- end row-->
-                </div> <!-- container -->
-            </div> <!-- content -->
-            <div class="content" id="members-list">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="row">
-                            <div class="col-12">
-                                <h4 class="page-title mt-3">Members</h4>
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-centered table-borderless table-hover w-100 dt-responsive nowrap" id="products-datatable">
-                                                <thead class="table-light">
-                                                    <tr>
-                                                        <th>Name</th>
-                                                        <th>Email</th>
-                                                        <th>Course</th>
-                                                        <th>Year Level</th>
-                                                        <th>Usertype</th>
-                                                        <th>Actions</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal-dialog -->
+                </div><!-- /.modal -->
+                <section class="container-fluid" id="events">
+                    <!-- start page title -->
 
-                                                    $organization_id = $_GET['org_id'];
-                                                    $department_id = $_GET['dept_id'];
-
-                                                    $query = "SELECT * FROM members WHERE importer_id = $user AND organization_id = $organization_id AND department_id = $department_id;";
-                                                    $results = $conn->query($query);
-                                                    while ($row = $results->fetch_assoc()) {
-                                                    ?>
-                                                        <tr>
-                                                            <td class="table-user">
-                                                                <span hidden id="importer_id<?= $row['member_id']; ?>"><?= $row['importer_id']; ?></span>
-                                                                <span hidden id="organization_id<?= $row['member_id']; ?>"><?= $row['organization_id']; ?></span>
-                                                                <span hidden id="department_id<?= $row['member_id']; ?>"><?= $row['department_id']; ?></span>
-
-                                                                <img src="../assets/images/users/avatar-4.jpg" alt="table-user" class="me-2 rounded-circle" />
-                                                                <a href="javascript:void(0);" class="text-body fw-semibold">
-                                                                    <span id="firstname<?= $row['member_id']; ?>"><?= $row['firstname']; ?></span>
-                                                                    <span id="middlename<?= $row['member_id']; ?>"><?= $row['middlename']; ?></span>
-                                                                    <span id="lastname<?= $row['member_id']; ?>"><?= $row['lastname']; ?></span>
-                                                                </a>
-                                                            </td>
-                                                            <td><span id="email<?= $row['member_id']; ?>"><?= $row['email']; ?></span></td>
-                                                            <td><span id="course<?= $row['member_id']; ?>"><?= $row['course']; ?></span></td>
-                                                            <td><span id="yearlevel<?= $row['member_id']; ?>"><?= $row['yearlevel']; ?></span></td>
-                                                            <td><span id="usertype<?= $row['member_id']; ?>"><? $row['usertype']; ?><span class="badge bg-primary"><?= $row['usertype'] ?></span></span></td>
-                                                            <td class="table-action">
-                                                                <button data-bs-toggle="modal" data-bs-target="#edit-member-modal" class="action-icon edit-custom btn btn-success btn-light" value="<?= $row['member_id']; ?>">
-                                                                    <i class="mdi mdi-square-edit-outline"></i>
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                        <!-- Standard modal -->
-                                                        <div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                                            <div class="modal-dialog">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
-                                                                    </div>
-                                                                    <form method="post" action="../controllers/edit.member.ctrls.php" enctype="multipart/form-data">
-                                                                        <div class="modal-body">
-                                                                            <input type="hidden" id="eimporter_id" name="importer_id">
-                                                                            <input type="hidden" id="eorganization_id" name="organization_id">
-                                                                            <input type="hidden" id="edepartment_id" name="department_id">
-                                                                            <input type="hidden" id="emember_id" name="user_id">
-                                                                            <div class="mb-1 mt-1">
-                                                                                <label for="firstname" class="form-label">Firstname</label>
-                                                                                <input type="input" name="firstname" class="form-control" id="efirstname" required>
-                                                                            </div>
-                                                                            <div class="mb-1 mt-1">
-                                                                                <label for="middlename" class="form-label">Middlename</label>
-                                                                                <input type="input" name="middlename" class="form-control" id="emiddlename" required>
-                                                                            </div>
-                                                                            <div class="mb-1 mt-1">
-                                                                                <label for="department" class="form-label">Lastname</label>
-                                                                                <input type="input" name="lastname" class="form-control" id="elastname" required>
-                                                                            </div>
-                                                                            <div class="mb-1 mt-1">
-                                                                                <label for="email" class="form-label">Email</label>
-                                                                                <input type="email" name="email" class="form-control" id="eemail" required>
-                                                                            </div>
-                                                                            <div class="mb-1 mt-1">
-                                                                                <label for="ecourse" class="form-label">Course</label>
-                                                                                <input type="input" name="course" class="form-control" id="ecourse" required>
-                                                                            </div>
-                                                                            <div class="mb-1 mt-1">
-                                                                                <label for="yearlevel-select" class="form-label">Year Level</label>
-                                                                                <select class="form-select" name="yearlevel-select" id="eyearlevel-select">
-                                                                                    <option value="1st">1st</option>
-                                                                                    <option value="2nd">2nd</option>
-                                                                                    <option value="3rd">3rd</option>
-                                                                                    <option value="4th">4th</option>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div class="mb-1 mt-1">
-                                                                                <label for="usertype-select" class="form-label">Usertype</label>
-                                                                                <select class="form-select" name="usertype-select" id="eusertype-select">
-                                                                                    <option value="Member">Member</option>
-                                                                                    <option value="Organizer">Organizer</option>
-                                                                                </select>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="modal-footer">
-                                                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                                                                            <button type="submit" name="submit" class="btn btn-primary">Save changes</button>
-                                                                        </div>
-                                                                    </form>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    <?php } ?>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <!-- end card-body-->
-                                </div>
-                                <!-- end card-->
-                            </div>
-                            <!-- end col -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal fade" id="centermodal" tabindex="-1" role="dialog" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title" id="myCenterModalLabel">Add Event Details</h4>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <div class="card">
-                                        <form action="../controllers/add.event.ctrls.php" method="post" enctype="multipart/form-data">
-                                            <?php
-                                            $organization_id = $_GET['org_id'];
-                                            $department_id = $_GET['dept_id'];
-                                            if (isset($_SESSION['importer_id'])) {
-                                                $importer_id = $_SESSION['importer_id'];
-                                            } else {
-                                                $importer_id = 0;
-                                            }
-
-                                            ?>
-                                            <input type="hidden" name="user-id" value=<?= $user; ?>>
-                                            <input type="hidden" name="organization-id" value=<?= $organization_id; ?>>
-                                            <input type="hidden" name="department-id" value=<?= $department_id; ?>>
-                                            <input type="hidden" name="importer-id" value=<?= $importer_id; ?>>
-                                            <input type="hidden" name="usertype" value=<?= $usertype; ?>>
-                                            <div class="card-body">
-                                                <div class="mb-3">
-                                                    <label for="event-name" class="form-label">Event Name</label>
-                                                    <input type="text" id="event-name" name="event-name" class="form-control">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="event-description" class="form-label">Event Desciption</label>
-                                                    <textarea class="form-control" id="event-description" name="event-description" rows="5"></textarea>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="event-date" class="form-label"> Event Date</label>
-                                                    <input class="form-control" name="event-date" id="event-date" type="date" name="date">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="event-start-time" class="form-label">Start Time</label>
-                                                    <input class="form-control" name="event-start" id="example-start-time" type="time" name="time">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="event-end-time" class="form-label">End Time</label>
-                                                    <input class="form-control" name="event-end" id="example-end-time" type="time" name="time">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="attendance-duration-select" class="form-label">Attendance Duration (mins)</label>
-                                                    <select class="form-select" name="attendance-duration-select" id="attendance-duration-select">
-                                                        <option value="15">15</option>
-                                                        <option value="20">20</option>
-                                                        <option value="25">25</option>
-                                                        <option value="30">30</option>
-                                                    </select>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <div class="form-check form-switch">
-                                                        <input type="checkbox" class="form-check-input" id="all-day" name="all-day">
-                                                        <label class=" form-check-label" for="customSwitch1">Toggle this switch if event is whole day</label>
-                                                    </div>
-                                                </div>
-                                                <button type="submit" name="submit" class="btn btn-primary">Add</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box">
+                                <h4 class="page-title">Events
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#centermodal" class="btn btn-success btn-sm ms-3">Add New Event</a>
+                                </h4>
                             </div>
                         </div>
-                    </div><!-- /.modal-content -->
-                </div><!-- /.modal-dialog -->
-            </div><!-- /.modal -->
-            <section class="container-fluid" id="events">
-                <!-- start page title -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="page-title-box">
-                            <h4 class="page-title">Events
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#centermodal" class="btn btn-success btn-sm ms-3">Add New Event</a>
-                            </h4>
-                        </div>
                     </div>
-                </div>
+                <?php } ?>
                 <!-- end page title -->
                 <div class="row">
                     <div class="col-12">
@@ -405,24 +360,22 @@
                                 <h5 class="mt-0 task-header">FOR APPROVAL (1)</h5>
                                 <div id="task-list-one" class="task-list-items">
                                     <?php
-                                    $organization_id = $_GET['org_id'];
-                                    $department_id = $_GET['dept_id'];
-
-                                    $query = "SELECT * FROM events WHERE status = 'Pending' AND organization_id = $organization_id AND department_id = $department_id;";
+                                    $query = "SELECT * FROM events WHERE event_status = 'pending' AND department_id = $department_id;";
                                     $results = $conn->query($query);
                                     while ($row = $results->fetch_assoc()) {
                                     ?>
                                         <!-- Task Item -->
                                         <div class="card mb-0">
-                                            <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>">
-                                                <div class="card-body p-3">
-                                                    <!-- Date Created -->
-                                                    <small class="float-end text-muted"><?= $row['date_created'] ?></small>
-                                                    <span class="badge bg-danger"><?= $row['status'] ?></span>
-                                                    <h5 class="mt-2 mb-2">
-                                                        <!-- Event Name -->
-                                                        <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body"><?= $row['event_name'] ?></a>
-                                                    </h5>
+
+                                            <div class="card-body p-3">
+                                                <!-- Date Created -->
+                                                <small class="float-end text-muted"><?= $row['event_datetime_created'] ?></small>
+                                                <span class="badge bg-warning"><?= $row['event_status'] ?></span>
+                                                <h2 class="mt-2 mb-2">
+                                                    <!-- Event Name -->
+                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body"><?= $row['event_name'] ?></a>
+                                                    </h3>
+                                                    <p><?= $row['event_description'] ?></p>
                                                     <p class="mb-0">
                                                         <span class="pe-2 text-nowrap mb-2 d-inline-block">
                                                             <i class="mdi mdi-account-check-outline text-muted"></i>
@@ -438,13 +391,18 @@
                                                             <i class="mdi mdi-dots-vertical font-18"></i>
                                                         </a>
                                                         <div class="dropdown-menu dropdown-menu-end">
-                                                            <!-- item-->
+
                                                             <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
-                                                            <!-- item-->
-                                                            <a href="javascript:void(0);" class="dropdown-item" id="delete-event" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?> data-user_id=<?= $row['user_id'] ?> data-event_id=<?= $row['event_id'] ?> data-usertype=<?= $usertype ?>><i class="mdi mdi-delete me-1"></i>Delete</a>
-                                                            <!-- item-->
-                                                            <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>" class="dropdown-item"><i class="mdi mdi-eye-circle-outline me-1"></i>View</a>
-                                                            <!-- item-->
+
+                                                            <a href="javascript:void(0);" class="dropdown-item delete-event" id="delete-event" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?> data-user_id=<?= $row['user_id'] ?> data-event_id=<?= $row['event_id'] ?> data-usertype=<?= $usertype ?>>
+                                                                <i class="mdi mdi-delete me-1"></i>
+                                                                Delete
+                                                            </a>
+                                                            <?php
+                                                            $usertype_encoded = base64_encode($usertype);
+                                                            ?>
+                                                            <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>&usertype=<?= $usertype_encoded ?>" class="dropdown-item"><i class="mdi mdi-eye-circle-outline me-1"></i>View</a>
+
                                                             <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
                                                         </div>
                                                     </div>
@@ -452,22 +410,19 @@
                                                         <img src="../assets/images/users/avatar-2.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
                                                         <span class="align-middle">Robert Carlile</span>
                                                     </p>
-                                                </div> <!-- end card-body -->
+                                            </div> <!-- end card-body -->
                                         </div>
                                         <!-- Task Item End -->
-                                    <?php } ?>
+                                    <?php }
+                                    ?>
                                 </div> <!-- end company-list-1-->
                             </div>
                             <div class="tasks">
-                                <h5 class="mt-0 task-header text-uppercase">APPROVED</h5>
+                                <h5 class="mt-0 task-header text-uppercase">UPCOMING</h5>
                                 <div id="task-list-two" class="task-list-items">
                                     <!-- Task Item -->
                                     <?php
-
-                                    $organization_id = $_GET['org_id'];
-                                    $department_id = $_GET['dept_id'];
-
-                                    $query = "SELECT * FROM events WHERE status = 'Approved' AND organization_id = $organization_id AND department_id = $department_id;";
+                                    $query = "SELECT * FROM events WHERE event_status = 'approved' AND department_id = $department_id;";
                                     $results = $conn->query($query);
                                     while ($row = $results->fetch_assoc()) {
                                     ?>
@@ -476,150 +431,98 @@
 
                                             <div class="card-body p-3">
                                                 <!-- Date Created -->
-                                                <small class="float-end text-muted"><?= $row['date_created'] ?></small>
-                                                <span class="badge bg-success"><?= $row['status'] ?></span>
-                                                <h5 class="mt-2 mb-2">
+                                                <small class="float-end text-muted"><?= $row['event_datetime_created'] ?></small>
+                                                <span class="badge bg-success"><?= $row['event_status'] ?></span>
+                                                <h2 class="mt-2 mb-2">
                                                     <!-- Event Name -->
                                                     <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body"><?= $row['event_name'] ?></a>
-                                                </h5>
-                                                <p class="mb-0">
-                                                    <span class="pe-2 text-nowrap mb-2 d-inline-block">
-                                                        <i class="mdi mdi-account-check-outline text-muted"></i>
-                                                        Confirmed
-                                                    </span>
-                                                    <span class="text-nowrap mb-2 d-inline-block">
-                                                        <i class="mdi mdi-account-clock-outline text-muted"></i>
-                                                        <b>74</b> Unconfirmed
-                                                    </span>
-                                                </p>
-                                                <div class="dropdown float-end">
-                                                    <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <i class="mdi mdi-dots-vertical font-18"></i>
-                                                    </a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-
-                                                        <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
-
-                                                        <a href="javascript:void(0);" class="dropdown-item delete-event" id="delete-event" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?> data-user_id=<?= $row['user_id'] ?> data-event_id=<?= $row['event_id'] ?> data-usertype=<?= $usertype ?>>
-                                                            <i class="mdi mdi-delete me-1"></i>
-                                                            Delete
+                                                    </h3>
+                                                    <p><?= $row['event_description'] ?></p>
+                                                    <p class="mb-0">
+                                                        <span class="pe-2 text-nowrap mb-2 d-inline-block">
+                                                            <i class="mdi mdi-account-check-outline text-muted"></i>
+                                                            Confirmed
+                                                        </span>
+                                                        <span class="text-nowrap mb-2 d-inline-block">
+                                                            <i class="mdi mdi-account-clock-outline text-muted"></i>
+                                                            <b>74</b> Unconfirmed
+                                                        </span>
+                                                    </p>
+                                                    <div class="dropdown float-end">
+                                                        <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="mdi mdi-dots-vertical font-18"></i>
                                                         </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
 
-                                                        <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>" class="dropdown-item"><i class="mdi mdi-eye-circle-outline me-1"></i>View</a>
+                                                            <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
 
-                                                        <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
+                                                            <a href="javascript:void(0);" class="dropdown-item delete-event" id="delete-event" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?> data-user_id=<?= $row['user_id'] ?> data-event_id=<?= $row['event_id'] ?> data-usertype=<?= $usertype ?>>
+                                                                <i class="mdi mdi-delete me-1"></i>
+                                                                Delete
+                                                            </a>
+
+                                                            <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>" class="dropdown-item"><i class="mdi mdi-eye-circle-outline me-1"></i>View</a>
+
+                                                            <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <p class="mb-0">
-                                                    <img src="../assets/images/users/avatar-2.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
-                                                    <span class="align-middle">Robert Carlile</span>
-                                                </p>
+                                                    <p class="mb-0">
+                                                        <img src="../assets/images/users/avatar-2.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
+                                                        <span class="align-middle">Robert Carlile</span>
+                                                    </p>
                                             </div> <!-- end card-body -->
                                         </div>
                                         <!-- Task Item End -->
-                                    <?php } ?>
-                                </div> <!-- end company-list-2-->
-                            </div>
-                            <div class="tasks">
-                                <h5 class="mt-0 task-header text-uppercase">UPCOMING (1)</h5>
-                                <div id="task-list-three" class="task-list-items">
-                                    <?php
-
-                                    $organization_id = $_GET['org_id'];
-                                    $department_id = $_GET['dept_id'];
-                                    $query = "SELECT * FROM events WHERE user_id = $user AND organization_id = $organization_id AND department_id = $department_id AND status = 'upcoming';";
-                                    $results = $conn->query($query);
-                                    while ($row = $results->fetch_assoc()) {
+                                    <?php }
                                     ?>
-                                        <!-- Task Item -->
-                                        <div class="card mb-0">
-                                            <div class="card-body p-3">
-                                                <small class="float-end text-muted">22 Jul 2018</small>
-                                                <span class="badge bg-danger">High</span>
-
-                                                <h5 class="mt-2 mb-2">
-                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body">Improve animation loader</a>
-                                                </h5>
-                                                <p class="mb-0">
-                                                    <span class="pe-2 text-nowrap mb-2 d-inline-block">
-                                                        <i class="mdi mdi-briefcase-outline text-muted"></i>
-                                                        CRM
-                                                    </span>
-                                                    <span class="text-nowrap mb-2 d-inline-block">
-                                                        <i class="mdi mdi-comment-multiple-outline text-muted"></i>
-                                                        <b>39</b> Comments
-                                                    </span>
-                                                </p>
-                                                <div class="dropdown float-end">
-                                                    <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <i class="mdi mdi-dots-vertical font-18"></i>
-                                                    </a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
-                                                        <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
-                                                        <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-plus-circle-outline me-1"></i>Add People</a>
-                                                        <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
-                                                    </div>
-                                                </div>
-                                                <p class="mb-0">
-                                                    <img src="../assets/images/users/avatar-4.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
-                                                    <span class="align-middle">Riley Steele</span>
-                                                </p>
-                                            </div> <!-- end card-body -->
-                                        </div>
-                                        <!-- Task Item End -->
-                                    <?php } ?>
-                                </div> <!-- end company-list-3-->
+                                </div> <!-- end company-list-2-->
                             </div>
                             <div class="tasks">
                                 <h5 class="mt-0 task-header text-uppercase">Done (1)</h5>
                                 <div id="task-list-four" class="task-list-items">
                                     <?php
-                                    $user = $_GET['user_id'];
-                                    $organization_id = $_GET['org_id'];
-                                    $department_id = $_GET['dept_id'];
-                                    $query = "SELECT * FROM events WHERE user_id = $user AND organization_id = $organization_id AND department_id = $department_id AND status = 'done';";
-                                    $results = $conn->query($query);
-                                    while ($row = $results->fetch_assoc()) {
+                                    // $user = $_GET['user_id'];
+                                    // $organization_id = $_GET['org_id'];
+                                    // $department_id = $_GET['dept_id'];
+                                    // $query = "SELECT * FROM events WHERE user_id = $user AND organization_id = $organization_id AND department_id = $department_id AND status = 'done';";
+                                    // $results = $conn->query($query);
+                                    // while ($row = $results->fetch_assoc()) {
                                     ?>
-                                        <!-- Task Item -->
-                                        <div class="card mb-0">
-                                            <div class="card-body p-3">
-                                                <small class="float-end text-muted">16 Jul 2018</small>
-                                                <span class="badge bg-success">Low</span>
+                                    <!-- Task Item -->
+                                    <div class="card mb-0">
+                                        <div class="card-body p-3">
+                                            <small class="float-end text-muted">16 Jul 2018</small>
+                                            <span class="badge bg-success">Low</span>
 
-                                                <h5 class="mt-2 mb-2">
-                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body">Dashboard design</a>
-                                                </h5>
-                                                <p class="mb-0">
-                                                    <span class="pe-2 text-nowrap mb-2 d-inline-block">
-                                                        <i class="mdi mdi-briefcase-outline text-muted"></i>
-                                                        Hyper
-                                                    </span>
-                                                    <span class="text-nowrap mb-2 d-inline-block">
-                                                        <i class="mdi mdi-comment-multiple-outline text-muted"></i>
-                                                        <b>287</b> Comments
-                                                    </span>
-                                                </p>
-                                                <p class="mb-0">
-                                                    <img src="../assets/images/users/avatar-10.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
-                                                    <span class="align-middle">Harvey Dickinson</span>
-                                                </p>
-                                            </div> <!-- end card-body -->
-                                        </div>
-                                        <!-- Task Item End -->
-                                    <?php } ?>
+                                            <h5 class="mt-2 mb-2">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body">Dashboard design</a>
+                                            </h5>
+                                            <p class="mb-0">
+                                                <span class="pe-2 text-nowrap mb-2 d-inline-block">
+                                                    <i class="mdi mdi-briefcase-outline text-muted"></i>
+                                                    Hyper
+                                                </span>
+                                                <span class="text-nowrap mb-2 d-inline-block">
+                                                    <i class="mdi mdi-comment-multiple-outline text-muted"></i>
+                                                    <b>287</b> Comments
+                                                </span>
+                                            </p>
+                                            <p class="mb-0">
+                                                <img src="../assets/images/users/avatar-10.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
+                                                <span class="align-middle">Harvey Dickinson</span>
+                                            </p>
+                                        </div> <!-- end card-body -->
+                                    </div>
+                                    <!-- Task Item End -->
+                                    <?php //} 
+                                    ?>
                                 </div> <!-- end company-list-4-->
                             </div>
                         </div> <!-- end .board-->
                     </div> <!-- end col -->
                 </div>
                 <!-- end row-->
-            </section>
+                </section>
         </div>
     </div>
     <!-- END wrapper -->
