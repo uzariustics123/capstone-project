@@ -58,7 +58,7 @@ if (isset($_SESSION['member_id'])) {
                 <li class="side-nav-item">
                     <a href="pages-organization-list.php" class="side-nav-link">
                         <i class="uil-suitcase-alt"></i>
-                        <span> My Organization </span>
+                        <span> My Organizations </span>
                     </a>
                 </li>
             <?php } ?>

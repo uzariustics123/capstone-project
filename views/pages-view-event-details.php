@@ -360,7 +360,7 @@
                                                             <tr>
                                                                 <th>Name</th>
                                                                 <th>Role</th>
-                                                                <th>Status</th>
+                                                                <th>Participant Status</th>
                                                                 <th style="width: 75px;">Action</th>
                                                             </tr>
                                                         </thead>

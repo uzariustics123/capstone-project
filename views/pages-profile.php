@@ -4,9 +4,7 @@
         $status = $_SESSION['status'];
         echo "<span>$status</span>";
     } ?>
-    <?php
-    $department_id = $_GET['department_id'];
-    ?>
+
     <!-- Begin page -->
     <div class="wrapper">
         <?php include '../includes/sidebar.php' ?>
@@ -144,7 +142,7 @@
                         </div>
                     </div>
                     <div class="container-fluid">
-                        <?php if (isset($department_id)) { ?>
+                        <?php if ($usertype != 'admin') { ?>
                             <div class="row">
                                 <div class="col-12">
                                     <div class="page-title-box">
@@ -165,46 +163,31 @@
                                                             RIGHT OUTER JOIN members ON participants.member_reference_id = members.member_id
                                                             WHERE member_reference_id = $member_id AND participant_status = 'pending' ORDER BY event_date ASC;";
                                                 $results = $conn->query($query);
+
                                                 while ($row = $results->fetch_assoc()) {
                                                 ?>
 
                                                     <div class="card mb-0">
-
                                                         <div class="card-body p-3">
 
                                                             <small class="float-end text-muted"><?= $row['event_date'] ?></small>
-                                                            <span class="badge bg-success"><?= $row['event_status'] ?></span>
+                                                            <span class="badge bg-success"><?= $row['participant_status'] ?></span>
                                                             <h2 class="mt-2 mb-2">
 
                                                                 <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body"><?= $row['event_name'] ?></a>
                                                                 </h3>
                                                                 <p><?= $row['event_description'] ?></p>
-                                                                <p class="mb-0">
-                                                                    <span class="pe-2 text-nowrap mb-2 d-inline-block">
-                                                                        <i class="mdi mdi-account-check-outline text-muted"></i>
-                                                                        Confirmed
-                                                                        <?= $member_id ?>
-                                                                    </span>
-                                                                    <span class="text-nowrap mb-2 d-inline-block">
-                                                                        <i class="mdi mdi-account-clock-outline text-muted"></i>
-                                                                        <b>74</b> Unconfirmed
-                                                                    </span>
-                                                                </p>
+                                                                <div class="text-center">
+                                                                    <a class="btn btn-primary confirm_attendance" name='submit' type="submit" href="javascript:void(0)" data-participant_id="<?= $row['participant_id'] ?>" data-event_id="<?= $row['event_id'] ?>">Confirm</a>
+                                                                </div>
                                                                 <div class="dropdown float-end">
                                                                     <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
                                                                         <i class="mdi mdi-dots-vertical font-18"></i>
                                                                     </a>
                                                                     <div class="dropdown-menu dropdown-menu-end">
-
                                                                         <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>" class="dropdown-item"><i class="mdi mdi-eye-circle-outline me-1"></i>View</a>
-
-                                                                        <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
                                                                     </div>
                                                                 </div>
-                                                                <p class="mb-0">
-                                                                    <img src="../assets/images/users/avatar-2.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
-                                                                    <span class="align-middle">Robert Carlile</span>
-                                                                </p>
                                                         </div> <!-- end card-body -->
                                                     </div>
                                                 <?php }
@@ -217,97 +200,44 @@
                                             <h5 class="mt-0 task-header text-uppercase">Confirmed</h5>
 
                                             <div id="task-list-two" class="task-list-items">
+                                                <?php
+                                                $query = "SELECT * FROM EVENTS
+                                                            RIGHT OUTER JOIN participants ON participants.event_id = events.event_id
+                                                            RIGHT OUTER JOIN members ON participants.member_reference_id = members.member_id
+                                                            WHERE member_reference_id = $member_id 
+                                                            AND participant_status = 'confirmed'
+                                                            ORDER BY event_date ASC;";
+                                                $results = $conn->query($query);
+                                                while ($row = $results->fetch_assoc()) {
+                                                    $now = date('Y-m-d');
+                                                    $newdate = date("M d, Y", strtotime($now));
+                                                    $event_date = $row['event_date'];
+                                                    if ($event_date >= $newdate) {
+                                                ?>
 
-                                                <!-- Task Item -->
-                                                <div class="card mb-0">
-                                                    <div class="card-body p-3">
-                                                        <small class="float-end text-muted">22 Jun 2018</small>
-                                                        <span class="badge bg-secondary text-light">Medium</span>
+                                                        <div class="card mb-0">
+                                                            <div class="card-body p-3">
 
-                                                        <h5 class="mt-2 mb-2">
-                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body">Write a release note</a>
-                                                        </h5>
+                                                                <small class="float-end text-muted"><?= $row['event_date'] ?></small>
+                                                                <span class="badge bg-success"><?= $row['participant_status'] ?></span>
+                                                                <h2 class="mt-2 mb-2">
 
-                                                        <p class="mb-0">
-                                                            <span class="pe-2 text-nowrap mb-2 d-inline-block">
-                                                                <i class="mdi mdi-briefcase-outline text-muted"></i>
-                                                                Hyper
-                                                            </span>
-                                                            <span class="text-nowrap mb-2 d-inline-block">
-                                                                <i class="mdi mdi-comment-multiple-outline text-muted"></i>
-                                                                <b>17</b> Comments
-                                                            </span>
-                                                        </p>
-
-                                                        <div class="dropdown float-end">
-                                                            <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <i class="mdi mdi-dots-vertical font-18"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-plus-circle-outline me-1"></i>Add People</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
-                                                            </div>
+                                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body"><?= $row['event_name'] ?></a>
+                                                                    </h3>
+                                                                    <p><?= $row['event_description'] ?></p>
+                                                                    <div class="dropdown float-end">
+                                                                        <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                            <i class="mdi mdi-dots-vertical font-18"></i>
+                                                                        </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                                            <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>" class="dropdown-item"><i class="mdi mdi-eye-circle-outline me-1"></i>View</a>
+                                                                        </div>
+                                                                    </div>
+                                                            </div> <!-- end card-body -->
                                                         </div>
-
-                                                        <p class="mb-0">
-                                                            <img src="assets/images/users/avatar-5.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
-                                                            <span class="align-middle">Sean White</span>
-                                                        </p>
-                                                    </div> <!-- end card-body -->
-                                                </div>
-                                                <!-- Task Item End -->
-
-                                                <!-- Task Item -->
-                                                <div class="card mb-0">
-                                                    <div class="card-body p-3">
-                                                        <small class="float-end text-muted">19 Jun 2018</small>
-                                                        <span class="badge bg-success">Low</span>
-
-                                                        <h5 class="mt-2 mb-2">
-                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body">Enable analytics tracking</a>
-                                                        </h5>
-
-                                                        <p class="mb-0">
-                                                            <span class="pe-2 text-nowrap mb-2 d-inline-block">
-                                                                <i class="mdi mdi-briefcase-outline text-muted"></i>
-                                                                CRM
-                                                            </span>
-                                                            <span class="text-nowrap mb-2 d-inline-block">
-                                                                <i class="mdi mdi-comment-multiple-outline text-muted"></i>
-                                                                <b>48</b> Comments
-                                                            </span>
-                                                        </p>
-
-                                                        <div class="dropdown float-end">
-                                                            <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <i class="mdi mdi-dots-vertical font-18"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-plus-circle-outline me-1"></i>Add People</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
-                                                            </div>
-                                                        </div>
-
-                                                        <p class="mb-0">
-                                                            <img src="assets/images/users/avatar-6.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
-                                                            <span class="align-middle">Louis Allen</span>
-                                                        </p>
-                                                    </div> <!-- end card-body -->
-                                                </div>
-                                                <!-- Task Item End -->
-
+                                                <?php }
+                                                }
+                                                ?>
                                             </div> <!-- end company-list-2-->
                                         </div>
 
@@ -315,143 +245,6 @@
                                         <div class="tasks">
                                             <h5 class="mt-0 task-header text-uppercase">Attended</h5>
                                             <div id="task-list-three" class="task-list-items">
-
-                                                <!-- Task Item -->
-                                                <div class="card mb-0">
-                                                    <div class="card-body p-3">
-                                                        <small class="float-end text-muted">2 May 2018</small>
-                                                        <span class="badge bg-danger">High</span>
-
-                                                        <h5 class="mt-2 mb-2">
-                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body">Kanban board design</a>
-                                                        </h5>
-
-                                                        <p class="mb-0">
-                                                            <span class="pe-2 text-nowrap mb-2 d-inline-block">
-                                                                <i class="mdi mdi-briefcase-outline text-muted"></i>
-                                                                CRM
-                                                            </span>
-                                                            <span class="text-nowrap mb-2 d-inline-block">
-                                                                <i class="mdi mdi-comment-multiple-outline text-muted"></i>
-                                                                <b>65</b> Comments
-                                                            </span>
-                                                        </p>
-
-                                                        <div class="dropdown float-end">
-                                                            <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <i class="mdi mdi-dots-vertical font-18"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-plus-circle-outline me-1"></i>Add People</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
-                                                            </div>
-                                                        </div>
-
-                                                        <p class="mb-0">
-                                                            <img src="assets/images/users/avatar-1.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
-                                                            <span class="align-middle">Coder Themes</span>
-                                                        </p>
-                                                    </div> <!-- end card-body -->
-                                                </div>
-                                                <!-- Task Item End -->
-
-                                                <!-- Task Item -->
-                                                <div class="card mb-0">
-                                                    <div class="card-body p-3">
-                                                        <small class="float-end text-muted">7 May 2018</small>
-                                                        <span class="badge bg-secondary text-light">Medium</span>
-
-                                                        <h5 class="mt-2 mb-2">
-                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body">Code HTML email template</a>
-                                                        </h5>
-
-                                                        <p class="mb-0">
-                                                            <span class="pe-2 text-nowrap mb-2 d-inline-block">
-                                                                <i class="mdi mdi-briefcase-outline text-muted"></i>
-                                                                CRM
-                                                            </span>
-                                                            <span class="text-nowrap mb-2 d-inline-block">
-                                                                <i class="mdi mdi-comment-multiple-outline text-muted"></i>
-                                                                <b>106</b> Comments
-                                                            </span>
-                                                        </p>
-
-                                                        <div class="dropdown float-end">
-                                                            <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <i class="mdi mdi-dots-vertical font-18"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-plus-circle-outline me-1"></i>Add People</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
-                                                            </div>
-                                                        </div>
-
-                                                        <p class="mb-0">
-                                                            <img src="assets/images/users/avatar-9.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
-                                                            <span class="align-middle">Zak Turnbull</span>
-                                                        </p>
-                                                    </div> <!-- end card-body -->
-                                                </div>
-                                                <!-- Task Item End -->
-
-                                                <!-- Task Item -->
-                                                <div class="card mb-0">
-                                                    <div class="card-body p-3">
-                                                        <small class="float-end text-muted">8 Jul 2018</small>
-                                                        <span class="badge bg-secondary text-light">Medium</span>
-
-                                                        <h5 class="mt-2 mb-2">
-                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body">Brand logo design</a>
-                                                        </h5>
-
-                                                        <p class="mb-0">
-                                                            <span class="pe-2 text-nowrap mb-2 d-inline-block">
-                                                                <i class="mdi mdi-briefcase-outline text-muted"></i>
-                                                                Design
-                                                            </span>
-                                                            <span class="text-nowrap mb-2 d-inline-block">
-                                                                <i class="mdi mdi-comment-multiple-outline text-muted"></i>
-                                                                <b>95</b> Comments
-                                                            </span>
-                                                        </p>
-
-                                                        <div class="dropdown float-end">
-                                                            <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <i class="mdi mdi-dots-vertical font-18"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-plus-circle-outline me-1"></i>Add People</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
-                                                            </div>
-                                                        </div>
-
-                                                        <p class="mb-0">
-                                                            <img src="assets/images/users/avatar-8.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
-                                                            <span class="align-middle">Lily Parkin</span>
-                                                        </p>
-                                                    </div> <!-- end card-body -->
-                                                </div>
-                                                <!-- Task Item End -->
-
-                                                <!-- Task Item -->
                                                 <div class="card mb-0">
                                                     <div class="card-body p-3">
                                                         <small class="float-end text-muted">22 Jul 2018</small>

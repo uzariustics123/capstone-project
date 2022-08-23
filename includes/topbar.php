@@ -24,9 +24,9 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                 </div>
                 <?php
                 $query = "SELECT * FROM EVENTS 
-                        RIGHT OUTER JOIN members ON events.department_id = members.department_id
-                        RIGHT OUTER JOIN users ON users.userid = members.user_reference_id
-                        WHERE userid = $user AND event_status = 'pending' AND members.usertype = 'admin';";
+                RIGHT OUTER JOIN departments ON events.department_id = departments.department_id
+                RIGHT OUTER JOIN organizations ON departments.organization_id = organizations.organization_id
+                WHERE organizations.org_admin_id = $user AND events.event_status ='pending';";
                 $results = $conn->query($query);
                 while ($row = $results->fetch_assoc()) {
                 ?>
@@ -94,7 +94,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                 <?php
                 if ($row['usertype'] == 'member' || $row['usertype'] == 'organizer') {
                 ?>
-                    <a href="../views/pages-profile.php?department_id=<?= $row['department_id'] ?>" class="dropdown-item notify-item">
+                    <a href="../views/pages-profile.php" class="dropdown-item notify-item">
                         <i class="mdi mdi-account-circle me-1"></i>
                         <span>My Account</span>
                     </a>

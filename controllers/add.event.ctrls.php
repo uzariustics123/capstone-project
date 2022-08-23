@@ -3,14 +3,29 @@ if (isset($_POST['submit'])) {
 
     require_once '../config/db.php';
     require_once 'functions.ctrls.php';
-
+    $organization_id = $_POST['organization_id'];
+    $department_id = $_POST['department_id'];
 
     $event_name = $_POST['event_name'];
     $event_description = $_POST['event_description'];
     $event_location = $_POST['event_location'];
     $event_date = $_POST['event_date'];
+    $now = date('Y-m-d');
+    if ($event_date <= $now) {
+        session_start();
+        $_SESSION["status"] =
+            "<script>
+        Swal.fire(
+        'Warning',
+        'Date Must be valid',
+        'warning')
+        </script>";
+        header("location: ../views/pages-my-department.php?org_id=$organization_id&dept_id=$department_id");
+        exit();
+    }
     $event_start_time_am = $_POST['event_start_time_am'];
     $event_end_time_am = $_POST['event_end_time_am'];
+
     if ($event_start_time_am >= $event_end_time_am) {
         session_start();
         $_SESSION["status"] =
@@ -20,7 +35,7 @@ if (isset($_POST['submit'])) {
         'Time Values must be valid',
         'warning')
         </script>";
-        header("location: ../views/pages-view-event-details.php?event_id=$event_id");
+        header("location: ../views/pages-my-department.php?org_id=$organization_id&dept_id=$department_id");
         exit();
     }
     $event_attendance_duration = $_POST['attendance_duration'];
@@ -41,7 +56,7 @@ if (isset($_POST['submit'])) {
         'Time Values must be valid',
         'warning')
         </script>";
-            header("location: ../views/pages-view-event-details.php?event_id=$event_id");
+            header("location: ../views/pages-my-department.php?org_id=$organization_id&dept_id=$department_id");
             exit();
         }
     }
@@ -60,6 +75,6 @@ if (isset($_POST['submit'])) {
 
     createEvent($conn, $event_name, $event_description, $event_location, $department_id, $event_datetime_created, $newdate, $event_attendance_duration, $event_start_time_am, $event_end_time_am, $event_start_time_pm, $event_end_time_pm, $event_all_day, $event_status, $publisher_id, $organization_id);
 } else {
-    header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id");
+    header("location: ../views/pages-my-department.php?org_id=$organization_id&dept_id=$department_id");
     exit();
 }

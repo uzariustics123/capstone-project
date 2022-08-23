@@ -175,7 +175,6 @@
                                             <div class="text-center">
                                                 <button type="submit" class="btn btn-primary add-department" name="submit">Save</button>
                                             </div>
-
                                         </form>
                                     </div>
                                 </div>

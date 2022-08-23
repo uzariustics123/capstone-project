@@ -291,6 +291,26 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         }
 
     })
+
+    $('.confirm_attendance').click(function() {
+        var data_participant_id = $(this).data('participant_id');
+        var data_event_id = $(this).data('event_id');
+
+        Swal.fire({
+            title: 'Are you sure you want to confirm attendance?',
+            text: "",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Confirm'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "../controllers/confirm.attendance.ctrls.php?participant_id=" + data_participant_id + "&event_id=" + data_event_id;
+            }
+        })
+
+    })
 </script>
 
 

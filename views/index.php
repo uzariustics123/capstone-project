@@ -98,20 +98,9 @@
                                     <div class="card-img-overlay">
                                         <div class="badge bg-danger p-1">Organization</div>
                                     </div>
-                                    <div class="card-body position-relative">
+                                    <div class="card-body position-relative text-center">
                                         <h4 class="mt-0">
                                             <h4><?= $row['org_name'] ?></h4>
-                                            <p class="mb-3">
-
-                                                <span class="pe-2 text-nowrap">
-                                                    <i class="mdi mdi-format-list-bulleted-type"></i>
-                                                    <b></b> Departments
-                                                </span>
-                                                <span class="text-nowrap">
-                                                    <i class="mdi mdi-comment-multiple-outline"></i>
-                                                    <b></b> Organizers
-                                                </span>
-                                            </p>
                                             <div class="text-center"><a href="pages-my-organization.php?id=<?= $row['organization_id'] ?>" class="btn btn-success">Manage Organization</a></div>
                                     </div>
                                 </div>
