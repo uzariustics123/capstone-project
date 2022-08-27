@@ -420,6 +420,7 @@ function createOrganization($conn, $organization_name, $organization_description
                     exit();
                 }
 
+
                 mysqli_stmt_bind_param($stmt, "ssssss", $organization_name, $organization_description, $organization_address, $filePath, $date_created, $userid);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
@@ -925,6 +926,26 @@ function createEvent($conn, $event_name, $event_description, $event_location, $d
         mysqli_stmt_execute($stmt);
     }
 
+    $query = "SELECT * FROM EVENTS 
+                RIGHT OUTER JOIN departments ON events.department_id = departments.department_id
+                RIGHT OUTER JOIN members ON events.department_id = members.department_id
+                WHERE events.event_id = ?;";
+    $stmt_mail = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt_mail, $query)) {
+        header("location: ../views/pages-add-organization.php?error=stmtfailed");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt_mail, "s", $event_id);
+    mysqli_stmt_execute($stmt_mail);
+
+    $result = $stmt_mail->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $recipient = $row['member_email'];
+        $subject = $row['event_name'];
+        $body = 'Hey you are invited to attend ' . $subject . ' you can view and confirm your attendance by logging in to your account';
+        mailSender($recipient, $subject, $body);
+    }
+
 
 
     mysqli_stmt_close($stmt);
@@ -1080,6 +1101,31 @@ function confirmAttendance($conn, $participant_id)
         Swal.fire(
         'Confirmed!',
         'Attendance Confirmed.',
+        'success')
+        </script>";
+
+    header("location: ../views/pages-profile.php");
+    exit();
+}
+function addEvaluation($conn, $user_id, $event_id,  $customRadio1, $customRadio2, $customRadio3, $customRadio4, $customRadio5)
+{
+
+    $sql = "INSERT INTO evaluations SET user_reference_id=?, event_reference_id=?, question_1=?, question_2=?, question_3=?, question_4=?, question_5 =?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        header("location: ../views/pages-profile.php?error=stmtfailed");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, "sssssss", $user_id, $event_id,  $customRadio1, $customRadio2, $customRadio3, $customRadio4, $customRadio5);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    session_start();
+    $_SESSION["status"] =
+        "<script>
+        Swal.fire(
+        'Congratulations!',
+        'Succesfully added evaluation.',
         'success')
         </script>";
 

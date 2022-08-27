@@ -1,7 +1,5 @@
 <?php include '../includes/header.php' ?>
 <?php if (isset($user)) {
-    $organization = $_GET['org_id'];
-    $department = $_GET['dept_id'];
 ?>
 
     <?php if (isset($_SESSION['status'])) {
@@ -191,9 +189,7 @@
 
                             <tbody>
                                 <?php
-                                $query = "SELECT * FROM users 
-                                                    RIGHT OUTER JOIN members ON members.user_reference_id = users.userid 
-                                                    LEFT OUTER JOIN departments ON members.department_id = departments.department_id WHERE members.department_id = $department_id";
+                                $query = "SELECT * FROM users RIGHT OUTER JOIN members ON members.user_reference_id = users.userid LEFT OUTER JOIN departments ON members.department_id = departments.department_id WHERE members.department_id = $department_id";
                                 $results = $conn->query($query);
                                 while ($row = $results->fetch_assoc()) {
                                 ?>
@@ -415,7 +411,7 @@
                                 <div id="task-list-two" class="task-list-items">
                                     <!-- Task Item -->
                                     <?php
-                                    $query = "SELECT * FROM events WHERE event_status = 'approved' AND department_id = $department_id;";
+                                    $query = "SELECT * FROM events WHERE event_status = 'approved' AND department_id = $department_id ORDER BY event_date ASC;";
                                     $results = $conn->query($query);
                                     while ($row = $results->fetch_assoc()) {
                                     ?>

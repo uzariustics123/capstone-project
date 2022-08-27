@@ -1,16 +1,19 @@
-﻿<?php include '../includes/header.php' ?>
-<?php if (isset($user)) { ?>
+﻿<?php include_once '../includes/header.php';
 
+?>
+<?php if (isset($user)) {
+    include_once('../config/db.php');
+?>
     <?php if (isset($_SESSION['status'])) {
         $status = $_SESSION['status'];
         echo "<span>$status</span>";
     } ?>
 
     <div class="wrapper">
-        <?php include '../includes/sidebar.php' ?>
+        <?php include_once '../includes/sidebar.php'; ?>
         <div class="content-page">
             <div class="content">
-                <?php include '../includes/topbar.php' ?>
+                <?php include_once '../includes/topbar.php'; ?>
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-12">
@@ -315,9 +318,9 @@
         </div>
     </div>
     </div>
-    <?php include '../includes/endbar.php' ?>
+    <?php include_once '../includes/endbar.php'; ?>
     <div class="rightbar-overlay"></div>
-    <?php include '../includes/footer.php'; ?>
+    <?php include_once '../includes/footer.php'; ?>
 <?php } else {
     header("location:../views/pages-404.php");
     exit();
