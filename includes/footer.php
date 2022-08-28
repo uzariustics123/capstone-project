@@ -98,6 +98,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
     $('.delete-organization').click(function() {
         var data_org_id = $(this).data('org_id');
+        var data_user_id = $(this).data('user_id');
         console.log({
             data_org_id
         });
@@ -111,7 +112,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "../controllers/delete.organization.ctrls.php?id=" + data_org_id;
+                window.location.href = "../controllers/delete.organization.ctrls.php?id=" + data_org_id + "&user_id" + data_user_id;
             }
         })
 

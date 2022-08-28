@@ -122,7 +122,7 @@
                                                         if (!file_exists($PNG_TEMP_DIR))
                                                             mkdir($PNG_TEMP_DIR);
                                                         $filename = $PNG_TEMP_DIR . 'test.png';
-                                                        $codeString = bin2hex($user);
+                                                        $codeString = "userid:" . bin2hex($user);
                                                         $hexed = $codeString;
                                                         $filename = $PNG_TEMP_DIR . 'test' . md5($hexed) . '.png';
                                                         QRcode::png($hexed, $filename);
@@ -159,12 +159,14 @@
                                                 $query = "SELECT * FROM EVENTS
                                                             RIGHT OUTER JOIN participants ON participants.event_id = events.event_id
                                                             RIGHT OUTER JOIN members ON participants.member_reference_id = members.member_id
-                                                            WHERE member_reference_id = $member_id AND participant_status = 'pending' ORDER BY event_date ASC;";
+                                                            RIGHT OUTER JOIN users ON members.user_reference_id = users.userid
+                                                            WHERE users.userid = $user 
+                                                            AND participant_status = 'pending'
+                                                            ORDER BY event_date ASC;";
                                                 $results = $conn->query($query);
 
                                                 while ($row = $results->fetch_assoc()) {
                                                 ?>
-
                                                     <div class="card mb-0">
                                                         <div class="card-body p-3">
 
@@ -200,11 +202,12 @@
                                             <div id="task-list-two" class="task-list-items">
                                                 <?php
                                                 $query = "SELECT * FROM EVENTS
-                                                            RIGHT OUTER JOIN participants ON participants.event_id = events.event_id
-                                                            RIGHT OUTER JOIN members ON participants.member_reference_id = members.member_id
-                                                            WHERE member_reference_id = $member_id 
-                                                            AND participant_status = 'confirmed'
-                                                            ORDER BY event_date ASC;";
+                                                        RIGHT OUTER JOIN participants ON participants.event_id = events.event_id
+                                                        RIGHT OUTER JOIN members ON participants.member_reference_id = members.member_id
+                                                        RIGHT OUTER JOIN users ON members.user_reference_id = users.userid
+                                                        WHERE users.userid = $user AND participant_status = 'confirmed' 
+                                                        ORDER BY event_date ASC;";
+
                                                 $results = $conn->query($query);
                                                 while ($row = $results->fetch_assoc()) {
                                                     $now = date('Y-m-d');
@@ -212,7 +215,6 @@
                                                     $event_date = $row['event_date'];
                                                     if ($event_date >= $newdate) {
                                                 ?>
-
                                                         <div class="card mb-0">
                                                             <div class="card-body p-3">
 
@@ -255,115 +257,115 @@
                                                                 <div class=" mt-3">
                                                                     <h4>What is your level of satisfaction with this event?</h4>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio1" name="customRadio1" class="form-check-input" value="1">
+                                                                        <input type="radio" id="customRadio1" name="customRadio1" class="form-check-input" value="1" required>
                                                                         <label class="form-check-label" for="customRadio1">Very Good</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio2" name="customRadio1" class="form-check-input" value="2">
+                                                                        <input type="radio" id="customRadio2" name="customRadio1" class="form-check-input" value="2" required>
                                                                         <label class="form-check-label" for="customRadio2">Good</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio3" name="customRadio1" class="form-check-input" value="3">
+                                                                        <input type="radio" id="customRadio3" name="customRadio1" class="form-check-input" value="3" required>
                                                                         <label class="form-check-label" for="customRadio3">Neutral</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio4" name="customRadio1" class="form-check-input" value="4">
+                                                                        <input type="radio" id="customRadio4" name="customRadio1" class="form-check-input" value="4" required>
                                                                         <label class="form-check-label" for="customRadio4">Poor</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio5" name="customRadio1" class="form-check-input" value="5">
+                                                                        <input type="radio" id="customRadio5" name="customRadio1" class="form-check-input" value="5" required>
                                                                         <label class="form-check-label" for="customRadio5">Very Poor</label>
                                                                     </div>
                                                                 </div>
                                                                 <div class="mt-3">
                                                                     <h4>How likely are you to tell a friend about this event?</h4>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio6" name="customRadio2" class="form-check-input" value="1">
+                                                                        <input type="radio" id="customRadio6" name="customRadio2" class="form-check-input" value="1" required>
                                                                         <label class="form-check-label" for="customRadio6">Very Good</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio7" name="customRadio2" class="form-check-input" value="2">
+                                                                        <input type="radio" id="customRadio7" name="customRadio2" class="form-check-input" value="2" required>
                                                                         <label class="form-check-label" for="customRadio7">Good</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio8" name="customRadio2" class="form-check-input" value="3">
+                                                                        <input type="radio" id="customRadio8" name="customRadio2" class="form-check-input" value="3" required>
                                                                         <label class="form-check-label" for="customRadio8">Neutral</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio9" name="customRadio2" class="form-check-input" value="5">
+                                                                        <input type="radio" id="customRadio9" name="customRadio2" class="form-check-input" value="4" required>
                                                                         <label class="form-check-label" for="customRadio9">Bad</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio10" name="customRadio2" class="form-check-input" value="5">
+                                                                        <input type="radio" id="customRadio10" name="customRadio2" class="form-check-input" value="5" required>
                                                                         <label class="form-check-label" for="customRadio10">Very Bad</label>
                                                                     </div>
                                                                 </div>
                                                                 <div class="mt-3">
                                                                     <h4>How would you rate our event venue and equipment in regards to how it served your keynote?</h4>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio11" name="customRadio3" class="form-check-input" value="1">
+                                                                        <input type="radio" id="customRadio11" name="customRadio3" class="form-check-input" value="1" required>
                                                                         <label class="form-check-label" for="customRadio11">Very Good</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio12" name="customRadio3" class="form-check-input" value="2">
+                                                                        <input type="radio" id="customRadio12" name="customRadio3" class="form-check-input" value="2" required>
                                                                         <label class="form-check-label" for="customRadio12">Good</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio13" name="customRadio3" class="form-check-input" value="3">
+                                                                        <input type="radio" id="customRadio13" name="customRadio3" class="form-check-input" value="3" required>
                                                                         <label class="form-check-label" for="customRadio13">Neutral</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio14" name="customRadio3" class="form-check-input" value="4">
+                                                                        <input type="radio" id="customRadio14" name="customRadio3" class="form-check-input" value="4" required>
                                                                         <label class="form-check-label" for="customRadio14">Bad</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio15" name="customRadio3" class="form-check-input" value="5">
+                                                                        <input type="radio" id="customRadio15" name="customRadio3" class="form-check-input" value="5" required>
                                                                         <label class="form-check-label" for="customRadio15">Very Bad</label>
                                                                     </div>
                                                                 </div>
                                                                 <div class="mt-3">
                                                                     <h4>How satisfied were you with the speakers and sessions at our event?</h4>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio16" name="customRadio4" class="form-check-input" value="1">
+                                                                        <input type="radio" id="customRadio16" name="customRadio4" class="form-check-input" value="1" required>
                                                                         <label class="form-check-label" for="customRadio16">Very Good</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio17" name="customRadio4" class="form-check-input" value="2">
+                                                                        <input type="radio" id="customRadio17" name="customRadio4" class="form-check-input" value="2" required>
                                                                         <label class="form-check-label" for="customRadio17">Good</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio18" name="customRadio4" class="form-check-input" value="3">
+                                                                        <input type="radio" id="customRadio18" name="customRadio4" class="form-check-input" value="3" required>
                                                                         <label class="form-check-label" for="customRadio18">Neutral</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio19" name="customRadio4" class="form-check-input" value="4">
+                                                                        <input type="radio" id="customRadio19" name="customRadio4" class="form-check-input" value="4" required>
                                                                         <label class="form-check-label" for="customRadio19">Bad</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio20" name="customRadio4" class="form-check-input" value="5">
+                                                                        <input type="radio" id="customRadio20" name="customRadio4" class="form-check-input" value="5" required>
                                                                         <label class="form-check-label" for="customRadio20">Very Bad</label>
                                                                     </div>
                                                                 </div>
                                                                 <div class="mt-3">
                                                                     <h4>How did you feel about the duration of the content?</h4>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio21" name="customRadio5" class="form-check-input" value="1">
+                                                                        <input type="radio" id="customRadio21" name="customRadio5" class="form-check-input" value="1" required>
                                                                         <label class="form-check-label" for="customRadio21">Very Good</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio22" name="customRadio5" class="form-check-input" value="2">
+                                                                        <input type="radio" id="customRadio22" name="customRadio5" class="form-check-input" value="2" required>
                                                                         <label class="form-check-label" for="customRadio22">Good</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio23" name="customRadio5" class="form-check-input" value="3">
+                                                                        <input type="radio" id="customRadio23" name="customRadio5" class="form-check-input" value="3" required>
                                                                         <label class="form-check-label" for="customRadio23">Neutral</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio24" name="customRadio5" class="form-check-input" value="4">
+                                                                        <input type="radio" id="customRadio24" name="customRadio5" class="form-check-input" value="4" required>
                                                                         <label class="form-check-label" for="customRadio24">Bad</label>
                                                                     </div>
                                                                     <div class="form-check">
-                                                                        <input type="radio" id="customRadio25" name="customRadio5" class="form-check-input" value="5">
+                                                                        <input type="radio" id="customRadio25" name="customRadio5" class="form-check-input" value="5" required>
                                                                         <label class="form-check-label" for="customRadio25">Very Bad</label>
                                                                     </div>
                                                                 </div>

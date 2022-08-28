@@ -91,20 +91,7 @@
                                 <!-- project card -->
                                 <div class="card d-block">
                                     <div class="card-body">
-                                        <div class="dropdown float-end">
-                                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class="dripicons-dots-3"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-end">
-                                                <!-- item-->
-                                                <a href="../controllers/edit.organization.ctrls.php?id=<?= $row['organization_id'] ?>" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#organization_modal"> <i class="mdi mdi-square-edit-outline me-1"></i>Edit</a>
-                                                <!-- item-->
 
-                                                <a href="javascript:void(0)" id="delete-organization" class="dropdown-item delete-organization" data-org_id=<?= $organization_id ?>>
-                                                    <i class="mdi mdi-delete me-1"></i>Delete
-                                                </a>
-                                            </div>
-                                        </div>
                                         <!-- project title-->
                                         <img src="<?= $row['org_imgurl'] ?>" class="img-fluid rounded" alt="background image" style="max-width: 600px">
                                         <h2 class="mt-3">

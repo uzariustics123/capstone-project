@@ -9,7 +9,12 @@ if (isset($_POST['submit'])) {
     $organization_name = $_POST['organization_name'];
     $organization_description = $_POST['organization_description'];
     $organization_address = $_POST['address'];
-    $file = $_FILES['image'];
+    if ($_FILES['image']['size'] != 0) {
+        $file = $_FILES['image'];
+    } else {
+        $file = null;
+    }
+
     $date_created = date('Y-m-d');
 
     if (emptyInputOrganization($organization_name, $organization_description, $organization_address) !== false) {

@@ -334,57 +334,101 @@ function editUserProfile($conn, $user_id, $firstname, $lastname, $file)
 
 function setupProfile($conn, $user, $password, $firstname, $lastname, $file)
 {
-    $allow = array('jpg', 'jpeg', 'png');
-    $exntension = explode('.', $file['name']);
-    $fileActExt = strtolower(end($exntension));
-    $fileNew = rand() . "." . $fileActExt;  // rand function create the rand number 
-    $filePath = '../assets/uploads/' . $fileNew;
+    if ($file != null) {
+        $allow = array('jpg', 'jpeg', 'png');
+        $exntension = explode('.', $file['name']);
+        $fileActExt = strtolower(end($exntension));
+        $fileNew = rand() . "." . $fileActExt;  // rand function create the rand number 
+        $filePath = '../assets/uploads/' . $fileNew;
 
-    if (in_array($fileActExt, $allow)) {
-        if ($file['size'] > 0 && $file['error'] == 0) {
-            if (move_uploaded_file($file['tmp_name'], $filePath)) {
-                $sql = "UPDATE users SET firstname=?, lastname=?, photourl=?, password=?, temp_pass=?, registration_status=? WHERE userid = $user;";
-                $stmt = mysqli_stmt_init($conn);
-                $temp_pass = null;
-                $registration_status = 'registered';
-                if (!mysqli_stmt_prepare($stmt, $sql)) {
-                    session_start();
-                    $_SESSION["status"] =
-                        "<script>
+        if (in_array($fileActExt, $allow)) {
+            if ($file['size'] > 0 && $file['error'] == 0) {
+                if (move_uploaded_file($file['tmp_name'], $filePath)) {
+                    $sql = "UPDATE users SET firstname=?, lastname=?, photourl=?, password=?, temp_pass=?, registration_status=? WHERE userid = $user;";
+                    $stmt = mysqli_stmt_init($conn);
+                    $temp_pass = null;
+                    $registration_status = 'registered';
+                    if (!mysqli_stmt_prepare($stmt, $sql)) {
+                        session_start();
+                        $_SESSION["status"] =
+                            "<script>
                     Swal.fire(
                     'Error',
                     'Statement failed',
                     'warning')
                     </script>";
-                    header("location: ../views/index.php");
-                    exit();
-                }
-                $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
-                mysqli_stmt_bind_param(
-                    $stmt,
-                    "ssssss",
-                    $firstname,
-                    $lastname,
-                    $filePath,
-                    $hashedpassword,
-                    $temp_pass,
-                    $registration_status
-                );
-                mysqli_stmt_execute($stmt);
-                mysqli_stmt_close($stmt);
-                session_start();
-                $_SESSION["registration_status"] = $registration_status;
-                $_SESSION["status"] =
-                    "<script>
+                        header("location: ../views/index.php");
+                        exit();
+                    }
+                    $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
+                    mysqli_stmt_bind_param(
+                        $stmt,
+                        "ssssss",
+                        $firstname,
+                        $lastname,
+                        $filePath,
+                        $hashedpassword,
+                        $temp_pass,
+                        $registration_status
+                    );
+                    mysqli_stmt_execute($stmt);
+                    mysqli_stmt_close($stmt);
+                    session_start();
+                    $_SESSION["registration_status"] = $registration_status;
+                    $_SESSION["status"] =
+                        "<script>
                     Swal.fire(
                     'Success',
                     'Profile Updated Successfully',
                     'success')
                     </script>";
-                header("location: ../views/index.php");
-                exit();
+                    header("location: ../views/index.php");
+                    exit();
+                }
             }
         }
+    } else {
+        $file = 'https://cdn-icons-png.flaticon.com/512/892/892781.png';
+        $sql = "UPDATE users SET firstname=?, lastname=?, photourl=?, password=?, temp_pass=?, registration_status=? WHERE userid = $user;";
+        $stmt = mysqli_stmt_init($conn);
+        $temp_pass = null;
+        $registration_status = 'registered';
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            session_start();
+            $_SESSION["status"] =
+                "<script>
+                    Swal.fire(
+                    'Error',
+                    'Statement failed',
+                    'warning')
+                    </script>";
+            header("location: ../views/index.php");
+            exit();
+        }
+        $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
+        mysqli_stmt_bind_param(
+            $stmt,
+            "ssssss",
+            $firstname,
+            $lastname,
+            $file,
+            $hashedpassword,
+            $temp_pass,
+            $registration_status
+        );
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        session_start();
+        $_SESSION["registration_status"] = $registration_status;
+        $_SESSION["status"] =
+            "<script>
+                    Swal.fire(
+                    'Success',
+                    'Profile Updated Successfully',
+                    'success')
+                    </script>";
+        header("location: ../views/index.php");
+        exit();
     }
 }
 
@@ -403,32 +447,17 @@ function emptyInputOrganization($organization_name, $organization_description, $
 function createOrganization($conn, $organization_name, $organization_description, $organization_address, $userid, $file, $date_created, $email)
 {
 
-    $allow = array('jpg', 'jpeg', 'png');
-    $exntension = explode('.', $file['name']);
-    $fileActExt = strtolower(end($exntension));
-    $fileNew = randomName() . "." . $fileActExt;  // rand function create the rand number 
-    $filePath = '../assets/uploads/' . $fileNew;
+    if ($file != null) {
+        $allow = array('jpg', 'jpeg', 'png');
+        $exntension = explode('.', $file['name']);
+        $fileActExt = strtolower(end($exntension));
+        $fileNew = randomName() . "." . $fileActExt;  // rand function create the rand number 
+        $filePath = '../assets/uploads/' . $fileNew;
 
-    if (in_array($fileActExt, $allow)) {
-        if ($file['size'] > 0 && $file['error'] == 0) {
-            if (move_uploaded_file($file['tmp_name'], $filePath)) {
-                $sql = "INSERT INTO organizations (org_name, org_description,org_address, org_imgurl, date_created, org_admin_id) VALUES (?,?,?,?,?,?);";
-                $stmt = mysqli_stmt_init($conn);
-
-                if (!mysqli_stmt_prepare($stmt, $sql)) {
-                    header("location: ../views/pages-add-organization.php?error=mysqlierror");
-                    exit();
-                }
-
-
-                mysqli_stmt_bind_param($stmt, "ssssss", $organization_name, $organization_description, $organization_address, $filePath, $date_created, $userid);
-                mysqli_stmt_execute($stmt);
-                mysqli_stmt_close($stmt);
-
-                if (mysqli_affected_rows($conn)) {
-                    $organization_id = $conn->insert_id;
-                    $usertype = 'admin';
-                    $sql = "INSERT INTO members (member_email, usertype, organization_id,user_reference_id) VALUES (?,?,?,?);";
+        if (in_array($fileActExt, $allow)) {
+            if ($file['size'] > 0 && $file['error'] == 0) {
+                if (move_uploaded_file($file['tmp_name'], $filePath)) {
+                    $sql = "INSERT INTO organizations (org_name, org_description,org_address, org_imgurl, date_created, org_admin_id) VALUES (?,?,?,?,?,?);";
                     $stmt = mysqli_stmt_init($conn);
 
                     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -436,30 +465,87 @@ function createOrganization($conn, $organization_name, $organization_description
                         exit();
                     }
 
-                    mysqli_stmt_bind_param($stmt, "ssss", $email, $usertype, $organization_id, $userid);
+
+                    mysqli_stmt_bind_param($stmt, "ssssss", $organization_name, $organization_description, $organization_address, $filePath, $date_created, $userid);
                     mysqli_stmt_execute($stmt);
                     mysqli_stmt_close($stmt);
-                    session_start();
-                    $_SESSION["status"] =
-                        "<script>
+
+                    if (mysqli_affected_rows($conn)) {
+                        $organization_id = $conn->insert_id;
+                        $usertype = 'admin';
+                        $sql = "INSERT INTO members (member_email, usertype, organization_id,user_reference_id) VALUES (?,?,?,?);";
+                        $stmt = mysqli_stmt_init($conn);
+
+                        if (!mysqli_stmt_prepare($stmt, $sql)) {
+                            header("location: ../views/pages-add-organization.php?error=mysqlierror");
+                            exit();
+                        }
+
+                        mysqli_stmt_bind_param($stmt, "ssss", $email, $usertype, $organization_id, $userid);
+                        mysqli_stmt_execute($stmt);
+                        mysqli_stmt_close($stmt);
+                        session_start();
+                        $_SESSION["status"] =
+                            "<script>
                     Swal.fire(
                     'Added!',
                     'An organization has been added.',
                     'success')
                     </script>";
-                    header("location: ../views/index.php?error=none");
-                    exit();
+                        header("location: ../views/index.php?error=none");
+                        exit();
+                    }
                 }
             }
         }
+    } else {
+        $file = "https://images.unsplash.com/photo-1606327054536-e37e655d4f4a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80";
+        $sql = "INSERT INTO organizations (org_name, org_description,org_address, org_imgurl, date_created, org_admin_id) VALUES (?,?,?,?,?,?);";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../views/pages-add-organization.php?error=mysqlierror");
+            exit();
+        }
+
+
+        mysqli_stmt_bind_param($stmt, "ssssss", $organization_name, $organization_description, $organization_address, $file, $date_created, $userid);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+
+        if (mysqli_affected_rows($conn)) {
+            $organization_id = $conn->insert_id;
+            $usertype = 'admin';
+            $sql = "INSERT INTO members (member_email, usertype, organization_id,user_reference_id) VALUES (?,?,?,?);";
+            $stmt = mysqli_stmt_init($conn);
+
+            if (!mysqli_stmt_prepare($stmt, $sql)) {
+                header("location: ../views/pages-add-organization.php?error=mysqlierror");
+                exit();
+            }
+
+            mysqli_stmt_bind_param($stmt, "ssss", $email, $usertype, $organization_id, $userid);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+            session_start();
+            $_SESSION["status"] =
+                "<script>
+                    Swal.fire(
+                    'Added!',
+                    'An organization has been added.',
+                    'success')
+                    </script>";
+            header("location: ../views/index.php?error=none");
+            exit();
+        }
     }
 }
-function deleteOrganization($conn, $organization_id)
+function deleteOrganization($conn, $organization_id, $user_id)
 {
     $sql_org = "DELETE FROM organizations WHERE organization_id=?";
     $sql_dept = "DELETE FROM departments WHERE organization_id=?";
     $sql_mem = "DELETE FROM members WHERE organization_id=?";
-    $sql_event = "DELETE FROM events WHERE organization_id=?";
+    $sql_event = "DELETE FROM events WHERE publisher_id=?";
 
     $stmt = mysqli_stmt_init($conn);
 
@@ -481,7 +567,7 @@ function deleteOrganization($conn, $organization_id)
         header("location: ../views/pages-add-organization.php?error=mysqlierror");
         exit();
     }
-    mysqli_stmt_bind_param($stmt, "i", $organization_id);
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
     mysqli_stmt_execute($stmt);
     if (!mysqli_stmt_prepare($stmt, $sql_event)) {
         header("location: ../views/pages-add-organization.php?error=mysqlierror");
@@ -974,13 +1060,9 @@ function deleteEvent($conn, $event_id, $user_id, $organization_id, $department_i
         'Event deleted.',
         'success')
         </script>";
-    if ($usertype == 'Administrator') {
-        header("location: ../views/pages-my-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id#events");
-        exit();
-    } else if ($usertype == 'Organizer') {
-        header("location: ../views/pages-member-department.php?user_id=$user_id&org_id=$organization_id&dept_id=$department_id#events");
-        exit();
-    }
+
+    header("location: ../views/pages-my-department.php?org_id=$organization_id&dept_id=$department_id#events-list");
+    exit();
 }
 
 function approveEvent($conn, $event_id)

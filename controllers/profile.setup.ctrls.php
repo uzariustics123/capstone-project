@@ -9,7 +9,12 @@ if (isset($_POST['submit'])) {
   $confirm = $_POST['confirm'];
   $firstname = $_POST['firstname'];
   $lastname = $_POST['lastname'];
-  $file = $_FILES['image'];
+  if ($_FILES['image']['size'] != 0) {
+    $file = $_FILES['image'];
+  } else {
+    $file = null;
+  }
+
 
   if (empty($password) || empty($confirm)) {
     session_start();

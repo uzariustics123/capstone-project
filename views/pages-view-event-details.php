@@ -30,7 +30,6 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box">
-
                                 <h4 class="page-title">Event Details</h4>
                             </div>
                         </div>
@@ -39,6 +38,7 @@
                     <?php
                     $query = "SELECT * FROM events 
                                 RIGHT OUTER JOIN departments on events.department_id = departments.department_id
+                                RIGHT OUTER JOIN organizations on departments.organization_id = organizations.organization_id
                                 WHERE event_id = $event_id;";
                     $results = $conn->query($query);
                     while ($row = $results->fetch_assoc()) {
@@ -155,27 +155,33 @@
                                 <!-- project card -->
                                 <div class="card d-block">
                                     <div class="card-body">
-                                        <?php if ($row['event_status'] == 'pending') { ?>
+                                        <?php
+                                        if ($row['org_admin_id'] == $user) {
+
+                                        ?>
                                             <div class="dropdown card-widgets">
                                                 <a href="#" class="dropdown-toggle arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <i class='uil uil-ellipsis-h'></i>
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end">
 
-                                                    <!-- item-->
-                                                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit-event-modal" id="edit-event-modal-button">
-                                                        <i class='uil uil-edit me-1'></i>Edit
-                                                    </a>
-                                                    <!-- item-->
-                                                    <?php if ($usertype == 'admin') { ?>
-                                                        <a href="javascript:void(0);" class="dropdown-item" id="approve-event" data-event_id=<?= $row['event_id'] ?>>
-                                                            <i class='uil uil-file-copy-alt me-1'></i>Approve Event
+                                                    <?php if ($row['event_status'] == 'pending') { ?>
+                                                        <!-- item-->
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit-event-modal" id="edit-event-modal-button">
+                                                            <i class='uil uil-edit me-1'></i>Edit
                                                         </a>
+                                                        <!-- item-->
+                                                        <?php if ($usertype == 'admin') { ?>
+                                                            <a href="javascript:void(0);" class="dropdown-item" id="approve-event" data-event_id=<?= $row['event_id'] ?>>
+                                                                <i class='uil uil-file-copy-alt me-1'></i>Approve Event
+                                                            </a>
+                                                        <?php } ?>
                                                     <?php } ?>
                                                     <div class="dropdown-divider"></div>
                                                     <!-- item-->
-                                                    <a href="javascript:void(0);" class="dropdown-item text-danger">
-                                                        <i class='uil uil-trash-alt me-1'></i>Delete
+                                                    <a href="javascript:void(0);" class="dropdown-item delete-event" id="delete-event" data-org_id=<?= $row['organization_id'] ?> data-dept_id=<?= $row['department_id'] ?> data-event_id=<?= $row['event_id'] ?> data-usertype=<?= $usertype ?>>
+                                                        <i class="mdi mdi-delete me-1"></i>
+                                                        Delete
                                                     </a>
 
                                                 </div> <!-- end dropdown menu-->
@@ -221,7 +227,7 @@
                                                     <i class='uil uil-clock font-18 text-success me-1'></i>
 
                                                     <h5 class="mt-1 font-14">
-                                                        <?= substr($row['event_attendance_duration'], 3, 2) ?> Minutes
+                                                        <?= $row['event_attendance_duration'] ?> Minutes
                                                     </h5>
 
                                                 </div>

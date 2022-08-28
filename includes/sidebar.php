@@ -86,13 +86,14 @@ if (isset($_SESSION['member_id'])) {
                         <span>Dashboard</span>
                     </a>
                 </li>
-                <li class="side-nav-item">
-                    <a href="../views/pages-event-feed.php" class="side-nav-link">
-                        <i class="uil-object-group"></i>
-                        <span>Event Feed</span>
-                    </a>
-                </li>
+
             <?php } ?>
+            <li class="side-nav-item">
+                <a href="../views/pages-event-feed.php" class="side-nav-link">
+                    <i class="uil-object-group"></i>
+                    <span>Event Feed</span>
+                </a>
+            </li>
         </ul>
 
         <!-- End Sidebar -->

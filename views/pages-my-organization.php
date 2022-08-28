@@ -102,7 +102,7 @@
                                                 <a href="../controllers/edit.organization.ctrls.php?id=<?= $row['organization_id'] ?>" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#organization_modal"> <i class="mdi mdi-square-edit-outline me-1"></i>Edit</a>
                                                 <!-- item-->
 
-                                                <a href="javascript:void(0)" id="delete-organization" class="dropdown-item delete-organization" data-org_id=<?= $organization_id ?>>
+                                                <a href="javascript:void(0)" id="delete-organization" class="dropdown-item delete-organization" data-org_id=<?= $organization_id ?> data-user_id=<?= $user ?>>
                                                     <i class="mdi mdi-delete me-1"></i>Delete
                                                 </a>
                                             </div>

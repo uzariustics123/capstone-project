@@ -63,7 +63,7 @@
 
                                                                 <div class="mb-3">
                                                                     <label for="project-overview" class="form-label">Image</label>
-                                                                    <input type="file" class="form-control" name="image" id="image" rows="6" placeholder="Enter some brief details about the organization.." required></input>
+                                                                    <input type="file" class="form-control" name="image" id="image" rows="6" placeholder="Enter some brief details about the organization.."></input>
                                                                 </div>
 
                                                             </div>

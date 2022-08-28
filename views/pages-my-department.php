@@ -306,10 +306,12 @@
                                                     <div class="mb-3">
                                                         <label for="attendance-duration-select" class="form-label">Attendance Duration (mins)</label>
                                                         <select class="form-select" name="attendance_duration" id="attendance-duration-select">
-                                                            <option value="1500">15</option>
-                                                            <option value="2000">20</option>
-                                                            <option value="2500">25</option>
-                                                            <option value="3000">30</option>
+                                                            <option value="15">15</option>
+                                                            <option value="20">20</option>
+                                                            <option value="25">25</option>
+                                                            <option value="30">30</option>
+                                                            <option value="45">45</option>
+                                                            <option value="60">60</option>
                                                         </select>
                                                     </div>
                                                     <div class="mb-3">
@@ -346,7 +348,7 @@
                     <div class="col-12">
                         <div class="board">
                             <div class="tasks">
-                                <h5 class="mt-0 task-header">FOR APPROVAL (1)</h5>
+                                <h5 class="mt-0 task-header">FOR APPROVAL</h5>
                                 <div id="task-list-one" class="task-list-items">
                                     <?php
                                     $query = "SELECT * FROM events WHERE event_status = 'pending' AND department_id = $department_id;";
@@ -383,7 +385,7 @@
 
                                                             <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
 
-                                                            <a href="javascript:void(0);" class="dropdown-item delete-event" id="delete-event" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?> data-user_id=<?= $row['user_id'] ?> data-event_id=<?= $row['event_id'] ?> data-usertype=<?= $usertype ?>>
+                                                            <a href="javascript:void(0);" class="dropdown-item delete-event" id="delete-event" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?> data-event_id=<?= $row['event_id'] ?> data-usertype=<?= $usertype ?>>
                                                                 <i class="mdi mdi-delete me-1"></i>
                                                                 Delete
                                                             </a>
@@ -411,99 +413,103 @@
                                 <div id="task-list-two" class="task-list-items">
                                     <!-- Task Item -->
                                     <?php
-                                    $query = "SELECT * FROM events WHERE event_status = 'approved' AND department_id = $department_id ORDER BY event_date ASC;";
+                                    $now = date('Y-m-d');
+                                    $newdate = date("M d, Y", strtotime($now));
+                                    $query = "SELECT * FROM EVENTS 
+                                            RIGHT OUTER JOIN users ON events.publisher_id = users.userid
+                                            WHERE event_status = 'approved' AND department_id = $department_id ORDER BY event_date ASC;";
                                     $results = $conn->query($query);
                                     while ($row = $results->fetch_assoc()) {
+                                        if ($row['event_date'] >= $newdate) {
                                     ?>
-                                        <!-- Task Item -->
-                                        <div class="card mb-0">
+                                            <!-- Task Item -->
+                                            <div class="card mb-0">
 
-                                            <div class="card-body p-3">
-                                                <!-- Date Created -->
-                                                <small class="float-end text-muted"><?= $row['event_datetime_created'] ?></small>
-                                                <span class="badge bg-success"><?= $row['event_status'] ?></span>
-                                                <h2 class="mt-2 mb-2">
-                                                    <!-- Event Name -->
-                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body"><?= $row['event_name'] ?></a>
-                                                    </h3>
-                                                    <p><?= $row['event_description'] ?></p>
-                                                    <p class="mb-0">
-                                                        <span class="pe-2 text-nowrap mb-2 d-inline-block">
-                                                            <i class="mdi mdi-account-check-outline text-muted"></i>
-                                                            Confirmed
-                                                        </span>
-                                                        <span class="text-nowrap mb-2 d-inline-block">
-                                                            <i class="mdi mdi-account-clock-outline text-muted"></i>
-                                                            <b>74</b> Unconfirmed
-                                                        </span>
-                                                    </p>
-                                                    <div class="dropdown float-end">
-                                                        <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                                            <i class="mdi mdi-dots-vertical font-18"></i>
-                                                        </a>
-                                                        <div class="dropdown-menu dropdown-menu-end">
-
-                                                            <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
-
-                                                            <a href="javascript:void(0);" class="dropdown-item delete-event" id="delete-event" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?> data-user_id=<?= $row['user_id'] ?> data-event_id=<?= $row['event_id'] ?> data-usertype=<?= $usertype ?>>
-                                                                <i class="mdi mdi-delete me-1"></i>
-                                                                Delete
+                                                <div class="card-body p-3">
+                                                    <!-- Date Created -->
+                                                    <small class="float-end text-muted"><?= $row['event_datetime_created'] ?></small>
+                                                    <span class="badge bg-success"><?= $row['event_status'] ?></span>
+                                                    <h2 class="mt-2 mb-2">
+                                                        <!-- Event Name -->
+                                                        <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body"><?= $row['event_name'] ?></a>
+                                                        </h3>
+                                                        <p><?= $row['event_description'] ?></p>
+                                                        <p class="mb-0">
+                                                            <span class="pe-2 text-nowrap mb-2 d-inline-block">
+                                                                <i class="mdi mdi-account-check-outline text-muted"></i>
+                                                                <?php
+                                                                $event_id = $row['event_id'];
+                                                                $sql = "SELECT * FROM participants WHERE event_id =  $event_id AND participant_status = 'confirmed'";
+                                                                $result = $conn->query($sql);
+                                                                $num_rows = mysqli_num_rows($result);
+                                                                ?>
+                                                                <b><?= $num_rows ?></b> Confirmed
+                                                            </span>
+                                                            <span class="text-nowrap mb-2 d-inline-block">
+                                                                <i class="mdi mdi-account-clock-outline text-muted"></i>
+                                                                <?php
+                                                                $event_id = $row['event_id'];
+                                                                $sql = "SELECT * FROM participants WHERE event_id =  $event_id AND participant_status = 'pending'";
+                                                                $result = $conn->query($sql);
+                                                                $num_rows = mysqli_num_rows($result);
+                                                                ?>
+                                                                <b><?= $num_rows ?></b> Pending
+                                                            </span>
+                                                        </p>
+                                                        <div class="dropdown float-end">
+                                                            <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <i class="mdi mdi-dots-vertical font-18"></i>
                                                             </a>
+                                                            <div class="dropdown-menu dropdown-menu-end">
 
-                                                            <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>" class="dropdown-item"><i class="mdi mdi-eye-circle-outline me-1"></i>View</a>
+                                                                <a href="javascript:void(0);" class="dropdown-item delete-event" id="delete-event" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?> data-event_id=<?= $row['event_id'] ?> data-usertype=<?= $usertype ?>>
+                                                                    <i class="mdi mdi-delete me-1"></i>
+                                                                    Delete
+                                                                </a>
 
-                                                            <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
+                                                                <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>" class="dropdown-item"><i class="mdi mdi-eye-circle-outline me-1"></i>View</a>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <p class="mb-0">
-                                                        <img src="../assets/images/users/avatar-2.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
-                                                        <span class="align-middle">Robert Carlile</span>
-                                                    </p>
-                                            </div> <!-- end card-body -->
-                                        </div>
-                                        <!-- Task Item End -->
+                                                        <p class="mb-0">
+                                                            <img src="<?= $row['photourl'] ?>" alt="user-img" class="avatar-xs rounded-circle me-1">
+                                                            <span class="align-middle"><?= $row['firstname'] ?> <?= $row['lastname'] ?></span>
+                                                        </p>
+                                                </div> <!-- end card-body -->
+                                            </div>
+                                            <!-- Task Item End -->
                                     <?php }
+                                    }
                                     ?>
                                 </div> <!-- end company-list-2-->
                             </div>
                             <div class="tasks">
-                                <h5 class="mt-0 task-header text-uppercase">Done (1)</h5>
+                                <h5 class="mt-0 task-header text-uppercase">Done</h5>
                                 <div id="task-list-four" class="task-list-items">
                                     <?php
-                                    // $user = $_GET['user_id'];
-                                    // $organization_id = $_GET['org_id'];
-                                    // $department_id = $_GET['dept_id'];
-                                    // $query = "SELECT * FROM events WHERE user_id = $user AND organization_id = $organization_id AND department_id = $department_id AND status = 'done';";
-                                    // $results = $conn->query($query);
-                                    // while ($row = $results->fetch_assoc()) {
+                                    $now = date('Y-m-d');
+                                    $newdate = date("M d, Y", strtotime($now));
+                                    $query = "SELECT * FROM EVENTS 
+                                            RIGHT OUTER JOIN users ON events.publisher_id = users.userid
+                                            WHERE event_status = 'approved' AND department_id = $department_id ORDER BY event_date ASC;";
+                                    $results = $conn->query($query);
+                                    while ($row = $results->fetch_assoc()) {
+                                        if ($row['event_date'] <= $newdate) {
                                     ?>
-                                    <!-- Task Item -->
-                                    <div class="card mb-0">
-                                        <div class="card-body p-3">
-                                            <small class="float-end text-muted">16 Jul 2018</small>
-                                            <span class="badge bg-success">Low</span>
+                                            
+                                            <!-- Task Item -->
+                                            <div class="card mb-0">
+                                                <div class="card-body p-3">
+                                                    <small class="float-end text-muted"><?= $row['event_date'] ?></small>
+                                                    <span class="badge bg-success">Done</span>
 
-                                            <h5 class="mt-2 mb-2">
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body">Dashboard design</a>
-                                            </h5>
-                                            <p class="mb-0">
-                                                <span class="pe-2 text-nowrap mb-2 d-inline-block">
-                                                    <i class="mdi mdi-briefcase-outline text-muted"></i>
-                                                    Hyper
-                                                </span>
-                                                <span class="text-nowrap mb-2 d-inline-block">
-                                                    <i class="mdi mdi-comment-multiple-outline text-muted"></i>
-                                                    <b>287</b> Comments
-                                                </span>
-                                            </p>
-                                            <p class="mb-0">
-                                                <img src="../assets/images/users/avatar-10.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
-                                                <span class="align-middle">Harvey Dickinson</span>
-                                            </p>
-                                        </div> <!-- end card-body -->
-                                    </div>
-                                    <!-- Task Item End -->
-                                    <?php //} 
+                                                    <h5 class="mt-2 mb-2">
+                                                        <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body"><?= $row['event_name'] ?></a>
+                                                    </h5>
+                                                </div> <!-- end card-body -->
+                                            </div>
+                                            <!-- Task Item End -->
+                                    <?php }
+                                    }
                                     ?>
                                 </div> <!-- end company-list-4-->
                             </div>
