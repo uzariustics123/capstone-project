@@ -4,19 +4,22 @@
         $status = $_SESSION['status'];
         echo "<span>$status</span>";
     } ?>
-    <?php $event_id = $_GET['event_id'];
+    <?php
+    $event_id = $_GET['event_id'];
+    if (isset($_GET['org_admin_id'])) {
+        $org_admin_id = $_GET['org_admin_id'];
+    }
+
     if (isset($_GET['usertype'])) {
         $usertype = base64_decode($encoded = $_GET['usertype']);
     }
+    $now = date('Y-m-d');
+    $newDate = date("M d, Y", strtotime($now));
     ?>
     <!-- Begin page -->
     <div class="wrapper">
 
-        <?php include '../includes/sidebar.php' ?>
-        <!-- Begin page -->
-        <!-- ============================================================== -->
-        <!-- Start Page Content here -->
-        <!-- ============================================================== -->
+        <?php include_once '../includes/sidebar.php' ?>
 
         <div class="content-page">
             <div class="content">
@@ -31,6 +34,7 @@
                         <div class="col-12">
                             <div class="page-title-box">
                                 <h4 class="page-title">Event Details</h4>
+
                             </div>
                         </div>
                     </div>
@@ -42,6 +46,9 @@
                                 WHERE event_id = $event_id;";
                     $results = $conn->query($query);
                     while ($row = $results->fetch_assoc()) {
+                        $event_date = $row['event_date'];
+                        $event_all_day = $row['event_all_day'];
+                        $organization_id = $row['organization_id'];
                     ?>
 
                         <div class="modal fade" id="edit-event-modal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -98,29 +105,51 @@
                                                                 <label for="attendance-duration-select" class="form-label">Attendance Duration (mins)</label>
                                                                 <select class="form-select" name="event_attendance_duration" id="attendance-duration-select">
                                                                     <?php
-                                                                    if ($row['event_attendance_duration'] == '00:15:00') {
+                                                                    if ($row['event_attendance_duration'] == 15) {
                                                                     ?>
-                                                                        <option value="1500" selected>15</option>
-                                                                        <option value="2000">20</option>
-                                                                        <option value="2500">25</option>
-                                                                        <option value="3000">30</option>
-                                                                    <?php } else if ($row['event_attendance_duration'] == '00:20:00') {
+                                                                        <option value="15" selected>15</option>
+                                                                        <option value="20">20</option>
+                                                                        <option value="25">25</option>
+                                                                        <option value="30">30</option>
+                                                                        <option value="45">45</option>
+                                                                        <option value="60">60</option>
+                                                                    <?php } else if ($row['event_attendance_duration'] == 20) {
                                                                     ?>
-                                                                        <option value="1500">15</option>
-                                                                        <option value="2000" selected>20</option>
-                                                                        <option value="2500">25</option>
-                                                                        <option value="3000">30</option>
+                                                                        <option value="15">15</option>
+                                                                        <option value="20" selected>20</option>
+                                                                        <option value="25">25</option>
+                                                                        <option value="30">30</option>
+                                                                        <option value="45">45</option>
+                                                                        <option value="60">60</option>
                                                                     <?php
-                                                                    } else if ($row['event_attendance_duration'] == '00:25:00') { ?>
-                                                                        <option value="1500">15</option>
-                                                                        <option value="2000">20</option>
-                                                                        <option value="2500" selected>25</option>
-                                                                        <option value="3000">30</option>
-                                                                    <?php } else if ($row['event_attendance_duration'] == '00:30:00') { ?>
-                                                                        <option value="1500">15</option>
-                                                                        <option value="2000">20</option>
-                                                                        <option value="2500">25</option>
-                                                                        <option value="3000" selected>30</option>
+                                                                    } else if ($row['event_attendance_duration'] == 25) { ?>
+                                                                        <option value="15">15</option>
+                                                                        <option value="20">20</option>
+                                                                        <option value="25" selected>25</option>
+                                                                        <option value="30">30</option>
+                                                                        <option value="45">45</option>
+                                                                        <option value="60">60</option>
+                                                                    <?php } else if ($row['event_attendance_duration'] == 30) { ?>
+                                                                        <option value="15">15</option>
+                                                                        <option value="20">20</option>
+                                                                        <option value="25">25</option>
+                                                                        <option value="30" selected>30</option>
+                                                                        <option value="45">45</option>
+                                                                        <option value="60">60</option>
+                                                                    <?php } else if ($row['event_attendance_duration'] == 45) { ?>
+                                                                        <option value="15">15</option>
+                                                                        <option value="20">20</option>
+                                                                        <option value="25">25</option>
+                                                                        <option value="30">30</option>
+                                                                        <option value="45" selected>45</option>
+                                                                        <option value="60">60</option>
+                                                                    <?php } else if ($row['event_attendance_duration'] == 45) { ?>
+                                                                        <option value="15">15</option>
+                                                                        <option value="20">20</option>
+                                                                        <option value="25">25</option>
+                                                                        <option value="30">30</option>
+                                                                        <option value="45">45</option>
+                                                                        <option value="60" selected>60</option>
                                                                     <?php } ?>
                                                                 </select>
                                                             </div>
@@ -149,7 +178,6 @@
                                 </div><!-- /.modal-content -->
                             </div><!-- /.modal-dialog -->
                         </div>
-
                         <div class="row">
                             <div class="col-xxl-12 col-xl-12">
                                 <!-- project card -->
@@ -157,7 +185,6 @@
                                     <div class="card-body">
                                         <?php
                                         if ($row['org_admin_id'] == $user) {
-
                                         ?>
                                             <div class="dropdown card-widgets">
                                                 <a href="#" class="dropdown-toggle arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
@@ -171,19 +198,23 @@
                                                             <i class='uil uil-edit me-1'></i>Edit
                                                         </a>
                                                         <!-- item-->
-                                                        <?php if ($usertype == 'admin') { ?>
+                                                        <?php if ($row['org_admin_id'] == $user) { ?>
                                                             <a href="javascript:void(0);" class="dropdown-item" id="approve-event" data-event_id=<?= $row['event_id'] ?>>
                                                                 <i class='uil uil-file-copy-alt me-1'></i>Approve Event
                                                             </a>
                                                         <?php } ?>
                                                     <?php } ?>
-                                                    <div class="dropdown-divider"></div>
-                                                    <!-- item-->
-                                                    <a href="javascript:void(0);" class="dropdown-item delete-event" id="delete-event" data-org_id=<?= $row['organization_id'] ?> data-dept_id=<?= $row['department_id'] ?> data-event_id=<?= $row['event_id'] ?> data-usertype=<?= $usertype ?>>
-                                                        <i class="mdi mdi-delete me-1"></i>
-                                                        Delete
-                                                    </a>
+                                                    <?php
 
+                                                    $now = date('Y-m-d');
+                                                    $newdate = date("M d, Y", strtotime($now));
+                                                    if ($row['event_date'] >= $newdate) {
+                                                    ?>
+                                                        <a href="javascript:void(0);" class="dropdown-item delete-event" id="delete-event" data-org_id=<?= $row['organization_id'] ?> data-dept_id=<?= $row['department_id'] ?> data-event_id=<?= $row['event_id'] ?> data-usertype=<?= $usertype ?>>
+                                                            <i class="mdi mdi-delete me-1"></i>
+                                                            Delete
+                                                        </a>
+                                                    <?php } ?>
                                                 </div> <!-- end dropdown menu-->
                                             </div> <!-- end dropdown-->
                                         <?php } ?>
@@ -347,6 +378,13 @@
                     <?php
                     if ($usertype == 'admin' || $usertype == 'organizer') {
                     ?>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="page-title-box">
+                                    <h4 class="page-title">Participants</h4>
+                                </div>
+                            </div>
+                        </div>
                         <div class="container-fluid" id="members-list">
                             <div class="row">
                                 <div class="col-12">
@@ -355,22 +393,40 @@
                                             <ul class="nav nav-tabs nav-bordered mb-3">
                                                 <li class="nav-item">
                                                     <a href="#basic-datatable-preview" data-bs-toggle="tab" aria-expanded="false" class="nav-link active">
-                                                        Preview
+                                                        Event Participant Details
                                                     </a>
                                                 </li>
                                             </ul> <!-- end nav-->
                                             <div class="tab-content">
                                                 <div class="tab-pane show active" id="basic-datatable-preview">
                                                     <table id="basic-datatable" class="table dt-responsive nowrap w-100">
+                                                        <?php
+                                                        $now = date('Y-m-d');
+                                                        $newdate = date("M d, Y", strtotime($now));
+                                                        ?>
                                                         <thead>
                                                             <tr>
                                                                 <th>Name</th>
                                                                 <th>Role</th>
                                                                 <th>Participant Status</th>
-                                                                <th style="width: 75px;">Action</th>
+                                                                <?php if ($event_date >= $newdate) { ?>
+                                                                    <th style="width: 75px;">Action</th>
+                                                                    <?php } else if ($event_date <= $newdate) {
+                                                                    if ($event_all_day == 'yes') {
+                                                                    ?>
+                                                                        <th>Attendance In AM</th>
+                                                                        <th>Attendance Out AM</th>
+                                                                        <th>Attendance In PM</th>
+                                                                        <th>Attendance Out PM</th>
+                                                                    <?php   } else { ?>
+                                                                        <th>Attendance In</th>
+                                                                        <th>Attendance Out</th>
+                                                                <?php
+                                                                    }
+                                                                } ?>
+
                                                             </tr>
                                                         </thead>
-
 
                                                         <tbody>
                                                             <?php
@@ -385,12 +441,59 @@
                                                                 <tr>
                                                                     <td><?= $row['firstname'] ?> <?= $row['lastname'] ?></td>
                                                                     <td><span id="accesstype<?= $row['participant_id']; ?>"><?= $row['accesstype'] ?></span></td>
-                                                                    <td class="text-success"><?= $row['participant_status'] ?></td>
-                                                                    <td class="table-action">
-                                                                        <button data-bs-toggle="modal" data-bs-target="#edit-participant-role-modal" class="action-icon btn btn-success btn-light edit-participant-role-modal" value="<?= $row['participant_id']; ?>">
-                                                                            <i class="mdi mdi-square-edit-outline"></i>
-                                                                        </button>
-                                                                    </td>
+                                                                    <?php if ($row['participant_status'] == 'pending') { ?>
+                                                                        <td class="text-warning"><?= $row['participant_status'] ?></td>
+                                                                    <?php } else { ?>
+                                                                        <td class="text-success"><?= $row['participant_status'] ?></td>
+                                                                    <?php } ?>
+                                                                    <?php
+                                                                    $now = date('Y-m-d');
+                                                                    $newdate = date("M d, Y", strtotime($now));
+                                                                    ?>
+                                                                    <?php if ($event_date >= $newdate) { ?>
+                                                                        <td class="table-action">
+                                                                            <button data-bs-toggle="modal" data-bs-target="#edit-participant-role-modal" class="action-icon btn btn-success btn-light edit-participant-role-modal" value="<?= $row['participant_id']; ?>">
+                                                                                <i class="mdi mdi-square-edit-outline"></i>
+                                                                            </button>
+                                                                        </td>
+                                                                        <?php } else {
+                                                                        $participant = $row['participant_id'];
+                                                                        if ($event_all_day == 'no') {
+                                                                            $sql = "SELECT * FROM attendances
+                                                                        RIGHT OUTER JOIN participants ON participants.participant_id = attendances.participant_reference_id
+                                                                        RIGHT OUTER JOIN events ON events.event_id = attendances.event_reference_id 
+                                                                        WHERE event_reference_id = $event_id
+                                                                        GROUP BY attendances.attendance_user_id
+                                                                        HAVING COUNT(*) > 1";
+                                                                        } else if ($event_all_day == 'yes') {
+                                                                            $sql = "SELECT * FROM attendances
+                                                                        RIGHT OUTER JOIN participants ON participants.participant_id = attendances.participant_reference_id
+                                                                        RIGHT OUTER JOIN events ON events.event_id = attendances.event_reference_id 
+                                                                        WHERE event_reference_id = $event_id
+                                                                        GROUP BY attendances.attendance_user_id
+                                                                        HAVING COUNT(*) > 3";
+                                                                        }
+
+                                                                        $result = $conn->query($sql);
+                                                                        while ($rows = $result->fetch_assoc()) {
+                                                                            $event_all_day = $rows['event_all_day'];
+                                                                            $participant_id = $rows['participant_reference_id'];
+                                                                            if ($participant_id == $participant && $event_all_day == 'yes') {
+                                                                                echo "<td class='text-success'>Attended</td>";
+                                                                                echo "<td class='text-success'>Attended</td>";
+                                                                                echo "<td class='text-success'>Attended</td>";
+                                                                                echo "<td class='text-success'>Attended</td>";
+                                                                            } else if ($participant_id == $participant && $event_all_day == 'no') {
+                                                                                echo "<td class='text-success'>Attended</td>";
+                                                                                echo "<td class='text-success'>Attended</td>";
+                                                                            }
+
+                                                                        ?>
+
+                                                                    <?php
+                                                                        }
+                                                                    }
+                                                                    ?>
                                                                 </tr>
 
                                                             <?php } ?>
@@ -432,11 +535,127 @@
                             </div>
                         </div>
                     <?php } ?>
-                </div> <!-- container -->
-
-
+                </div>
             </div> <!-- content -->
+            <?php
+            if ($usertype == 'admin' || $usertype == 'organizer') {
+            ?>
+                <section class="content">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box">
+                                <h4 class="page-title">Analytics</h4>
+                            </div>
+                        </div>
+                    </div>
 
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6">
+                            <a href="../analytics/invited.participants.php?event_id=<?= $event_id ?>" style="color:inherit;">
+                                <div class=" card tilebox-one">
+                                    <div class="card-body">
+                                        <i class='uil uil-users-alt float-end'></i>
+                                        <h4 class="text-uppercase mt-0">Participant Invited</h4>
+                                        <?php
+                                        $query = "SELECT * FROM users
+                                                        RIGHT OUTER JOIN members ON members.user_reference_id = users.userid
+                                                        RIGHT OUTER JOIN participants ON participants.member_reference_id = members.member_id
+                                                        WHERE participants.event_id = $event_id;";
+                                        $results = $conn->query($query);
+                                        $total = $results->num_rows;
+                                        ?>
+                                        <h2 class="my-2" id="active-users-count"><?= $total ?></h2>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="../analytics/attended.participants.php?event_id=<?= $event_id ?>&org_id=<?= $organization_id ?>" style="color:inherit;">
+                                <div class="card tilebox-one">
+                                    <div class="card-body">
+                                        <i class='uil uil-analytics float-end'></i>
+                                        <h4 class="text-uppercase mt-0">Attended</h4>
+                                        <?php
+                                        $query = "SELECT * FROM attendances
+                                                RIGHT OUTER JOIN participants ON participants.participant_id = attendances.participant_reference_id
+                                                RIGHT OUTER JOIN events ON events.event_id = attendances.event_reference_id 
+                                                WHERE event_reference_id = $event_id
+                                                GROUP BY attendances.participant_reference_id
+                                                HAVING COUNT(*) > 0 ;";
+                                        $results = $conn->query($query);
+                                        $total_attended = 0;
+                                        while ($row = $results->fetch_assoc()) {
+                                            if ($row['event_all_day'] == 'yes') {
+                                                $total_attended++;
+                                            } else if ($row['event_all_day'] == 'no') {
+                                                $total_attended++;
+                                            }
+                                        }
+                                        ?>
+                                        <h2 class="my-2" id="active-views-count"><?= $total_attended ?></h2>
+                                    </div> <!-- end card-body-->
+                                </div>
+                            </a>
+
+                            <a href="../analytics/evaluations.php?event_id=<?= $event_id ?>" style="color:inherit;">
+                                <div class="card tilebox-one">
+                                    <div class="card-body">
+                                        <i class='uil uil-file-check-alt float-end'></i>
+                                        <h4 class="text-uppercase mt-0">Evaluated</h4>
+                                        <?php
+                                        $query = "SELECT * FROM evaluations 
+                                        WHERE event_reference_id = $event_id;";
+                                        $results = $conn->query($query);
+                                        $total = $results->num_rows;
+                                        ?>
+                                        <h2 class="my-2" id="active-views-count"><?= $total ?></h2>
+                                    </div> <!-- end card-body-->
+                                </div>
+                            </a>
+
+                        </div> <!-- end col -->
+
+                        <div class="col-xl-6 col-lg-6">
+                            <a href="../analytics/confirmed.participants.php?event_id=<?= $event_id ?>" style="color:inherit;">
+                                <div class="card tilebox-one">
+                                    <div class="card-body">
+                                        <i class='uil uil-envelope-check float-end'></i>
+                                        <h4 class="text-uppercase mt-0">Participant Confirmed</h4>
+                                        <?php
+                                        $query = "SELECT * FROM users
+                                                        RIGHT OUTER JOIN members ON members.user_reference_id = users.userid
+                                                        RIGHT OUTER JOIN participants ON participants.member_reference_id = members.member_id
+                                                        WHERE participants.event_id = $event_id AND participants.participant_status = 'confirmed';";
+                                        $results = $conn->query($query);
+                                        $total = $results->num_rows;
+                                        ?>
+                                        <h2 class="my-2" id="active-users-count"><?= $total ?></h2>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <a href="../analytics/checkers.participants.php?event_id=<?= $event_id ?>" style="color:inherit;">
+                                <div class="card tilebox-one">
+                                    <div class="card-body">
+                                        <i class='uil uil-window-restore float-end'></i>
+                                        <h4 class="text-uppercase mt-0">Attendance Checkers</h4>
+                                        <?php
+                                        $query = "SELECT * FROM users
+                                                        RIGHT OUTER JOIN members ON members.user_reference_id = users.userid
+                                                        RIGHT OUTER JOIN participants ON participants.member_reference_id = members.member_id
+                                                        WHERE participants.event_id = $event_id AND participants.accesstype = 'attendance-checker';";
+                                        $results = $conn->query($query);
+                                        $total = $results->num_rows;
+                                        ?>
+                                        <h2 class="my-2" id="active-views-count"><?= $total ?> </h2>
+                                    </div> <!-- end card-body-->
+                                </div>
+                            </a>
+                            <!--end card-->
+                        </div>
+                    </div>
+
+
+                </section>
+            <?php } ?>
         </div>
 
         <!-- ============================================================== -->

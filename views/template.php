@@ -7,7 +7,7 @@
     <!-- Begin page -->
     <div class="wrapper">
 
-        <?php include '../includes/sidebar.php' ?>
+        <?php require_once '../includes/sidebar.php' ?>
         <!-- Begin page -->
         <!-- ============================================================== -->
         <!-- Start Page Content here -->
@@ -16,7 +16,7 @@
         <div class="content-page">
             <div class="content">
 
-                <?php include '../includes/topbar.php' ?>
+                <?php require_once '../includes/topbar.php' ?>
 
                 <!-- Start Content-->
                 <div class="container-fluid">
@@ -51,12 +51,12 @@
 
     </div>
     <!-- END wrapper -->
-    <?php include '../includes/endbar.php' ?>
+    <?php require_once '../includes/endbar.php' ?>
 
     <div class="rightbar-overlay"></div>
     <!-- /End-bar -->
 
-    <?php include '../includes/footer.php'; ?>
+    <?php require_once '../includes/footer.php'; ?>
 
 <?php } else {
     header("location: ../views/pages-404.php");

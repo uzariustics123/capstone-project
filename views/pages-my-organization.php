@@ -49,6 +49,7 @@
                     $results = $conn->query($query);
 
                     while ($row = $results->fetch_assoc()) {
+                        $org_admin_id = $row['org_admin_id'];
                     ?>
                         <!-- Standard modal -->
                         <div id="organization_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
@@ -152,6 +153,7 @@
                                         <form method="post" action="../controllers/add.department.ctrls.php" enctype="multipart/form-data">
                                             <h4 class="mb-3">Add Department</h4>
                                             <input type="hidden" class="form-control" name="user_id" value="<?= $user; ?>">
+                                            <input type="hidden" class="form-control" name="email" value="<?= $email; ?>">
                                             <input type="hidden" class="form-control" name="organization_id" value="<?= $organization_id = $_GET['id']; ?>">
                                             <div class="mb-1 mt-3">
                                                 <label for="department" class="form-label">Department Name</label>
@@ -195,7 +197,8 @@
 
                 <div class="row">
                     <?php
-                        $query = "SELECT * FROM departments WHERE organization_id = $organization_id;";
+                        $query = "SELECT * FROM departments
+                        WHERE organization_id = $organization_id;";
 
                         $results = $conn->query($query);
                         while ($row = $results->fetch_assoc()) {
@@ -210,7 +213,7 @@
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-end">
                                             <!-- item-->
-                                            <a href="../views/pages-my-department.php?org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>" class="dropdown-item"><i class="mdi mdi-account-cog me-1"></i>Manage</a>
+                                            <a href="../views/pages-my-department.php?org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>&admin_id=<?= $org_admin_id ?>" class="dropdown-item"><i class="mdi mdi-account-cog me-1"></i>Manage</a>
                                             <!-- item-->
 
 

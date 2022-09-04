@@ -23,7 +23,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             <!-- Settings -->
             <h5 class="mt-3">Color Scheme</h5>
             <hr class="mt-1" />
-
+            <input type="hidden" name="user_id" id="user_id" value="<?= $user ?>">
             <div class="form-check form-switch mb-1">
                 <input class="form-check-input" type="checkbox" name="color-scheme-mode" value="light" id="light-mode-check" checked="" />
                 <label class="form-check-label" for="light-mode-check">Light Mode</label>
@@ -48,7 +48,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             </div>
 
             <!-- Left Sidebar-->
-            <h5 class="mt-4">Left Sidebar</h5>
+            <h5 class="mt-4">Left Sidebar Color</h5>
             <hr class="mt-1" />
             <div class="form-check form-switch mb-1">
                 <input class="form-check-input" type="checkbox" name="theme" value="default" id="default-check" />
@@ -65,6 +65,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                 <label class="form-check-label" for="dark-check">Dark</label>
             </div>
 
+            <h5 class="mt-4">Left Sidebar Style</h5>
+            <hr class="mt-1" />
             <div class="form-check form-switch mb-1">
                 <input class="form-check-input" type="checkbox" name="compact" value="fixed" id="fixed-check" checked="" />
                 <label class="form-check-label" for="fixed-check">Fixed</label>
@@ -80,13 +82,8 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                 <label class="form-check-label" for="scrollable-check">Scrollable</label>
             </div>
 
-            <div class="d-grid mt-4">
-                <button class="btn btn-primary" id="resetBtn">
-                    Reset to Default
-                </button>
-            </div>
             <div class="d-grid mt-1">
-                <button class="btn btn-success" id="saveBtn">
+                <button class="btn btn-success" name="saveBtn" id="saveBtn" value="saveBtn">
                     Save Changes
                 </button>
             </div>

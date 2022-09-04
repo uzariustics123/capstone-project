@@ -1,7 +1,6 @@
 <?php
 if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     header('location: ../views/pages-404.php');
-    exit();
 };
 ?>
 <!-- Topbar Start -->
@@ -12,7 +11,15 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
         <li class="dropdown notification-list">
             <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                 <i class="dripicons-bell noti-icon"></i>
-                <span class="noti-icon-badge"></span>
+                <?php $query = "SELECT * FROM ((events 
+                RIGHT OUTER JOIN departments ON events.department_id = departments.department_id)
+                RIGHT OUTER JOIN organizations ON departments.organization_id = organizations.organization_id)
+                WHERE organizations.org_admin_id = $user AND events.event_status ='pending';";
+                $results = $conn->query($query);
+                if ($results->num_rows > 0) {
+                ?>
+                    <span class="noti-icon-badge"></span>
+                <?php } ?>
             </a>
             <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg">
                 <!-- item-->
@@ -23,15 +30,15 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                     </h5>
                 </div>
                 <?php
-                $query = "SELECT * FROM EVENTS 
-                RIGHT OUTER JOIN departments ON events.department_id = departments.department_id
-                RIGHT OUTER JOIN organizations ON departments.organization_id = organizations.organization_id
+                $query = "SELECT * FROM ((events 
+                RIGHT OUTER JOIN departments ON events.department_id = departments.department_id)
+                RIGHT OUTER JOIN organizations ON departments.organization_id = organizations.organization_id)
                 WHERE organizations.org_admin_id = $user AND events.event_status ='pending';";
                 $results = $conn->query($query);
                 while ($row = $results->fetch_assoc()) {
                 ?>
                     <div style="max-height: 230px;" data-simplebar="">
-                        <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>" class="dropdown-item notify-item">
+                        <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>&usertype=<?= base64_encode($usertype) ?>" class="dropdown-item notify-item">
                             <div class="notify-icon bg-info">
                                 <i class="mdi mdi-calendar-alert"></i>
                             </div>
@@ -41,10 +48,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                         </a>
                     </div>
                 <?php } ?>
-                <!-- All-->
-                <a href="javascript:void(0);" class="dropdown-item text-center text-primary notify-item notify-all">
-                    View All
-                </a>
+
             </div>
         </li>
 
@@ -61,7 +65,7 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                     <?php
                     $query = "SELECT * FROM users
                             LEFT OUTER JOIN members ON members.user_reference_id = users.userid
-                            WHERE userid = $user";
+                            WHERE userid = $user;";
                     $results = $conn->query($query);
                     $row = $results->fetch_assoc();
                     if (!empty($row)) {
@@ -77,7 +81,6 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
                         </span>
 
                         <span class="account-user-name mt-1"><?= $row['firstname'] ?> <?php echo $row['lastname'] ?></span>
-
                     <?php
                     }
                     ?>

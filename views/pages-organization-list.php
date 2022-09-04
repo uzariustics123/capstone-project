@@ -24,7 +24,7 @@
 
                         $query = "SELECT * FROM organizations 
                                 RIGHT OUTER JOIN members ON members.organization_id = organizations.organization_id
-                                WHERE members.user_reference_id = $user AND members.usertype = 'member' OR members.usertype = 'organizer' 
+                                WHERE members.user_reference_id = $user AND organizations.org_admin_id != $user
                                 GROUP BY members.organization_id
                                 HAVING COUNT(*) > 0;";
                         $results = $conn->query($query);

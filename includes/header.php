@@ -1,23 +1,6 @@
 <?php
-if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
-    header('location: ../views/pages-404.php');
-    exit();
-};
+require_once 'verifyuser.php';
 ?>
-<?php
-session_start();
-$user = $_SESSION['userid'];
-$email = $_SESSION['email'];
-$registration_status = $_SESSION['registration_status'];
-if (isset($_SESSION['usertype'])) {
-    $usertype = $_SESSION['usertype'];
-} else {
-    $usertype = 0;
-}
-
-include_once('../config/db.php');
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 

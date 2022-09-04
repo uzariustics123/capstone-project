@@ -156,12 +156,13 @@
                                             <h5 class="mt-0 task-header">UNCONFIRMED</h5>
                                             <div id="task-list-one" class="task-list-items">
                                                 <?php
-                                                $query = "SELECT * FROM EVENTS
+                                                $query = "SELECT * FROM events
                                                             RIGHT OUTER JOIN participants ON participants.event_id = events.event_id
                                                             RIGHT OUTER JOIN members ON participants.member_reference_id = members.member_id
                                                             RIGHT OUTER JOIN users ON members.user_reference_id = users.userid
                                                             WHERE users.userid = $user 
                                                             AND participant_status = 'pending'
+                                                            AND event_status = 'approved'
                                                             ORDER BY event_date ASC;";
                                                 $results = $conn->query($query);
 
@@ -201,10 +202,11 @@
 
                                             <div id="task-list-two" class="task-list-items">
                                                 <?php
-                                                $query = "SELECT * FROM EVENTS
+                                                $query = "SELECT * FROM events
                                                         RIGHT OUTER JOIN participants ON participants.event_id = events.event_id
                                                         RIGHT OUTER JOIN members ON participants.member_reference_id = members.member_id
                                                         RIGHT OUTER JOIN users ON members.user_reference_id = users.userid
+                                                        RIGHT OUTER JOIN departments ON events.`department_id` = departments.`department_id`
                                                         WHERE users.userid = $user AND participant_status = 'confirmed' 
                                                         ORDER BY event_date ASC;";
 
@@ -217,22 +219,15 @@
                                                 ?>
                                                         <div class="card mb-0">
                                                             <div class="card-body p-3">
-
                                                                 <small class="float-end text-muted"><?= $row['event_date'] ?></small>
                                                                 <span class="badge bg-success"><?= $row['participant_status'] ?></span>
                                                                 <h2 class="mt-2 mb-2">
 
                                                                     <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body"><?= $row['event_name'] ?></a>
                                                                     </h3>
+                                                                    <p><b><?= $row['dept_name'] ?></b></p>
                                                                     <p><?= $row['event_description'] ?></p>
-                                                                    <div class="dropdown float-end">
-                                                                        <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                            <i class="mdi mdi-dots-vertical font-18"></i>
-                                                                        </a>
-                                                                        <div class="dropdown-menu dropdown-menu-end">
-                                                                            <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>" class="dropdown-item"><i class="mdi mdi-eye-circle-outline me-1"></i>View</a>
-                                                                        </div>
-                                                                    </div>
+
                                                             </div> <!-- end card-body -->
                                                         </div>
                                                 <?php }
@@ -241,268 +236,215 @@
                                             </div> <!-- end company-list-2-->
                                         </div>
 
-
-                                        <div class="tasks">
-                                            <div class="modal fade" id="evaluate_modal" tabindex="-1" role="dialog" aria-hidden="true">
-                                                <div class="modal-dialog  modal-lg">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h3 class="modal-title" id="myCenterModalLabel">Event Evaluation</h3>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <form action="../controllers/add.evaluation.ctrls.php" method="post" enctype="multipart/form-data">
-                                                                <input type="hidden" name="user_id" value="<?= $user ?>">
-                                                                <input type="hidden" name="event_id" value="<?= $event_id ?>">
-                                                                <div class=" mt-3">
-                                                                    <h4>What is your level of satisfaction with this event?</h4>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio1" name="customRadio1" class="form-check-input" value="1" required>
-                                                                        <label class="form-check-label" for="customRadio1">Very Good</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio2" name="customRadio1" class="form-check-input" value="2" required>
-                                                                        <label class="form-check-label" for="customRadio2">Good</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio3" name="customRadio1" class="form-check-input" value="3" required>
-                                                                        <label class="form-check-label" for="customRadio3">Neutral</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio4" name="customRadio1" class="form-check-input" value="4" required>
-                                                                        <label class="form-check-label" for="customRadio4">Poor</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio5" name="customRadio1" class="form-check-input" value="5" required>
-                                                                        <label class="form-check-label" for="customRadio5">Very Poor</label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="mt-3">
-                                                                    <h4>How likely are you to tell a friend about this event?</h4>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio6" name="customRadio2" class="form-check-input" value="1" required>
-                                                                        <label class="form-check-label" for="customRadio6">Very Good</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio7" name="customRadio2" class="form-check-input" value="2" required>
-                                                                        <label class="form-check-label" for="customRadio7">Good</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio8" name="customRadio2" class="form-check-input" value="3" required>
-                                                                        <label class="form-check-label" for="customRadio8">Neutral</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio9" name="customRadio2" class="form-check-input" value="4" required>
-                                                                        <label class="form-check-label" for="customRadio9">Bad</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio10" name="customRadio2" class="form-check-input" value="5" required>
-                                                                        <label class="form-check-label" for="customRadio10">Very Bad</label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="mt-3">
-                                                                    <h4>How would you rate our event venue and equipment in regards to how it served your keynote?</h4>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio11" name="customRadio3" class="form-check-input" value="1" required>
-                                                                        <label class="form-check-label" for="customRadio11">Very Good</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio12" name="customRadio3" class="form-check-input" value="2" required>
-                                                                        <label class="form-check-label" for="customRadio12">Good</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio13" name="customRadio3" class="form-check-input" value="3" required>
-                                                                        <label class="form-check-label" for="customRadio13">Neutral</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio14" name="customRadio3" class="form-check-input" value="4" required>
-                                                                        <label class="form-check-label" for="customRadio14">Bad</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio15" name="customRadio3" class="form-check-input" value="5" required>
-                                                                        <label class="form-check-label" for="customRadio15">Very Bad</label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="mt-3">
-                                                                    <h4>How satisfied were you with the speakers and sessions at our event?</h4>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio16" name="customRadio4" class="form-check-input" value="1" required>
-                                                                        <label class="form-check-label" for="customRadio16">Very Good</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio17" name="customRadio4" class="form-check-input" value="2" required>
-                                                                        <label class="form-check-label" for="customRadio17">Good</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio18" name="customRadio4" class="form-check-input" value="3" required>
-                                                                        <label class="form-check-label" for="customRadio18">Neutral</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio19" name="customRadio4" class="form-check-input" value="4" required>
-                                                                        <label class="form-check-label" for="customRadio19">Bad</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio20" name="customRadio4" class="form-check-input" value="5" required>
-                                                                        <label class="form-check-label" for="customRadio20">Very Bad</label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="mt-3">
-                                                                    <h4>How did you feel about the duration of the content?</h4>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio21" name="customRadio5" class="form-check-input" value="1" required>
-                                                                        <label class="form-check-label" for="customRadio21">Very Good</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio22" name="customRadio5" class="form-check-input" value="2" required>
-                                                                        <label class="form-check-label" for="customRadio22">Good</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio23" name="customRadio5" class="form-check-input" value="3" required>
-                                                                        <label class="form-check-label" for="customRadio23">Neutral</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio24" name="customRadio5" class="form-check-input" value="4" required>
-                                                                        <label class="form-check-label" for="customRadio24">Bad</label>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input type="radio" id="customRadio25" name="customRadio5" class="form-check-input" value="5" required>
-                                                                        <label class="form-check-label" for="customRadio25">Very Bad</label>
-                                                                    </div>
-                                                                </div>
-                                                                <hr>
-                                                                <div class="text-center">
-                                                                    <button type="submit" class="btn btn-primary mt-3 mb-3" name="submit">Submit Evaluation</button>
-                                                                </div>
-
-                                                            </form>
-                                                        </div>
-                                                    </div><!-- /.modal-content -->
-                                                </div><!-- /.modal-dialog -->
-                                            </div>
-
-                                            <h5 class=" mt-0 task-header text-uppercase">Attended</h5>
-                                            <div id="task-list-three" class="task-list-items">
-                                                <div class="card mb-0">
-                                                    <div class="card-body p-3">
-                                                        <small class="float-end text-muted">22 Jul 2018</small>
-                                                        <span class="badge bg-info">Attended</span>
-
-                                                        <h3 class="mt-2 mb-2 text-center">
-                                                            Event Name
-                                                        </h3>
-                                                        <div class="text-center">
-                                                            <a href="javascript:void(0)" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#evaluate_modal">Evaluate</a>
-                                                        </div>
-
-                                                    </div> <!-- end card-body -->
-                                                </div>
-                                                <!-- Task Item End -->
-
-                                            </div> <!-- end company-list-3-->
-                                        </div>
-
                                         <div class="tasks">
                                             <h5 class="mt-0 task-header text-uppercase">Attended and Evaluated</h5>
-                                            <div id="task-list-four" class="task-list-items">
+                                            <?php
+                                            $query = "SELECT * FROM events
+                                                    RIGHT OUTER JOIN participants ON participants.event_id = events.event_id
+                                                    RIGHT OUTER JOIN members ON participants.member_reference_id = members.member_id
+                                                    RIGHT OUTER JOIN users ON members.user_reference_id = users.userid
+                                                    RIGHT OUTER JOIN attendances ON attendances.event_reference_id = events.event_id
+                                                    WHERE users.userid = $user AND participant_status = 'confirmed'
+                                                    GROUP BY events.event_id
+                                                    HAVING COUNT(*) > 0
+                                                    ORDER BY event_date ASC;";
 
-                                                <!-- Task Item -->
-                                                <div class="card mb-0">
-                                                    <div class="card-body p-3">
-                                                        <small class="float-end text-muted">16 Jul 2018</small>
-                                                        <span class="badge bg-success">Low</span>
-
-                                                        <h5 class="mt-2 mb-2">
-                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body">Dashboard design</a>
-                                                        </h5>
-
-                                                        <p class="mb-0">
-                                                            <span class="pe-2 text-nowrap mb-2 d-inline-block">
-                                                                <i class="mdi mdi-briefcase-outline text-muted"></i>
-                                                                Hyper
-                                                            </span>
-                                                            <span class="text-nowrap mb-2 d-inline-block">
-                                                                <i class="mdi mdi-comment-multiple-outline text-muted"></i>
-                                                                <b>287</b> Comments
-                                                            </span>
-                                                        </p>
-
-                                                        <div class="dropdown float-end">
-                                                            <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <i class="mdi mdi-dots-vertical font-18"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-plus-circle-outline me-1"></i>Add People</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
+                                            $results = $conn->query($query);
+                                            while ($row = $results->fetch_assoc()) {
+                                            ?>
+                                                <?php
+                                                $event_id = $row['event_id'];
+                                                $sql = "SELECT * FROM evaluations WHERE event_reference_id = $event_id;";
+                                                $result = $conn->query($sql);
+                                                while ($rows = $result->fetch_assoc()) {
+                                                    if ($rows['event_reference_id'] == $event_id) {
+                                                ?>
+                                                        <div id="task-list-three" class="task-list-items">
+                                                            <div class="card mb-0">
+                                                                <div class="card-body p-3">
+                                                                    <?= $rows['evaluation_id'] ?>
+                                                                    <small class="float-end text-muted"><?= $row['event_date'] ?></small>
+                                                                    <span class="badge bg-success">Attended and Evaluated</span>
+                                                                    <h3 class="mt-2 mb-2 text-center">
+                                                                        <?= $row['event_name'] ?>
+                                                                    </h3>
+                                                                </div> <!-- end card-body -->
                                                             </div>
                                                         </div>
-
-                                                        <p class="mb-0">
-                                                            <img src="assets/images/users/avatar-10.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
-                                                            <span class="align-middle">Harvey Dickinson</span>
-                                                        </p>
-                                                    </div> <!-- end card-body -->
-                                                </div>
-                                                <!-- Task Item End -->
-
-                                            </div> <!-- end company-list-4-->
+                                                <?php }
+                                                } ?>
+                                            <?php } ?>
                                         </div>
                                         <div class="tasks">
-                                            <h5 class="mt-0 task-header text-uppercase">Missed Events</h5>
-                                            <div id="task-list-four" class="task-list-items">
+                                            <h5 class=" mt-0 task-header text-uppercase">Attended</h5>
+                                            <?php
+                                            $query = "SELECT * FROM events
+                                                    RIGHT OUTER JOIN participants ON participants.event_id = events.event_id
+                                                    RIGHT OUTER JOIN members ON participants.member_reference_id = members.member_id
+                                                    RIGHT OUTER JOIN users ON members.user_reference_id = users.userid
+                                                    RIGHT OUTER JOIN attendances ON attendances.event_reference_id = events.event_id
+                                                    WHERE users.userid = $user AND participant_status = 'confirmed'
+                                                    GROUP BY events.event_id
+                                                    HAVING COUNT(*) > 0
+                                                    ORDER BY event_date ASC;";
 
-                                                <!-- Task Item -->
-                                                <div class="card mb-0">
-                                                    <div class="card-body p-3">
-                                                        <small class="float-end text-muted">16 Jul 2018</small>
-                                                        <span class="badge bg-success">Low</span>
-
-                                                        <h5 class="mt-2 mb-2">
-                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body">Dashboard design</a>
-                                                        </h5>
-
-                                                        <p class="mb-0">
-                                                            <span class="pe-2 text-nowrap mb-2 d-inline-block">
-                                                                <i class="mdi mdi-briefcase-outline text-muted"></i>
-                                                                Hyper
-                                                            </span>
-                                                            <span class="text-nowrap mb-2 d-inline-block">
-                                                                <i class="mdi mdi-comment-multiple-outline text-muted"></i>
-                                                                <b>287</b> Comments
-                                                            </span>
-                                                        </p>
-
-                                                        <div class="dropdown float-end">
-                                                            <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <i class="mdi mdi-dots-vertical font-18"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-delete me-1"></i>Delete</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-plus-circle-outline me-1"></i>Add People</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
+                                            $results = $conn->query($query);
+                                            while ($row = $results->fetch_assoc()) {
+                                            ?>
+                                                <div id="task-list-three" class="task-list-items">
+                                                    <div class="card mb-0">
+                                                        <div class="card-body p-3">
+                                                            <small class="float-end text-muted"><?= $row['event_date'] ?></small>
+                                                            <span class="badge bg-info">Attended</span>
+                                                            <h3 class="mt-2 mb-2 text-center">
+                                                                <?= $row['event_name'] ?>
+                                                            </h3>
+                                                            <div class="text-center">
+                                                                <a href="javascript:void(0)" class="btn btn-info evaluate" data-bs-toggle="modal" data-bs-target="#evaluate_modal" data-event_id="<?= $row['event_id'] ?>">Evaluate</a>
                                                             </div>
-                                                        </div>
-
-                                                        <p class="mb-0">
-                                                            <img src="assets/images/users/avatar-10.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
-                                                            <span class="align-middle">Harvey Dickinson</span>
-                                                        </p>
-                                                    </div> <!-- end card-body -->
+                                                        </div> <!-- end card-body -->
+                                                    </div>
                                                 </div>
-                                                <!-- Task Item End -->
-
-                                            </div> <!-- end company-list-4-->
+                                            <?php } ?>
                                         </div>
+                                        <div class="modal fade" id="evaluate_modal" tabindex="-1" role="dialog" aria-hidden="true">
+                                            <div class="modal-dialog  modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h3 class="modal-title" id="myCenterModalLabel">Event Evaluation</h3>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form action="../controllers/add.evaluation.ctrls.php" method="post" enctype="multipart/form-data">
+                                                            <input type="hidden" name="user_id" value="<?= $user ?>">
+                                                            <input type="hidden" name="event_id" id="eevent_id">
+                                                            <div class=" mt-3">
+                                                                <h4>What is your level of satisfaction with this event?</h4>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio1" name="customRadio1" class="form-check-input" value="1" required>
+                                                                    <label class="form-check-label" for="customRadio1">Very Good</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio2" name="customRadio1" class="form-check-input" value="2" required>
+                                                                    <label class="form-check-label" for="customRadio2">Good</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio3" name="customRadio1" class="form-check-input" value="3" required>
+                                                                    <label class="form-check-label" for="customRadio3">Neutral</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio4" name="customRadio1" class="form-check-input" value="4" required>
+                                                                    <label class="form-check-label" for="customRadio4">Poor</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio5" name="customRadio1" class="form-check-input" value="5" required>
+                                                                    <label class="form-check-label" for="customRadio5">Very Poor</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="mt-3">
+                                                                <h4>How likely are you to tell a friend about this event?</h4>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio6" name="customRadio2" class="form-check-input" value="1" required>
+                                                                    <label class="form-check-label" for="customRadio6">Very Good</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio7" name="customRadio2" class="form-check-input" value="2" required>
+                                                                    <label class="form-check-label" for="customRadio7">Good</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio8" name="customRadio2" class="form-check-input" value="3" required>
+                                                                    <label class="form-check-label" for="customRadio8">Neutral</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio9" name="customRadio2" class="form-check-input" value="4" required>
+                                                                    <label class="form-check-label" for="customRadio9">Bad</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio10" name="customRadio2" class="form-check-input" value="5" required>
+                                                                    <label class="form-check-label" for="customRadio10">Very Bad</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="mt-3">
+                                                                <h4>How would you rate our event venue and equipment in regards to how it <br>served your keynote?</h4>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio11" name="customRadio3" class="form-check-input" value="1" required>
+                                                                    <label class="form-check-label" for="customRadio11">Very Good</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio12" name="customRadio3" class="form-check-input" value="2" required>
+                                                                    <label class="form-check-label" for="customRadio12">Good</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio13" name="customRadio3" class="form-check-input" value="3" required>
+                                                                    <label class="form-check-label" for="customRadio13">Neutral</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio14" name="customRadio3" class="form-check-input" value="4" required>
+                                                                    <label class="form-check-label" for="customRadio14">Bad</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio15" name="customRadio3" class="form-check-input" value="5" required>
+                                                                    <label class="form-check-label" for="customRadio15">Very Bad</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="mt-3">
+                                                                <h4>How satisfied were you with the speakers and sessions at our event?</h4>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio16" name="customRadio4" class="form-check-input" value="1" required>
+                                                                    <label class="form-check-label" for="customRadio16">Very Good</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio17" name="customRadio4" class="form-check-input" value="2" required>
+                                                                    <label class="form-check-label" for="customRadio17">Good</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio18" name="customRadio4" class="form-check-input" value="3" required>
+                                                                    <label class="form-check-label" for="customRadio18">Neutral</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio19" name="customRadio4" class="form-check-input" value="4" required>
+                                                                    <label class="form-check-label" for="customRadio19">Bad</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio20" name="customRadio4" class="form-check-input" value="5" required>
+                                                                    <label class="form-check-label" for="customRadio20">Very Bad</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="mt-3">
+                                                                <h4>How did you feel about the duration of the content?</h4>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio21" name="customRadio5" class="form-check-input" value="1" required>
+                                                                    <label class="form-check-label" for="customRadio21">Very Good</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio22" name="customRadio5" class="form-check-input" value="2" required>
+                                                                    <label class="form-check-label" for="customRadio22">Good</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio23" name="customRadio5" class="form-check-input" value="3" required>
+                                                                    <label class="form-check-label" for="customRadio23">Neutral</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio24" name="customRadio5" class="form-check-input" value="4" required>
+                                                                    <label class="form-check-label" for="customRadio24">Bad</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="radio" id="customRadio25" name="customRadio5" class="form-check-input" value="5" required>
+                                                                    <label class="form-check-label" for="customRadio25">Very Bad</label>
+                                                                </div>
+                                                            </div>
+                                                            <hr>
+                                                            <div class="text-center">
+                                                                <button type="submit" class="btn btn-primary mt-3 mb-3" name="submit">Submit Evaluation</button>
+                                                            </div>
+
+                                                        </form>
+                                                    </div>
+                                                </div><!-- /.modal-content -->
+                                            </div><!-- /.modal-dialog -->
+                                        </div>
+
+
                                     </div> <!-- end .board-->
                                 </div> <!-- end col -->
                             </div>

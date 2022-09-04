@@ -19,6 +19,12 @@
                 <?php
                 $organization_id = $_GET['org_id'];
                 $department_id = $_GET['dept_id'];
+                if (isset($_GET['admin_id'])) {
+                    $org_admin_id = $_GET['admin_id'];
+                } else {
+                    $org_admin_id = null;
+                }
+
                 ?>
                 <!-- Start Content-->
                 <div class="container-fluid">
@@ -46,9 +52,12 @@
                     </div>
                     <div class="row">
                         <?php
-                        $query = "SELECT * FROM departments WHERE department_id = $department_id;";
+                        $query = "SELECT * FROM departments 
+                        RIGHT OUTER JOIN organizations ON departments.organization_id = organizations.organization_id
+                        WHERE department_id =$department_id;";
                         $results = $conn->query($query);
                         while ($row = $results->fetch_assoc()) {
+
                         ?>
                             <!-- Standard modal -->
                             <div id="edit-department-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
@@ -97,7 +106,7 @@
                                                     <!-- item-->
                                                     <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#edit-department-modal" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
                                                     <!-- item-->
-                                                    <a href="javascript:void(0);" id="delete-department" class="dropdown-item" data-dept_id=<?= $row['department_id'] ?>><i class="mdi mdi-delete me-1"></i>Delete</a>
+                                                    <a href="javascript:void(0);" id="delete-department" class="dropdown-item" data-dept_id=<?= $department_id ?> data-org_id=<?= $organization_id ?>><i class="mdi mdi-delete me-1"></i>Delete</a>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -143,10 +152,11 @@
                                     </div> <!-- end card-->
                                 </div> <!-- end col-->
                                 <?php
+
                                 if (isset($_GET['usertype'])) {
                                     $usertype = base64_decode($encoded = $_GET['usertype']);
                                 }
-                                if ($usertype == 'organizer' || $usertype == 'admin') {
+                                if ($usertype == 'organizer' || $usertype == 'admin' || $org_admin_id == $user) {
                                 ?>
                                     <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
                                         <div class="card  p-3">
@@ -156,6 +166,7 @@
                                                     <p class="text-muted font-14">Import your CSV file here format should be Firstname, Lastname, Email</p>
                                                     <input type="hidden" name="department_id" value="<?= $department_id; ?>">
                                                     <input type="hidden" name="organization_id" value="<?= $organization_id; ?>">
+                                                    <input type="hidden" name="org_admin_id" value="<?= $org_admin_id; ?>">
                                                     <div class="mb-2">
                                                         <input type="file" class="form-control" name="file" id="file" rows="6" required></input>
                                                     </div>
@@ -171,7 +182,7 @@
                 </div> <!-- container -->
             </div> <!-- content -->
             <?php
-            if ($usertype == 'organizer' || $usertype == 'admin') {
+            if ($usertype == 'organizer' || $usertype == 'admin' || $org_admin_id == $user) {
             ?>
                 <div class="container-fluid" id="members-list">
                     <div class="row">
@@ -189,7 +200,9 @@
 
                             <tbody>
                                 <?php
-                                $query = "SELECT * FROM users RIGHT OUTER JOIN members ON members.user_reference_id = users.userid LEFT OUTER JOIN departments ON members.department_id = departments.department_id WHERE members.department_id = $department_id";
+                                $query = "SELECT * FROM users 
+                                RIGHT OUTER JOIN members ON members.user_reference_id = users.userid 
+                                LEFT OUTER JOIN departments ON members.department_id = departments.department_id WHERE members.department_id = $department_id";
                                 $results = $conn->query($query);
                                 while ($row = $results->fetch_assoc()) {
                                 ?>
@@ -210,7 +223,6 @@
                                             <button data-bs-toggle="modal" data-bs-target="#edit-member-modal" class="action-icon edit-custom btn btn-success btn-light" value="<?= $row['userid']; ?>">
                                                 <i class="mdi mdi-square-edit-outline"></i>
                                             </button>
-                                            <a href="javascript:void(0);" class="action-icon"> <i class="mdi mdi-delete"></i></a>
                                         </td>
                                     </tr>
 
@@ -267,6 +279,7 @@
                                                 <input type="hidden" name="publisher_id" value="<?= $user; ?>">
                                                 <input type="hidden" name="department_id" value="<?= $department_id; ?>">
                                                 <input type="hidden" name="organization_id" value="<?= $organization_id; ?>">
+                                                <input type="hidden" name="org_admin_id" value="<?= $org_admin_id; ?>">
 
                                                 <input type="hidden" name="usertype" value="<?= $usertype; ?>">
 
@@ -351,7 +364,9 @@
                                 <h5 class="mt-0 task-header">FOR APPROVAL</h5>
                                 <div id="task-list-one" class="task-list-items">
                                     <?php
-                                    $query = "SELECT * FROM events WHERE event_status = 'pending' AND department_id = $department_id;";
+                                    $query = "SELECT * FROM events 
+                                            RIGHT OUTER JOIN users ON events.publisher_id = users.userid
+                                            WHERE event_status = 'pending' AND department_id = $department_id ORDER BY event_date ASC;";
                                     $results = $conn->query($query);
                                     while ($row = $results->fetch_assoc()) {
                                     ?>
@@ -360,46 +375,28 @@
 
                                             <div class="card-body p-3">
                                                 <!-- Date Created -->
-                                                <small class="float-end text-muted"><?= $row['event_datetime_created'] ?></small>
+                                                <small class="float-end text-muted"><?= $row['event_date'] ?></small>
                                                 <span class="badge bg-warning"><?= $row['event_status'] ?></span>
                                                 <h2 class="mt-2 mb-2">
                                                     <!-- Event Name -->
                                                     <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body"><?= $row['event_name'] ?></a>
                                                     </h3>
                                                     <p><?= $row['event_description'] ?></p>
-                                                    <p class="mb-0">
-                                                        <span class="pe-2 text-nowrap mb-2 d-inline-block">
-                                                            <i class="mdi mdi-account-check-outline text-muted"></i>
-                                                            Confirmed
-                                                        </span>
-                                                        <span class="text-nowrap mb-2 d-inline-block">
-                                                            <i class="mdi mdi-account-clock-outline text-muted"></i>
-                                                            <b>74</b> Unconfirmed
-                                                        </span>
-                                                    </p>
                                                     <div class="dropdown float-end">
                                                         <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
                                                             <i class="mdi mdi-dots-vertical font-18"></i>
                                                         </a>
                                                         <div class="dropdown-menu dropdown-menu-end">
-
-                                                            <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
-
-                                                            <a href="javascript:void(0);" class="dropdown-item delete-event" id="delete-event" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?> data-event_id=<?= $row['event_id'] ?> data-usertype=<?= $usertype ?>>
-                                                                <i class="mdi mdi-delete me-1"></i>
-                                                                Delete
-                                                            </a>
                                                             <?php
                                                             $usertype_encoded = base64_encode($usertype);
                                                             ?>
-                                                            <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>&usertype=<?= $usertype_encoded ?>" class="dropdown-item"><i class="mdi mdi-eye-circle-outline me-1"></i>View</a>
+                                                            <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>&usertype=<?= $usertype_encoded ?> &org_admin_id=<?= $user ?>" class="dropdown-item"><i class="mdi mdi-eye-circle-outline me-1"></i>View</a>
 
-                                                            <a href="javascript:void(0);" class="dropdown-item"><i class="mdi mdi-exit-to-app me-1"></i>Leave</a>
                                                         </div>
                                                     </div>
                                                     <p class="mb-0">
-                                                        <img src="../assets/images/users/avatar-2.jpg" alt="user-img" class="avatar-xs rounded-circle me-1">
-                                                        <span class="align-middle">Robert Carlile</span>
+                                                        <img src="<?= $row['photourl'] ?>" alt="user-img" class="avatar-xs rounded-circle me-1">
+                                                        <span class="align-middle"><?= $row['firstname'] ?> <?= $row['lastname'] ?></span>
                                                     </p>
                                             </div> <!-- end card-body -->
                                         </div>
@@ -415,7 +412,7 @@
                                     <?php
                                     $now = date('Y-m-d');
                                     $newdate = date("M d, Y", strtotime($now));
-                                    $query = "SELECT * FROM EVENTS 
+                                    $query = "SELECT * FROM events 
                                             RIGHT OUTER JOIN users ON events.publisher_id = users.userid
                                             WHERE event_status = 'approved' AND department_id = $department_id ORDER BY event_date ASC;";
                                     $results = $conn->query($query);
@@ -427,7 +424,7 @@
 
                                                 <div class="card-body p-3">
                                                     <!-- Date Created -->
-                                                    <small class="float-end text-muted"><?= $row['event_datetime_created'] ?></small>
+                                                    <small class="float-end text-muted"><?= $row['event_date'] ?></small>
                                                     <span class="badge bg-success"><?= $row['event_status'] ?></span>
                                                     <h2 class="mt-2 mb-2">
                                                         <!-- Event Name -->
@@ -461,13 +458,15 @@
                                                                 <i class="mdi mdi-dots-vertical font-18"></i>
                                                             </a>
                                                             <div class="dropdown-menu dropdown-menu-end">
-
-                                                                <a href="javascript:void(0);" class="dropdown-item delete-event" id="delete-event" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?> data-event_id=<?= $row['event_id'] ?> data-usertype=<?= $usertype ?>>
-                                                                    <i class="mdi mdi-delete me-1"></i>
-                                                                    Delete
-                                                                </a>
-
-                                                                <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>" class="dropdown-item"><i class="mdi mdi-eye-circle-outline me-1"></i>View</a>
+                                                                <?php
+                                                                if ($usertype == 'admin') {
+                                                                ?>
+                                                                    <a href="javascript:void(0);" class="dropdown-item delete-event" id="delete-event" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?> data-event_id=<?= $row['event_id'] ?> data-usertype=<?= $usertype ?>>
+                                                                        <i class="mdi mdi-delete me-1"></i>
+                                                                        Delete
+                                                                    </a>
+                                                                <?php } ?>
+                                                                <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>&usertype=<?= base64_encode($usertype) ?>" class="dropdown-item"><i class="mdi mdi-eye-circle-outline me-1"></i>View</a>
                                                             </div>
                                                         </div>
                                                         <p class="mb-0">
@@ -488,14 +487,14 @@
                                     <?php
                                     $now = date('Y-m-d');
                                     $newdate = date("M d, Y", strtotime($now));
-                                    $query = "SELECT * FROM EVENTS 
+                                    $query = "SELECT * FROM events 
                                             RIGHT OUTER JOIN users ON events.publisher_id = users.userid
                                             WHERE event_status = 'approved' AND department_id = $department_id ORDER BY event_date ASC;";
                                     $results = $conn->query($query);
                                     while ($row = $results->fetch_assoc()) {
                                         if ($row['event_date'] <= $newdate) {
                                     ?>
-                                            
+
                                             <!-- Task Item -->
                                             <div class="card mb-0">
                                                 <div class="card-body p-3">
@@ -505,7 +504,16 @@
                                                     <h5 class="mt-2 mb-2">
                                                         <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body"><?= $row['event_name'] ?></a>
                                                     </h5>
+                                                    <div class="dropdown float-end">
+                                                        <a href="#" class="dropdown-toggle text-muted arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="mdi mdi-dots-vertical font-18"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <a href="pages-view-event-details.php?event_id=<?= $row['event_id'] ?>" class="dropdown-item"><i class="mdi mdi-eye-circle-outline me-1"></i>View</a>
+                                                        </div>
+                                                    </div>
                                                 </div> <!-- end card-body -->
+
                                             </div>
                                             <!-- Task Item End -->
                                     <?php }

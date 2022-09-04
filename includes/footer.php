@@ -33,6 +33,11 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 <script src="../assets/js/vendor/buttons.print.min.js"></script>
 <script src="../assets/js/vendor/dataTables.keyTable.min.js"></script>
 <script src="../assets/js/vendor/dataTables.select.min.js"></script>
+
+<!-- third party js ends -->
+
+<!-- demo app -->
+<script src="assets/js/pages/demo.dashboard-analytics.js"></script>
 <!-- third party js ends -->
 
 <!-- demo app -->
@@ -44,6 +49,10 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
 
 <script src="../assets/js/pages/demo.toastr.js"></script>
 <script src="../assets/js/pages/demo.form-wizard.js"></script>
+
+<script src="../assets/js/vendor/apexcharts.min.js"></script>
+<script src="../assets/js/vendor/jquery-jvectormap-1.2.2.min.js"></script>
+<script src="../assets/js/vendor/jquery-jvectormap-world-mill-en.js"></script>
 <!-- end demo js-->
 
 <!-- Showing update profile after import for members -->
@@ -311,6 +320,62 @@ if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
             }
         })
 
+    })
+
+    $('.evaluate').click(function() {
+        var event_id = $(this).data('event_id');
+        $('#eevent_id').val(event_id);
+    })
+
+    $(document).ready(function() {
+        $('#saveBtn').click(function() {
+            var user_id = $("#user_id").val();
+            var saveBtn = $("#saveBtn").val();
+            if ($('#light-mode-check').is(":checked")) {
+                var color_scheme = "light";
+            } else {
+                var color_scheme = "dark";
+            }
+
+            if ($('#fluid-check').is(":checked")) {
+                var width = "fluid";
+            } else {
+                var width = "boxed";;
+            }
+
+            if ($('#default-check').is(":checked")) {
+                var theme = "default";
+            } else if ($('#light-check').is(":checked")) {
+                var theme = "light";
+            } else if ($('#dark-check').is(":checked")) {
+                var theme = "dark";
+            }
+
+            if ($('#fixed-check').is(":checked")) {
+                var compact = "fixed";
+            } else if ($('#condensed-check').is(":checked")) {
+                var compact = "condensed";
+            } else if ($('#scrollable-check').is(":checked")) {
+                var compact = "scrollable";
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '../controllers/user.configuration.ctrls.php',
+                data: {
+                    user_id,
+                    saveBtn,
+                    color_scheme,
+                    width,
+                    theme,
+                    compact
+                },
+                success: function(result) {
+
+                }
+            })
+
+        })
     })
 </script>
 </body>

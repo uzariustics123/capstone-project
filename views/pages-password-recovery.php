@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -46,14 +49,14 @@
                                 <p class="text-muted mb-4">Enter your email address and we'll send you an email with instructions to reset your password.</p>
                             </div>
 
-                            <form action="#">
-                                <div class="mb-3">
+                            <form action="../controllers/password.recovery.ctrls.php" method="post" enctype="multipart/form-data">
+                                <div class=" mb-3">
                                     <label for="emailaddress" class="form-label">Email address</label>
-                                    <input class="form-control" type="email" id="emailaddress" required="" placeholder="Enter your email">
+                                    <input class="form-control" name="emailaddress" type="email" id="emailaddress" required="" placeholder="Enter your email">
                                 </div>
 
                                 <div class="mb-0 text-center">
-                                    <button class="btn btn-primary" type="submit">Reset Password</button>
+                                    <button class="btn btn-primary" type="submit" name="submit">Reset Password</button>
                                 </div>
                             </form>
                         </div> <!-- end card-body-->
@@ -62,7 +65,7 @@
 
                     <div class="row mt-3">
                         <div class="col-12 text-center">
-                            <p class="text-muted">Back to <a href="pages-login.html" class="text-muted ms-1"><b>Log In</b></a></p>
+                            <p class="text-muted">Back to <a href="pages-login.php" class="text-muted ms-1"><b>Log In</b></a></p>
                         </div> <!-- end col -->
                     </div>
                     <!-- end row -->

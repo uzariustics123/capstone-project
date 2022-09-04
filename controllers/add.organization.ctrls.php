@@ -17,10 +17,7 @@ if (isset($_POST['submit'])) {
 
     $date_created = date('Y-m-d');
 
-    if (emptyInputOrganization($organization_name, $organization_description, $organization_address) !== false) {
-        header("location: ../views/pages-add-organization.php?error=emptyfields");
-        exit();
-    }
+
 
     createOrganization($conn, $organization_name, $organization_description, $organization_address, $userid, $file, $date_created, $email);
 } else {

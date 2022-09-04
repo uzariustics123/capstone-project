@@ -64,8 +64,9 @@ if (isset($_POST['submit'])) {
         }
     }
 
+    $newdate = date("M d, Y", strtotime($event_date));
 
-    editEvent($conn, $event_id, $event_name, $event_description, $event_location, $event_date, $event_start_time_am, $event_end_time_am, $event_start_time_pm, $event_end_time_pm, $event_attendance_duration, $event_all_day);
+    editEvent($conn, $event_id, $event_name, $event_description, $event_location, $newdate, $event_start_time_am, $event_end_time_am, $event_start_time_pm, $event_end_time_pm, $event_attendance_duration, $event_all_day);
 } else {
     header("location: ../views/pages-view-event-details.php?event_id=$event_id");
     exit();

@@ -8,9 +8,6 @@ if (isset($_POST['submit'])) {
     $firstname = $_POST['firstname'];
     $lastname = $_POST['lastname'];
     $file = $_FILES['image'];
-    $usertype = $_POST['usertype'];
-
-
 
 
 
@@ -20,7 +17,7 @@ if (isset($_POST['submit'])) {
     }
 
 
-    editUserProfile($conn, $user_id, $firstname, $lastname, $file, $usertype);
+    editUserProfile($conn, $user_id, $firstname, $lastname, $file);
 } else {
     header("location: ../views/pages-my-organization.php");
     exit();

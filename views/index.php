@@ -1,8 +1,5 @@
-﻿<?php include_once '../includes/header.php';
-
-?>
+﻿<?php require_once '../includes/header.php'; ?>
 <?php if (isset($user)) {
-    include_once('../config/db.php');
 ?>
     <?php if (isset($_SESSION['status'])) {
         $status = $_SESSION['status'];
@@ -10,7 +7,7 @@
     } ?>
 
     <div class="wrapper">
-        <?php include_once '../includes/sidebar.php'; ?>
+        <?php require_once '../includes/sidebar.php'; ?>
         <div class="content-page">
             <div class="content">
                 <?php include_once '../includes/topbar.php'; ?>
@@ -84,7 +81,9 @@
                     </form>
                     <div class="row">
                         <?php
-                        $query = "SELECT * FROM organizations LEFT OUTER JOIN members ON members.organization_id = organizations.organization_id WHERE user_reference_id = $user AND usertype = 'admin';";
+                        $query = "SELECT * FROM organizations 
+                        RIGHT OUTER JOIN members ON members.organization_id = organizations.organization_id 
+                        WHERE members.user_reference_id = $user AND organizations.org_admin_id = $user;";
                         $results = $conn->query($query);
                         while ($row = $results->fetch_assoc()) {
                         ?>
@@ -196,7 +195,7 @@
                                                                                 <div class="row mb-3">
                                                                                     <label class="col-md-3 col-form-label" for="image"> Image</label>
                                                                                     <div class="col-md-9">
-                                                                                        <input type="file" id="image" name="image" class="form-control">
+                                                                                        <input type="file" id="image" name="image" class="form-control" required>
                                                                                     </div>
                                                                                 </div>
                                                                             </div> <!-- end col -->

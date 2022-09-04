@@ -75,19 +75,6 @@ if (isset($_SESSION['member_id'])) {
                 </li>
             <?php } ?>
 
-            <?php
-            $query = "SELECT * FROM members WHERE member_id = $member_id AND usertype = 'admin';";
-            $results = $conn->query($query);
-            while ($row = $results->fetch_assoc()) {
-            ?>
-                <li class="side-nav-item">
-                    <a href="javascript:void(0)" class="side-nav-link">
-                        <i class="uil-chart"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-
-            <?php } ?>
             <li class="side-nav-item">
                 <a href="../views/pages-event-feed.php" class="side-nav-link">
                     <i class="uil-object-group"></i>
