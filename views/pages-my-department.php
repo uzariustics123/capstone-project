@@ -98,17 +98,26 @@
                                 <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
                                     <div class="card">
                                         <div class="card-body">
-                                            <div class="dropdown card-widgets">
-                                                <a href="#" class="dropdown-toggle arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="dripicons-gear"></i>
-                                                </a>
-                                                <div class="dropdown-menu dropdown-menu-end">
-                                                    <!-- item-->
-                                                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#edit-department-modal" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
-                                                    <!-- item-->
-                                                    <a href="javascript:void(0);" id="delete-department" class="dropdown-item" data-dept_id=<?= $department_id ?> data-org_id=<?= $organization_id ?>><i class="mdi mdi-delete me-1"></i>Delete</a>
+                                            <?php
+                                            if (isset($_GET['usertype'])) {
+                                                $usertype = base64_decode($encoded = $_GET['usertype']);
+                                            }
+                                            if ($usertype == 'organizer' || $usertype == 'admin' || $org_admin_id == $user) {
+                                            ?>
+                                                ?>
+
+                                                <div class="dropdown card-widgets">
+                                                    <a href="#" class="dropdown-toggle arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="dripicons-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <!-- item-->
+                                                        <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#edit-department-modal" class="dropdown-item"><i class="mdi mdi-pencil me-1"></i>Edit</a>
+                                                        <!-- item-->
+                                                        <a href="javascript:void(0);" id="delete-department" class="dropdown-item" data-dept_id=<?= $department_id ?> data-org_id=<?= $organization_id ?>><i class="mdi mdi-delete me-1"></i>Delete</a>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            <?php } ?>
                                             <div class="row">
                                                 <div class="col-lg-5">
                                                     <!-- Product image -->

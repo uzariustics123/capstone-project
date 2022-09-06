@@ -210,10 +210,9 @@ function resetPassword($conn, $email)
 function loginUser($conn, $email, $password)
 {
     $emailExist = emailExist($conn, $email);
-    $registration_status = $emailExist['registration_status'];
+
 
     if ($emailExist == false) {
-
         session_start();
         $_SESSION['status'] = "
         <script>const Toast = Swal.mixin({
@@ -231,6 +230,7 @@ function loginUser($conn, $email, $password)
         header("location: ../views/pages-login.php?");
         exit();
     }
+    $registration_status = $emailExist['registration_status'];
 
     if ($registration_status == 'pending') {
         $temp_pass = $emailExist['temp_pass'];
@@ -941,7 +941,7 @@ function importMembers($conn, $department_id, $organization_id, $files, $org_adm
 
                     $subject = "Congratulations!!";
                     $body = "<h1><b>You have been successfully added to a department in your organization</b></h1>";
-                    //mailSender($email, $subject, $body);
+                    mailSender($email, $subject, $body);
                 }
             } else if ($emailExist == false) {
 
@@ -970,7 +970,7 @@ function importMembers($conn, $department_id, $organization_id, $files, $org_adm
 
                     $subject = "Congratulations!!";
                     $body = "You have been successfully added to a department in your organization to view this you can login using your email and this password. When first time logging in you will be prompted to change this temporary password. Thank you! <h2>" . $password . "</h2>";
-                    //mailSender($email, $subject, $body);
+                    mailSender($email, $subject, $body);
                 }
             }
         }
@@ -1103,7 +1103,7 @@ function createEvent($conn, $event_name, $event_description, $event_location, $d
             $recipient = $row['member_email'];
             $subject = $row['event_name'];
             $body = 'Hey you are invited to attend ' . $subject . ' you can view and confirm your attendance by logging in to your account';
-            //mailSender($recipient, $subject, $body);
+            mailSender($recipient, $subject, $body);
         }
     }
 
@@ -1134,7 +1134,7 @@ function deleteEvent($conn, $event_id, $organization_id, $department_id)
         $recipient = $row['member_email'];
         $subject = $row['event_name'];
         $body = 'The Event ' . $subject . ' has been deleted ';
-        //mailSender($recipient, $subject, $body);
+        mailSender($recipient, $subject, $body);
     }
 
 
@@ -1183,7 +1183,7 @@ function approveEvent($conn, $event_id)
         $recipient = $row['member_email'];
         $subject = $row['event_name'];
         $body = 'Hey you are invited to attend ' . $subject . ' you can view and confirm your attendance by logging in to your account';
-        //mailSender($recipient, $subject, $body);
+        mailSender($recipient, $subject, $body);
     }
 
     session_start();

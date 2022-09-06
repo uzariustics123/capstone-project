@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 
-  <link rel="shortcut icon" href="./assets/images/favicon.ico" />
+  <link rel="shortcut icon" href="./assets/images/logo_sm.png" />
 
   <link href="./assets/css/icons.min.css" rel="stylesheet" type="text/css" />
   <link href="./assets/css/app.min.css" rel="stylesheet" type="text/css" id="light-style" />

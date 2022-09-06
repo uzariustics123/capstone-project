@@ -116,20 +116,24 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <div class="text-center">
-                                                        <?php
-                                                        include "../assets/phpqrcode/qrlib.php";
-                                                        $PNG_TEMP_DIR = '../assets/images/temp/';
-                                                        if (!file_exists($PNG_TEMP_DIR))
-                                                            mkdir($PNG_TEMP_DIR);
-                                                        $filename = $PNG_TEMP_DIR . 'test.png';
-                                                        $codeString = "userid:" . bin2hex($user);
-                                                        $hexed = $codeString;
-                                                        $filename = $PNG_TEMP_DIR . 'test' . md5($hexed) . '.png';
-                                                        QRcode::png($hexed, $filename);
-                                                        $file = $PNG_TEMP_DIR . basename($filename);
-                                                        ?>
-                                                        <?= '<img src="' . $file . '" alt="" height="200">'; ?>
+                                                        <div class="row">
+                                                            <?php
+                                                            include "../assets/phpqrcode/qrlib.php";
+                                                            $PNG_TEMP_DIR = '../assets/images/temp/';
+                                                            if (!file_exists($PNG_TEMP_DIR))
+                                                                mkdir($PNG_TEMP_DIR);
+                                                            $filename = $PNG_TEMP_DIR . 'test.png';
+                                                            $codeString = "userid:" . bin2hex($user);
+                                                            $hexed = $codeString;
+                                                            $filename = $PNG_TEMP_DIR . 'test' . md5($hexed) . '.png';
+                                                            QRcode::png($hexed, $filename);
+                                                            $file = $PNG_TEMP_DIR . basename($filename);
+                                                            ?>
+                                                            <div class="text-center">
+                                                                <img src="<?= $file ?>" class="img-fluid" width="250" />
+                                                            </div>
 
+                                                        </div>
                                                         <button type="button" id="deleteqr" class="btn btn-success my-2" data-bs-dismiss="modal" data-image="<?= $file ?>">Close</button>
                                                     </div>
                                                 </div>

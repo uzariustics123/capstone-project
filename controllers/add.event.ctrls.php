@@ -89,7 +89,7 @@ if (isset($_POST['submit'])) {
     $publisher_id = $_POST['publisher_id'];
 
 
-    createEvent($conn, $event_name, $event_description, $event_location, $department_id, $event_datetime_created, $newdate, $event_attendance_duration, $event_start_time_am, $event_end_time_am, $event_start_time_pm, $event_end_time_pm, $event_all_day, $event_status, $publisher_id, $organization_id, $usertype, $org_admin_id);
+    createEvent($conn, $event_name, $event_description, $event_location, $department_id, $newdate, $event_attendance_duration, $event_start_time_am, $event_end_time_am, $event_start_time_pm, $event_end_time_pm, $event_all_day, $event_status, $publisher_id, $organization_id, $usertype, $org_admin_id);
 } else {
     header("location: ../views/pages-my-department.php?org_id=$organization_id&dept_id=$department_id&usertype=$encoded&admin_id=$org_admin_id");
     exit();
