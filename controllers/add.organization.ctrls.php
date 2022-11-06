@@ -14,12 +14,17 @@ if (isset($_POST['submit'])) {
     } else {
         $file = null;
     }
+    if ($_FILES['attachment']['size'] != 0) {
+        $attachment = $_FILES['attachment'];
+    } else {
+        $attachment = null;
+    }
 
     $date_created = date('Y-m-d');
 
 
 
-    createOrganization($conn, $organization_name, $organization_description, $organization_address, $userid, $file, $date_created, $email);
+    createOrganization($conn, $organization_name, $organization_description, $organization_address, $userid, $file, $date_created, $email, $attachment);
 } else {
     header("location: ../views/pages-add-organization.php");
     exit();

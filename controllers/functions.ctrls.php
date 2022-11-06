@@ -28,7 +28,7 @@ function tempPass()
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $randstring = '';
     for ($i = 0; $i < 8; $i++) {
-        $randstring .= $characters[rand(0, strlen($characters))];
+        $randstring .= $characters[rand(0, strlen($characters) - 1)];
     }
     return $randstring;
 }
@@ -52,11 +52,11 @@ function mailSender($recipient, $subject, $body)
     return $result;
 }
 
-function emptyInputSignup($firstname, $lastname, $email, $password, $registration_status)
+function emptyInputSignup($firstname, $lastname, $email)
 {
     $result = true;
 
-    if (empty($firstname) || empty($lastname) || empty($registration_status) || empty($email) || empty($password)) {
+    if (empty($firstname) || empty($lastname) || empty($email)) {
         $result = true;
     } else {
         $result = false;
@@ -89,52 +89,6 @@ function pwdMatch($password, $repeat_password)
     return $result;
 }
 
-function createUser($conn, $firstname, $lastname, $email, $password, $registration_status)
-{
-    $sql = "INSERT INTO users (firstname, lastname, email, photourl, password, registration_status) VALUES (?,?,?,?,?,?);";
-    $stmt = mysqli_stmt_init($conn);
-    $photourl = 'https://cdn-icons-png.flaticon.com/512/892/892781.png';
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        header("location: ../views/pages-register.php?error=stmtfailed");
-        exit();
-    }
-
-    $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
-    mysqli_stmt_bind_param($stmt, "ssssss", $firstname, $lastname, $email, $photourl, $hashedpassword, $registration_status);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
-
-    session_start();
-    $_SESSION['status'] = "
-        <script>const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000
-      })
-  
-      Toast.fire({
-        icon: 'success',
-        title: 'Registration Success'
-      })</script>";
-    header("location: ../views/pages-login.php?");
-    exit();
-}
-
-
-function emptyInputLogin($email, $password)
-{
-    $result = true;
-
-    if (empty($email) || empty($password)) {
-        $result = true;
-    } else {
-        $result = false;
-    }
-    return $result;
-}
-
-
 function emailExist($conn, $email)
 {
     $query = "SELECT * FROM users 
@@ -161,6 +115,147 @@ function emailExist($conn, $email)
 
     mysqli_stmt_close($stmt);
 }
+
+
+
+function createUser($conn, $firstname, $lastname, $email)
+{
+    $emailExist = emailExist($conn, $email);
+
+    if ($emailExist == true) {
+        session_start();
+        $_SESSION['status'] = "
+        <script>const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      })
+  
+      Toast.fire({
+        icon: 'warning',
+        title: 'Email already taken'
+      })</script>";
+
+        header("location: ../views/pages-register.php?");
+    } else {
+        $sql = "INSERT INTO users (firstname, lastname, email, photourl) VALUES (?,?,?,?);";
+        $stmt = mysqli_stmt_init($conn);
+        $photourl = 'https://cdn-icons-png.flaticon.com/512/892/892781.png';
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../views/pages-register.php?error=stmtfailed");
+            exit();
+        }
+
+        mysqli_stmt_bind_param($stmt, "ssss", $firstname, $lastname, $email, $photourl);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+
+        $user_id = base64_encode($conn->insert_id);
+        $recipient = $email;
+        $hashed_email = base64_encode($email);
+        $subject = "Clyde from Events Management System!";
+        $body = "To Register you need to click this <a href='http://localhost/capstone-project/views/pages-register-password.php?id=$user_id&email=$hashed_email'>link</a> and enter your password. <br>
+    If the link above did not work you can click this. <br>
+    http://localhost/capstone-project/views/pages-register-password.php?id=$user_id&email=$hashed_email
+    ";
+
+        mailSender($recipient, $subject, $body);
+        header("location: ../views/pages-approval-mail.php?");
+        exit();
+    }
+}
+
+function createUserPassword($conn, $user_id, $email, $password)
+{
+    $decoded_user_id = base64_decode($user_id);
+    $decoded_email = base64_decode($email);
+    $emailExist = emailExist($conn, $decoded_email);
+
+    if ($emailExist == false) {
+        session_start();
+        $_SESSION['status'] = "
+        <script>const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      })
+  
+      Toast.fire({
+        icon: 'warning',
+        title: 'User does not exist'
+      })</script>";
+
+        header("location: ../views/pages-login.php");
+        exit();
+    } else if ($emailExist['registration_status'] == 'registered') {
+        session_start();
+        $_SESSION['status'] = "
+        <script>const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      })
+  
+      Toast.fire({
+        icon: 'warning',
+        title: 'User already registered'
+      })</script>";
+
+        header("location: ../views/pages-login.php?");
+        exit();
+    } else {
+
+
+        $sql = "UPDATE users SET password = ?, registration_status = ? WHERE userid = $decoded_user_id;";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../views/pages-register.php?error=stmtfailed");
+            exit();
+        }
+        $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
+        $registration_status = "registered";
+
+        mysqli_stmt_bind_param($stmt, "ss", $hashedpassword, $registration_status);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+
+        session_start();
+        $_SESSION['status'] = "
+        <script>const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      })
+      Toast.fire({
+        icon: 'success',
+        title: 'Successfully registered now you can login!'
+      })</script>";
+
+        header("location: ../views/pages-login.php");
+        exit();
+    }
+}
+
+
+function emptyInputLogin($email, $password)
+{
+    $result = true;
+
+    if (empty($email) || empty($password)) {
+        $result = true;
+    } else {
+        $result = false;
+    }
+    return $result;
+}
+
+
+
 
 
 function resetPassword($conn, $email)
@@ -199,7 +294,7 @@ function resetPassword($conn, $email)
     $recipient = $email;
     $subject = "Password Recovery";
     $body = "Here is your temporary password. After logging in make sure to change your password <br><h1><b> " . $temp_pass . " </b></h1>";
-    mailSender($recipient, $subject, $body);
+    //mailSender($recipient, $subject, $body);
     session_start();
     $_SESSION["email"] = $emailExist["email"];
     header("location: ../views/pages-confirm-mail.php");
@@ -492,20 +587,31 @@ function emptyInputOrganization($organization_name, $organization_description, $
     return $result;
 }
 
-function createOrganization($conn, $organization_name, $organization_description, $organization_address, $userid, $file, $date_created, $email)
+function createOrganization($conn, $organization_name, $organization_description, $organization_address, $userid, $file, $date_created, $email, $attachment)
 {
 
-    if ($file != null) {
-        $allow = array('jpg', 'jpeg', 'png');
-        $exntension = explode('.', $file['name']);
-        $fileActExt = strtolower(end($exntension));
-        $fileNew = randomName() . "." . $fileActExt;
-        $filePath = '../assets/uploads/' . $fileNew;
+    if ($file != null && $attachment != null) {
+        $allow = array('jpg', 'png', 'jpeg', 'gif', 'pdf', 'doc', 'csv', 'docx');
 
-        if (in_array($fileActExt, $allow)) {
-            if ($file['size'] > 0 && $file['error'] == 0) {
-                if (move_uploaded_file($file['tmp_name'], $filePath)) {
-                    $sql = "INSERT INTO organizations (org_name, org_description, org_address, org_imgurl, date_created, org_admin_id) VALUES (?,?,?,?,?,?);";
+        // image
+        $exntension = explode('.', $file['name']);
+        $attachment_extension = explode('.', $attachment['name']);
+
+        $fileActExt = strtolower(end($exntension));
+        $attachmentActExt = strtolower(end($attachment_extension));
+
+        $fileNew = randomName() . "." . $fileActExt;
+        $attachmentNew = randomName() . "." . $attachmentActExt;
+
+        $filePath = '../assets/uploads/' . $fileNew;
+        $attachmentPath = '../assets/documents/' . $attachmentNew;
+
+        $org_status = 'pending';
+
+        if (in_array($fileActExt, $allow) && in_array($attachmentActExt, $allow)) {
+            if ($file['size'] > 0 && $file['error'] == 0 && $attachment['size'] > 0 && $attachment['error'] == 0) {
+                if (move_uploaded_file($file['tmp_name'], $filePath) && move_uploaded_file($attachment['tmp_name'], $attachmentPath)) {
+                    $sql = "INSERT INTO organizations (org_name, org_description, org_address, org_imgurl, date_created, org_admin_id, attachments, org_status) VALUES (?,?,?,?,?,?,?,?);";
                     $stmt = mysqli_stmt_init($conn);
 
                     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -515,7 +621,7 @@ function createOrganization($conn, $organization_name, $organization_description
                     $trimmed = ltrim($filePath, "./");
                     $updated_path = "https://emapppp.000webhostapp.com/" . $trimmed;
 
-                    mysqli_stmt_bind_param($stmt, "ssssss", $organization_name, $organization_description, $organization_address, $updated_path, $date_created, $userid);
+                    mysqli_stmt_bind_param($stmt, "ssssssss", $organization_name, $organization_description, $organization_address, $filePath, $date_created, $userid, $attachmentPath, $org_status);
                     mysqli_stmt_execute($stmt);
 
 
@@ -547,49 +653,59 @@ function createOrganization($conn, $organization_name, $organization_description
                 }
             }
         }
-    } else {
-        $file = "https://images.unsplash.com/photo-1606327054536-e37e655d4f4a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80";
-
-        $sql = "INSERT INTO organizations (org_name, org_description, org_address, org_imgurl, date_created, org_admin_id) VALUES (?,?,?,?,?,?);";
-        $stmt = mysqli_stmt_init($conn);
-
-        if (!mysqli_stmt_prepare($stmt, $sql)) {
-            header("location: ../views/pages-add-organization.php?error=mysqlierror");
-            exit();
-        }
-
-
-        mysqli_stmt_bind_param($stmt, "ssssss", $organization_name, $organization_description, $organization_address, $file, $date_created, $userid);
-        mysqli_stmt_execute($stmt);
-
-
-        if (mysqli_affected_rows($conn)) {
-            $organization_id = $conn->insert_id;
-
-            $sql = "INSERT INTO members (member_email, usertype, organization_id,user_reference_id) VALUES (?,?,?,?);";
-            $stmt = mysqli_stmt_init($conn);
-            $usertype = 'admin';
-            if (!mysqli_stmt_prepare($stmt, $sql)) {
-                header("location: ../views/pages-add-organization.php?error=mysqlierror");
-                exit();
-            }
-
-            mysqli_stmt_bind_param($stmt, "ssss", $email, $usertype, $organization_id, $userid);
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
-        }
-        session_start();
-        $_SESSION["status"] =
-            "<script>
-                    Swal.fire(
-                    'Added!',
-                    'An organization has been added.',
-                    'success')
-                    </script>";
-        header("location: ../views/index.php?error=none");
-        exit();
     }
 }
+
+function approveOrganization($conn, $organization_id)
+{
+    $sql = "UPDATE organizations SET org_status = ? WHERE organization_id = $organization_id;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        header("location: ../views/admin.php");
+        exit();
+    }
+    $org_status = "approved";
+    mysqli_stmt_bind_param($stmt, "s", $org_status);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    session_start();
+    $_SESSION["status"] =
+        "<script>
+        Swal.fire(
+        'Approved!',
+        'This organization was approved.',
+        'success')
+        </script>";
+    header("location: ../views/admin.php");
+    exit();
+}
+
+function disapproveOrganization($conn, $organization_id)
+{
+    $sql = "UPDATE organizations SET org_status = ? WHERE organization_id = $organization_id;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        header("location: ../views/admin.php");
+        exit();
+    }
+    $org_status = "disapproved";
+    mysqli_stmt_bind_param($stmt, "s", $org_status);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    session_start();
+    $_SESSION["status"] =
+        "<script>
+        Swal.fire(
+        'Disapproved!',
+        'This organization was disapproved.',
+        'warning')
+        </script>";
+    header("location: ../views/admin.php");
+    exit();
+}
+
 function deleteOrganization($conn, $organization_id)
 {
     $sql_org = "DELETE FROM organizations WHERE organization_id=?";
@@ -901,76 +1017,84 @@ function importMembers($conn, $department_id, $organization_id, $files, $org_adm
                 exit();
             }
 
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
-            $emailExist = emailExist($conn, $email);
+                $emailExist = emailExist($conn, $email);
 
-            if ($emailExist == true) {
-                $userid = $emailExist['userid'];
+                if ($emailExist == true) {
+                    $userid = $emailExist['userid'];
 
-                $sql_for_update = "SELECT * FROM members WHERE department_id = ? AND user_reference_id = $userid;";
-                $stmt_for_update = mysqli_stmt_init($conn);
-                if (!mysqli_stmt_prepare($stmt_for_update, $sql_for_update)) {
-                    header("location: ../views/pages-register.php?error=stmtfailed");
-                    exit();
-                }
-                mysqli_stmt_bind_param($stmt_for_update, "s", $department_id);
-                mysqli_stmt_execute($stmt_for_update);
-                $result = $stmt_for_update->get_result();
-                $members = $result->fetch_assoc();
+                    $sql_for_update = "SELECT * FROM members WHERE department_id = ? AND user_reference_id = $userid;";
+                    $stmt_for_update = mysqli_stmt_init($conn);
+                    if (!mysqli_stmt_prepare($stmt_for_update, $sql_for_update)) {
+                        header("location: ../views/pages-register.php?error=stmtfailed");
+                        exit();
+                    }
+                    mysqli_stmt_bind_param($stmt_for_update, "s", $department_id);
+                    mysqli_stmt_execute($stmt_for_update);
+                    $result = $stmt_for_update->get_result();
+                    $members = $result->fetch_assoc();
 
-                if (isset($members['department_id']) == $department_id && $members['user_reference_id'] == $userid) {
-                    session_start();
-                    $_SESSION["status"] =
-                        "<script>
+                    if (isset($members['department_id']) == $department_id && $members['user_reference_id'] == $userid) {
+                        session_start();
+                        $_SESSION["status"] =
+                            "<script>
                     Swal.fire(
                     'Added!',
                     'Import success.',
                     'success')
                     </script>";
-                    header("location: ../views/pages-my-department.php?&org_id=$organization_id&dept_id=$department_id&admin_id=$org_admin_id");
-                    exit();
-                } else {
-                    $sql = "INSERT INTO members (member_email, usertype, department_id, organization_id, user_reference_id) VALUES (?,?,?,?,?);";
-                    $stmt = mysqli_stmt_init($conn);
-                    if (!mysqli_stmt_prepare($stmt, $sql)) {
-                        header("location: ../views/pages-register.php?error=stmtfailed");
+                        header("location: ../views/pages-my-department.php?&org_id=$organization_id&dept_id=$department_id&admin_id=$org_admin_id");
                         exit();
+                    } else {
+                        $sql = "INSERT INTO members (member_email, usertype, department_id, organization_id, user_reference_id) VALUES (?,?,?,?,?);";
+                        $stmt = mysqli_stmt_init($conn);
+                        if (!mysqli_stmt_prepare($stmt, $sql)) {
+                            header("location: ../views/pages-register.php?error=stmtfailed");
+                            exit();
+                        }
+                        mysqli_stmt_bind_param($stmt, "sssss", $email, $usertype, $department_id, $organization_id, $userid);
+                        mysqli_stmt_execute($stmt);
+
+                        $subject = "Congratulations!!";
+                        $body = "<h1><b>You have been successfully added to a department in your organization</b></h1>";
+                        //mailSender($email, $subject, $body);
                     }
-                    mysqli_stmt_bind_param($stmt, "sssss", $email, $usertype, $department_id, $organization_id, $userid);
-                    mysqli_stmt_execute($stmt);
+                } else if ($emailExist == false) {
 
-                    $subject = "Congratulations!!";
-                    $body = "<h1><b>You have been successfully added to a department in your organization</b></h1>";
-                    mailSender($email, $subject, $body);
-                }
-            } else if ($emailExist == false) {
-
-                $sql = "INSERT INTO users (firstname, lastname, email, photourl, temp_pass, registration_status) VALUES (?,?,?,?,?,?);";
-                $stmt = mysqli_stmt_init($conn);
-                $photourl = 'https://cdn-icons-png.flaticon.com/512/892/892781.png';
-                if (!mysqli_stmt_prepare($stmt, $sql)) {
-                    header("location: ../views/pages-my-department.php?org_id=$organization_id&dept_id=$department_id&error=stmntfailed");
-                    exit();
-                }
-                $password = tempPass();
-                mysqli_stmt_bind_param($stmt, "ssssss", $firstname, $lastname, $email, $photourl, $password, $registration_status);
-                mysqli_stmt_execute($stmt);
-                mysqli_stmt_close($stmt);
-                if (mysqli_affected_rows($conn)) {
-                    $insert_id = $conn->insert_id;
-
-                    $sql = "INSERT INTO members (member_email, usertype, department_id, organization_id, user_reference_id) VALUES (?,?,?,?,?);";
+                    $sql = "INSERT INTO users (firstname, lastname, email, photourl, registration_status) VALUES (?,?,?,?,?);";
                     $stmt = mysqli_stmt_init($conn);
+                    $photourl = 'https://cdn-icons-png.flaticon.com/512/892/892781.png';
                     if (!mysqli_stmt_prepare($stmt, $sql)) {
                         header("location: ../views/pages-my-department.php?org_id=$organization_id&dept_id=$department_id&error=stmntfailed");
                         exit();
                     }
-                    mysqli_stmt_bind_param($stmt, "sssss", $email, $usertype, $department_id, $organization_id, $insert_id);
-                    mysqli_stmt_execute($stmt);
 
-                    $subject = "Congratulations!!";
-                    $body = "You have been successfully added to a department in your organization to view this you can login using your email and this password. When first time logging in you will be prompted to change this temporary password. Thank you! <h2>" . $password . "</h2>";
-                    mailSender($email, $subject, $body);
+                    mysqli_stmt_bind_param($stmt, "sssss", $firstname, $lastname, $email, $photourl, $registration_status);
+                    mysqli_stmt_execute($stmt);
+                    $user_id = base64_encode($conn->insert_id);
+                    mysqli_stmt_close($stmt);
+                    if (mysqli_affected_rows($conn)) {
+                        $insert_id = $conn->insert_id;
+
+                        $sql = "INSERT INTO members (member_email, usertype, department_id, organization_id, user_reference_id) VALUES (?,?,?,?,?);";
+                        $stmt = mysqli_stmt_init($conn);
+                        if (!mysqli_stmt_prepare($stmt, $sql)) {
+                            header("location: ../views/pages-my-department.php?org_id=$organization_id&dept_id=$department_id&error=stmntfailed");
+                            exit();
+                        }
+                        mysqli_stmt_bind_param($stmt, "sssss", $email, $usertype, $department_id, $organization_id, $insert_id);
+                        mysqli_stmt_execute($stmt);
+
+
+                        $recipient = $email;
+                        $hashed_email = base64_encode($email);
+                        $subject = "Clyde from Events Management System!";
+                        $body = "To Register you need to click this <a href='http://localhost/capstone-project/views/pages-register-password.php?id=$user_id&email=$hashed_email'>link</a> and enter your password. <br>
+                            If the link above did not work you can click this. <br>
+                            http://localhost/capstone-project/views/pages-register-password.php?id=$user_id&email=$hashed_email";
+                        mailSender($recipient, $subject, $body);
+                    }
                 }
             }
         }
@@ -981,8 +1105,8 @@ function importMembers($conn, $department_id, $organization_id, $files, $org_adm
         $_SESSION["status"] =
             "<script>
                     Swal.fire(
-                    'Added!',
-                    'Import success.',
+                    'Imported!',
+                    'All valid data has been imported successfully.',
                     'success')
                     </script>";
         header("location: ../views/pages-my-department.php?&org_id=$organization_id&dept_id=$department_id&admin_id=$org_admin_id");
@@ -1092,20 +1216,27 @@ function createEvent($conn, $event_name, $event_description, $event_location, $d
         mysqli_stmt_bind_param($stmt, "ss", $accesstype, $participant_status);
         mysqli_stmt_execute($stmt);
     }
-
+    // BUGGED
     if ($event_status == 'approved') {
-        $query = "SELECT * FROM ((events 
-                RIGHT OUTER JOIN departments ON events.department_id = departments.department_id)
-                RIGHT OUTER JOIN members ON events.department_id = members.department_id)
-                WHERE events.event_id = $event_id;";
+        $query = "SELECT * FROM members
+            RIGHT OUTER JOIN participants ON participants.member_reference_id = members.member_id
+            WHERE participants.event_id = $event_id;";
         $results = $conn->query($query);
         while ($row = $results->fetch_assoc()) {
+
+            $participant_id = $row['participant_id'];
+            $hashed_participant_id = base64_encode($participant_id);
             $recipient = $row['member_email'];
-            $subject = $row['event_name'];
-            $body = 'Hey you are invited to attend ' . $subject . ' you can view and confirm your attendance by logging in to your account';
+            $subject = "Event Invitation";
+            $body = "Hey you are invited to attend you can view and confirm your attendance by logging in to your account or by clicking this <a href='http://localhost/capstone-project/confirm.attendance.prompt.php?participant_id=$hashed_participant_id'>link</a>.
+            or by clicking this link below <br>
+            http://localhost/capstone-project/confirm.attendance.prompt.php?participant_id=$hashed_participant_id
+            ";
+
             mailSender($recipient, $subject, $body);
         }
     }
+    // BUGGED
 
     session_start();
     $_SESSION["status"] =
@@ -1134,7 +1265,7 @@ function deleteEvent($conn, $event_id, $organization_id, $department_id)
         $recipient = $row['member_email'];
         $subject = $row['event_name'];
         $body = 'The Event ' . $subject . ' has been deleted ';
-        mailSender($recipient, $subject, $body);
+        //mailSender($recipient, $subject, $body);
     }
 
 
@@ -1142,6 +1273,26 @@ function deleteEvent($conn, $event_id, $organization_id, $department_id)
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
+        header("location: ../views/pages-add-organization.php?error=stmtfailed");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, "i", $event_id);
+    mysqli_stmt_execute($stmt);
+
+    $delete_participants = "DELETE FROM participants WHERE event_id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $delete_participants)) {
+        header("location: ../views/pages-add-organization.php?error=stmtfailed");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, "i", $event_id);
+    mysqli_stmt_execute($stmt);
+
+    $delete_evaluations = "DELETE FROM evaluations WHERE event_reference_id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $delete_evaluations)) {
         header("location: ../views/pages-add-organization.php?error=stmtfailed");
         exit();
     }
@@ -1183,7 +1334,7 @@ function approveEvent($conn, $event_id)
         $recipient = $row['member_email'];
         $subject = $row['event_name'];
         $body = 'Hey you are invited to attend ' . $subject . ' you can view and confirm your attendance by logging in to your account';
-        mailSender($recipient, $subject, $body);
+        //mailSender($recipient, $subject, $body);
     }
 
     session_start();
@@ -1277,6 +1428,25 @@ function confirmAttendance($conn, $participant_id)
     header("location: ../views/pages-profile.php");
     exit();
 }
+
+function confirmAttendanceEmail($conn, $participant_id)
+{
+    $participant_status = 'confirmed';
+    $sql = "UPDATE participants SET participant_status = ? WHERE participant_id = $participant_id";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        header("location: ../views/pages-add-organization.php?error=stmtfailed");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, "s", $participant_status);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    header("location: /capstone-project/confirmed.attendance.view.php");
+    exit();
+}
+
 function addEvaluation($conn, $user_id, $event_id,  $customRadio1, $customRadio2, $customRadio3, $customRadio4, $customRadio5)
 {
 
@@ -1342,5 +1512,183 @@ function saveUserConfiguration($conn, $user_id, $color_scheme, $width, $theme, $
         </script>";
 
     header("location: ../views/pages-profile.php");
+    exit();
+}
+
+function participantExist($conn, $event_id, $member_id)
+{
+    $query = "SELECT * FROM participants WHERE event_id = ? AND member_reference_id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $query)) {
+        header("location: ../views/pages-register.php?error=stmtfailed");
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "ss", $event_id, $member_id);
+    mysqli_stmt_execute($stmt);
+    $resultData = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($resultData);
+
+    if (!empty($row)) {
+        $result = true;
+        return $result;
+    } else {
+        $result = false;
+        return $result;
+    }
+
+    mysqli_stmt_close($stmt);
+}
+
+function addSingleParticipant($conn, $event_id, $member_id)
+{
+    $accesstype = 'attendee';
+    $participant_status = 'pending';
+
+    $query = "INSERT INTO participants SET accesstype = ?, participant_status = ?, event_id = $event_id, member_reference_id = $member_id";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $query)) {
+        header("location: ../views/pages-view-event-details.php?event_id=$event_id");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, "ss", $accesstype, $participant_status);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    session_start();
+    $_SESSION["status"] =
+        "<script>
+        Swal.fire(
+        'Success!',
+        'Succesfully added this participant.',
+        'success')
+        </script>";
+    header("location: ../views/pages-view-event-details.php?event_id=$event_id");
+    exit();
+}
+
+function memberExist($conn, $member_email, $organization_id, $department_id, $user_id)
+{
+    $query = "SELECT * FROM members WHERE member_email =? AND department_id = ? AND organization_id = ? AND user_reference_id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $query)) {
+        header("location: ../views/pages-register.php?error=stmtfailed");
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "ssss", $member_email, $organization_id, $department_id, $user_id);
+    mysqli_stmt_execute($stmt);
+    $resultData = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($resultData);
+
+    if (!empty($row)) {
+        $result = true;
+        return $result;
+    } else {
+        $result = false;
+        return $result;
+    }
+
+    mysqli_stmt_close($stmt);
+}
+
+function addSingleMember($conn, $member_email, $department_id, $organization_id, $user_id, $org_admin_id)
+{
+
+    $query = "INSERT INTO members SET member_email = ?, department_id = ?, organization_id = ?, user_reference_id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $query)) {
+        header("location: ../views/pages-my-department.php?&org_id=$organization_id&dept_id=$department_id&admin_id=$org_admin_id");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, "ssss", $member_email, $department_id, $organization_id, $user_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    session_start();
+    $_SESSION["status"] =
+        "<script>
+        Swal.fire(
+        'Success!',
+        'Succesfully added this user to this department.',
+        'success')
+        </script>";
+    header("location: ../views/pages-my-department.php?&org_id=$organization_id&dept_id=$department_id&admin_id=$org_admin_id");
+    exit();
+}
+
+function addQuestion($conn, $user_id, $question, $type)
+{
+    $query = "INSERT INTO questions SET question_content = ?, question_type = ?, user_reference_id = ?";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $query)) {
+        header("location: ../views/evaluation-creation-tool.php");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, "sss", $question, $type, $user_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    session_start();
+    $_SESSION["status"] =
+        "<script>
+        Swal.fire(
+        'Success!',
+        'Succesfully added this evaluation question.',
+        'success')
+        </script>";
+    header("location: ../views/evaluation-creation-tool.php");
+    exit();
+}
+function editQuestion($conn, $question_id, $question_content, $question_type)
+{
+    $query = "UPDATE questions SET question_content = ?, question_type = ? WHERE question_id = $question_id";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $query)) {
+        header("location: ../views/evaluation-creation-tool.php");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, "ss", $question_content, $question_type);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    session_start();
+    $_SESSION["status"] =
+        "<script>
+        Swal.fire(
+        'Success!',
+        'Succesfully edited this evaluation question.',
+        'success')
+        </script>";
+    header("location: ../views/evaluation-creation-tool.php");
+    exit();
+}
+function deleteQuestion($conn, $question_id)
+{
+    $query = "DELETE FROM questions WHERE question_id = ?";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $query)) {
+        header("location: ../views/evaluation-creation-tool.php");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, "s", $question_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    session_start();
+    $_SESSION["status"] =
+        "<script>
+        Swal.fire(
+        'Deleted!',
+        'Succesfully deleted this evaluation question.',
+        'success')
+        </script>";
+    header("location: ../views/evaluation-creation-tool.php");
     exit();
 }

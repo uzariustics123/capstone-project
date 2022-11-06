@@ -46,6 +46,7 @@
                                 WHERE event_id = $event_id;";
                     $results = $conn->query($query);
                     while ($row = $results->fetch_assoc()) {
+                        $department_id = $row['department_id'];
                         $event_date = $row['event_date'];
                         $event_all_day = $row['event_all_day'];
                         $organization_id = $row['organization_id'];
@@ -382,9 +383,51 @@
                             <div class="col-12">
                                 <div class="page-title-box">
                                     <h4 class="page-title">Participants</h4>
+                                    <a href="#" class="btn btn-success btn-sm ms-3 mb-2" data-bs-toggle="modal" data-bs-target="#add_participant"> <i class="mdi mdi-plus"></i> Add Participant</a>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="modal fade" id="add_participant" tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title" id="myCenterModalLabel">Add Participant</h4>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table id="basic-datatable" class="table dt-responsive nowrap w-100">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Email</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+                                                $query = "SELECT * FROM users
+                                                RIGHT OUTER JOIN members ON members.user_reference_id = users.userid
+                                                WHERE members.organization_id = $organization_id
+                                                ;";
+                                                $results = $conn->query($query);
+                                                while ($row = $results->fetch_assoc()) {
+                                                ?>
+                                                    <tr>
+                                                        <td><?= $row['firstname'] ?> <?= $row['lastname'] ?></td>
+                                                        <td><?= $row['email'] ?></td>
+                                                        <td><button type="button" class="btn btn-success btn-rounded btn-sm add_participant" id="add_participant" data-event_id="<?= $event_id ?>" data-member_id="<?= $row['member_id'] ?>">Add</button></td>
+                                                    </tr>
+
+                                                <?php } ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div>
+
+
                         <div class="container-fluid" id="members-list">
                             <div class="row">
                                 <div class="col-12">
@@ -399,19 +442,20 @@
                                             </ul> <!-- end nav-->
                                             <div class="tab-content">
                                                 <div class="tab-pane show active" id="basic-datatable-preview">
-                                                    <table id="basic-datatable" class="table dt-responsive nowrap w-100">
+                                                    <table id="datatable-buttons" class="table dt-responsive nowrap w-100">
                                                         <?php
+                                                        date_default_timezone_set('Asia/Manila');
                                                         $now = date('Y-m-d');
-                                                        $newdate = date("M d, Y", strtotime($now));
+                                                        $parsed_date = date("Y-m-d", strtotime($event_date));
                                                         ?>
                                                         <thead>
                                                             <tr>
                                                                 <th>Name</th>
                                                                 <th>Role</th>
                                                                 <th>Participant Status</th>
-                                                                <?php if ($event_date >= $newdate) { ?>
+                                                                <?php if ($parsed_date >= $now) { ?>
                                                                     <th style="width: 75px;">Action</th>
-                                                                    <?php } else if ($event_date <= $newdate) {
+                                                                    <?php } else if ($parsed_date <= $now) {
                                                                     if ($event_all_day == 'yes') {
                                                                     ?>
                                                                         <th>Attendance In AM</th>
@@ -437,6 +481,7 @@
                                                         ;";
                                                             $results = $conn->query($query);
                                                             while ($row = $results->fetch_assoc()) {
+
                                                             ?>
                                                                 <tr>
                                                                     <td><?= $row['firstname'] ?> <?= $row['lastname'] ?></td>
@@ -447,10 +492,12 @@
                                                                         <td class="text-success"><?= $row['participant_status'] ?></td>
                                                                     <?php } ?>
                                                                     <?php
+                                                                    date_default_timezone_set('Asia/Manila');
                                                                     $now = date('Y-m-d');
-                                                                    $newdate = date("M d, Y", strtotime($now));
                                                                     ?>
-                                                                    <?php if ($event_date >= $newdate) { ?>
+                                                                    <?php
+                                                                    $parsed_date = date("Y-m-d", strtotime($event_date));
+                                                                    if ($parsed_date >= $now) { ?>
                                                                         <td class="table-action">
                                                                             <button data-bs-toggle="modal" data-bs-target="#edit-participant-role-modal" class="action-icon btn btn-success btn-light edit-participant-role-modal" value="<?= $row['participant_id']; ?>">
                                                                                 <i class="mdi mdi-square-edit-outline"></i>
@@ -458,36 +505,21 @@
                                                                         </td>
                                                                         <?php } else {
                                                                         $participant = $row['participant_id'];
-                                                                        if ($event_all_day == 'no') {
-                                                                            $sql = "SELECT * FROM attendances
+
+                                                                        $sql = "SELECT * FROM attendances
                                                                         RIGHT OUTER JOIN participants ON participants.participant_id = attendances.participant_reference_id
                                                                         RIGHT OUTER JOIN events ON events.event_id = attendances.event_reference_id 
-                                                                        WHERE event_reference_id = $event_id
-                                                                        GROUP BY attendances.attendance_user_id
-                                                                        HAVING COUNT(*) > 1";
-                                                                        } else if ($event_all_day == 'yes') {
-                                                                            $sql = "SELECT * FROM attendances
-                                                                        RIGHT OUTER JOIN participants ON participants.participant_id = attendances.participant_reference_id
-                                                                        RIGHT OUTER JOIN events ON events.event_id = attendances.event_reference_id 
-                                                                        WHERE event_reference_id = $event_id
-                                                                        GROUP BY attendances.attendance_user_id
-                                                                        HAVING COUNT(*) > 3";
-                                                                        }
+                                                                        WHERE attendances.participant_reference_id = $participant";
 
                                                                         $result = $conn->query($sql);
                                                                         while ($rows = $result->fetch_assoc()) {
                                                                             $event_all_day = $rows['event_all_day'];
                                                                             $participant_id = $rows['participant_reference_id'];
-                                                                            if ($participant_id == $participant && $event_all_day == 'yes') {
-                                                                                echo "<td class='text-success'>Attended</td>";
-                                                                                echo "<td class='text-success'>Attended</td>";
-                                                                                echo "<td class='text-success'>Attended</td>";
-                                                                                echo "<td class='text-success'>Attended</td>";
-                                                                            } else if ($participant_id == $participant && $event_all_day == 'no') {
-                                                                                echo "<td class='text-success'>Attended</td>";
-                                                                                echo "<td class='text-success'>Attended</td>";
+                                                                            if ($rows['attendance_status'] == 'attended') {
+                                                                                echo "<td class='text-success'>" . $rows['attendance_status'] . "</td>";
+                                                                            } else {
+                                                                                echo "<td class='text-danger'>" . $rows['attendance_status'] . "</td>";
                                                                             }
-
                                                                         ?>
 
                                                                     <?php

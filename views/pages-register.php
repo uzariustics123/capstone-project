@@ -51,7 +51,7 @@
               </div>
 
               <form action="../controllers/signup.ctrls.php" method="post">
-                <input type="hidden" name="registration_status" value="registered">
+
                 <div class="mb-3">
                   <label for="firstname" class="form-label">First Name</label>
                   <input class="form-control" type="text" id="firstname" placeholder="Enter your first name" name="firstname" required />
@@ -64,25 +64,6 @@
                 <div class="mb-3">
                   <label for="emailaddress" class="form-label">Email address</label>
                   <input class="form-control" type="email" id="emailaddress" placeholder="Enter your email" name="email" required />
-                </div>
-
-                <div class="mb-3">
-                  <label for="password" class="form-label">Password</label>
-                  <div class="input-group input-group-merge">
-                    <input type="password" id="password" class="form-control" placeholder="Enter your password" name="password" required />
-                    <div class="input-group-text" data-password="false">
-                      <span class="password-eye"></span>
-                    </div>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <label for="repeat_password" class="form-label">Repeat Password</label>
-                  <div class="input-group input-group-merge">
-                    <input type="password" id="repeat_password" class="form-control" placeholder="Repeat Password" name="repeat_password" required />
-                    <div class="input-group-text" data-password="false">
-                      <span class="password-eye"></span>
-                    </div>
-                  </div>
                 </div>
 
                 <div class="modal fade" id="terms_conditions" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">

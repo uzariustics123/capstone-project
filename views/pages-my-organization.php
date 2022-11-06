@@ -50,6 +50,7 @@
 
                     while ($row = $results->fetch_assoc()) {
                         $org_admin_id = $row['org_admin_id'];
+                        $org_status = $row['org_status'];
                     ?>
                         <!-- Standard modal -->
                         <div id="organization_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
@@ -113,10 +114,17 @@
                                         <h2 class="mt-3">
                                             <?= $row['org_name'] ?>
                                         </h2>
-                                        <div class="badge bg-danger mb-3">Organization</div>
+                                        <div class="badge <?php
+                                                            if ($row['org_status'] == 'pending') {
+                                                                echo 'bg-danger';
+                                                            } else {
+                                                                echo 'bg-success';
+                                                            }
+                                                            ?> mb-3">
+                                            <?= $row['org_status'] ?>
+                                        </div>
 
                                         <h3>Organization Details:</h3>
-
                                         <p class="text-muted mb-2">
                                             <?= $row['org_description'] ?>
                                         </p>
@@ -147,103 +155,110 @@
                                 </div> <!-- end card-->
 
                             </div>
-                            <div class="col-lg-4">
-                                <div class="card card-block p-3">
-                                    <div class="mb-3 mt-5 mt-xl-0">
-                                        <form method="post" action="../controllers/add.department.ctrls.php" enctype="multipart/form-data">
-                                            <h4 class="mb-3">Add Department</h4>
-                                            <input type="hidden" class="form-control" name="user_id" value="<?= $user; ?>">
-                                            <input type="hidden" class="form-control" name="email" value="<?= $email; ?>">
-                                            <input type="hidden" class="form-control" name="organization_id" value="<?= $organization_id = $_GET['id']; ?>">
-                                            <div class="mb-1 mt-3">
-                                                <label for="department" class="form-label">Department Name</label>
-                                                <input type="input" name="department_name" class="form-control" id="department" aria-describedby="emailHelp" placeholder="Enter department name.." required>
-                                            </div>
-                                            <div class="mb-1 mt-3">
-                                                <label for="description" class="form-label">Description</label>
-                                                <input type="input" name="department_desc" class="form-control" id="description" placeholder="Enter department description..">
-                                            </div>
-                                            <div class="mb-1 mt-3">
-                                                <label for="code" class="form-label">Department Code</label>
-                                                <input type="input" name="department_code" class="form-control" id="code" placeholder="Enter department code.." required>
-                                            </div>
-                                            <div class="mb-1 mt-3">
-                                                <label for="projectname" class="mb-0">Department Cover Photo</label>
-                                                <p class="text-muted font-14">Recommended thumbnail size 800x400 (px). Only accepts jpg, jpeg, png file format</p>
-                                                <div class="mb-3">
-                                                    <input type="file" class="form-control" name="image" id="image" rows="6"></input>
+                            <?php
+                            if ($org_status == 'approved') {
+                            ?>
+                                <div class="col-lg-4">
+                                    <div class="card card-block p-3">
+                                        <div class="mb-3 mt-5 mt-xl-0">
+                                            <form method="post" action="../controllers/add.department.ctrls.php" enctype="multipart/form-data">
+                                                <h4 class="mb-3">Add Department</h4>
+                                                <input type="hidden" class="form-control" name="user_id" value="<?= $user; ?>">
+                                                <input type="hidden" class="form-control" name="email" value="<?= $email; ?>">
+                                                <input type="hidden" class="form-control" name="organization_id" value="<?= $organization_id = $_GET['id']; ?>">
+                                                <div class="mb-1 mt-3">
+                                                    <label for="department" class="form-label">Department Name</label>
+                                                    <input type="input" name="department_name" class="form-control" id="department" aria-describedby="emailHelp" placeholder="Enter department name.." required>
                                                 </div>
-                                            </div>
-                                            <div class="text-center">
-                                                <button type="submit" class="btn btn-primary add-department" name="submit">Save</button>
-                                            </div>
-                                        </form>
+                                                <div class="mb-1 mt-3">
+                                                    <label for="description" class="form-label">Description</label>
+                                                    <input type="input" name="department_desc" class="form-control" id="description" placeholder="Enter department description..">
+                                                </div>
+                                                <div class="mb-1 mt-3">
+                                                    <label for="code" class="form-label">Department Code</label>
+                                                    <input type="input" name="department_code" class="form-control" id="code" placeholder="Enter department code.." required>
+                                                </div>
+                                                <div class="mb-1 mt-3">
+                                                    <label for="projectname" class="mb-0">Department Cover Photo</label>
+                                                    <p class="text-muted font-14">Recommended thumbnail size 800x400 (px). Only accepts jpg, jpeg, png file format</p>
+                                                    <div class="mb-3">
+                                                        <input type="file" class="form-control" name="image" id="image" rows="6"></input>
+                                                    </div>
+                                                </div>
+                                                <div class="text-center">
+                                                    <button type="submit" class="btn btn-primary add-department" name="submit">Save</button>
+                                                </div>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            <?php } ?>
                         </div><!-- end col -->
                 </div>
                 <!-- end row -->
 
             </div>
             <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="page-title-box">
-                            <h3 class="page-title">Departments</h3>
+                <?php
+                        if ($org_status == 'approved') {
+                ?>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box">
+                                <h3 class="page-title">Departments</h3>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="row">
-                    <?php
-                        $query = "SELECT * FROM departments
+                    <div class="row">
+                        <?php
+                            $query = "SELECT * FROM departments
                         WHERE organization_id = $organization_id;";
 
-                        $results = $conn->query($query);
-                        while ($row = $results->fetch_assoc()) {
-                    ?>
-                        <div class="col-md-6 col-xxl-3">
-                            <!-- project card -->
-                            <div class="card d-block">
-                                <div class="card-body">
-                                    <div class="dropdown card-widgets">
-                                        <a href="#" class="dropdown-toggle arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="dripicons-dots-3"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-end">
-                                            <!-- item-->
-                                            <a href="../views/pages-my-department.php?org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>&admin_id=<?= $org_admin_id ?>" class="dropdown-item"><i class="mdi mdi-account-cog me-1"></i>Manage</a>
-                                            <!-- item-->
-
-
-                                            <a href="javascript:void(0)" id="delete-department" class="dropdown-item delete-department" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?>>
-                                                <i class="mdi mdi-delete me-1"></i>Delete
+                            $results = $conn->query($query);
+                            while ($row = $results->fetch_assoc()) {
+                        ?>
+                            <div class="col-md-6 col-xxl-3">
+                                <!-- project card -->
+                                <div class="card d-block">
+                                    <div class="card-body">
+                                        <div class="dropdown card-widgets">
+                                            <a href="#" class="dropdown-toggle arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="dripicons-dots-3"></i>
                                             </a>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                <!-- item-->
+                                                <a href="../views/pages-my-department.php?org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>&admin_id=<?= $org_admin_id ?>" class="dropdown-item"><i class="mdi mdi-account-cog me-1"></i>Manage</a>
+                                                <!-- item-->
+
+
+                                                <a href="javascript:void(0)" id="delete-department" class="dropdown-item delete-department" data-org_id=<?= $organization_id ?> data-dept_id=<?= $row['department_id'] ?>>
+                                                    <i class="mdi mdi-delete me-1"></i>Delete
+                                                </a>
+                                            </div>
+
                                         </div>
-
-                                    </div>
-                                    <!-- project title-->
-                                    <!-- Thumbnail-->
-                                    <a href="../views/pages-my-department.php?user_id=<?= $user; ?>&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>">
-                                        <div class="text-center"><img src="<?= $row['dept_imgurl'] ?>" alt="image" class="img-fluid rounded mt-2" width="250" /></div>
-                                    </a>
+                                        <!-- project title-->
+                                        <!-- Thumbnail-->
+                                        <a href="../views/pages-my-department.php?user_id=<?= $user; ?>&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>">
+                                            <div class="text-center"><img src="<?= $row['dept_imgurl'] ?>" alt="image" class="img-fluid rounded mt-2" width="250" /></div>
+                                        </a>
 
 
-                                    <h2 class="mt-3">
-                                        <a href="../views/pages-my-department.php?user_id=<?= $user; ?>&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>" class="text-title"><?= $row['dept_name'] ?></a>
-                                    </h2>
-                                    <div class="badge bg-success text-light mb-3"><?= $row['dept_code'] ?></div>
+                                        <h2 class="mt-3">
+                                            <a href="../views/pages-my-department.php?user_id=<?= $user; ?>&org_id=<?= $organization_id ?>&dept_id=<?= $row['department_id'] ?>" class="text-title"><?= $row['dept_name'] ?></a>
+                                        </h2>
+                                        <div class="badge bg-success text-light mb-3"><?= $row['dept_code'] ?></div>
 
-                                    <p class="text-muted font-13 mb-3"><?= $row['dept_description'] ?>
-                                    </p>
-                                </div> <!-- end card-body-->
-                            </div> <!-- end card-->
-                        </div>
+                                        <p class="text-muted font-13 mb-3"><?= $row['dept_description'] ?>
+                                        </p>
+                                    </div> <!-- end card-body-->
+                                </div> <!-- end card-->
+                            </div>
 
-                    <?php } ?>
-                </div>
-
+                        <?php } ?>
+                    </div>
+                <?php } ?>
             </div><!-- container -->
         <?php } ?>
         </div> <!-- content -->

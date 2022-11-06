@@ -81,6 +81,22 @@ if (isset($_SESSION['member_id'])) {
                     <span>Event Feed</span>
                 </a>
             </li>
+            <li class="side-nav-item">
+                <a href="../views/evaluation-creation-tool.php" class="side-nav-link">
+                    <i class=" uil-paint-tool"></i>
+                    <span>Evaluation Tool</span>
+                </a>
+            </li>
+            <?php
+            if ($user == '1') {
+            ?>
+                <li class="side-nav-item">
+                    <a href="../views/admin.php" class="side-nav-link">
+                        <i class="uil-keyhole-square"></i>
+                        <span>Admin</span>
+                    </a>
+                </li>
+            <?php } ?>
         </ul>
 
         <!-- End Sidebar -->

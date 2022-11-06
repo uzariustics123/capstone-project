@@ -6,14 +6,12 @@ if (isset($_POST['submit'])) {
   $firstname = $_POST['firstname'];
   $lastname = $_POST['lastname'];
   $email = $_POST['email'];
-  $password = $_POST['password'];
-  $repeat_password = $_POST['repeat_password'];
-  $registration_status = $_POST['registration_status'];
+
   require_once '../config/db.php';
   require_once 'functions.ctrls.php';
 
 
-  if (emptyInputSignup($firstname, $lastname, $email, $password, $registration_status) !== false) {
+  if (emptyInputSignup($firstname, $lastname, $email) !== false) {
     session_start();
     $_SESSION['status'] = "
         <script>const Toast = Swal.mixin({
@@ -47,6 +45,23 @@ if (isset($_POST['submit'])) {
     header("location: ../views/pages-register.php");
     exit();
   }
+  if (pwdMatch($password, $repeat_password) !== false) {
+    session_start();
+    $_SESSION['status'] = "
+        <script>const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      })
+
+      Toast.fire({
+        icon: 'warning',
+        title: 'Passwords do not match'
+      })</script>";
+    header("location: ../views/pages-register.php");
+    exit();
+  }
 
   if (invalidEmail($email) !== false) {
     session_start();
@@ -65,23 +80,7 @@ if (isset($_POST['submit'])) {
     header("location: ../views/pages-register.php");
     exit();
   }
-  if (pwdMatch($password, $repeat_password) !== false) {
-    session_start();
-    $_SESSION['status'] = "
-        <script>const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000
-      })
-  
-      Toast.fire({
-        icon: 'warning',
-        title: 'Passwords do not match'
-      })</script>";
-    header("location: ../views/pages-register.php");
-    exit();
-  }
+
 
   if (emailExist($conn, $email) == true) {
     session_start();
@@ -100,7 +99,7 @@ if (isset($_POST['submit'])) {
     exit();
   }
 
-  createUser($conn, $firstname, $lastname, $email, $password, $registration_status);
+  createUser($conn, $firstname, $lastname, $email);
 } else {
   header("location: ../index.php");
   exit();

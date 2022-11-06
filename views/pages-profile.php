@@ -216,10 +216,10 @@
 
                                                 $results = $conn->query($query);
                                                 while ($row = $results->fetch_assoc()) {
-                                                    $now = date('Y-m-d');
-                                                    $newdate = date("M d, Y", strtotime($now));
                                                     $event_date = $row['event_date'];
-                                                    if ($event_date >= $newdate) {
+                                                    $now = date('Y-m-d');
+                                                    $parsed_date = date("M d, Y", strtotime($event_date));
+                                                    if ($parsed_date >= $now) {
                                                 ?>
                                                         <div class="card mb-0">
                                                             <div class="card-body p-3">
@@ -240,6 +240,7 @@
                                             </div> <!-- end company-list-2-->
                                         </div>
 
+                                        <!-- BUUUG!!! -->
                                         <div class="tasks">
                                             <h5 class="mt-0 task-header text-uppercase">Attended and Evaluated</h5>
                                             <?php
@@ -279,6 +280,8 @@
                                                 } ?>
                                             <?php } ?>
                                         </div>
+                                        <!-- BUUUG!!! -->
+
                                         <div class="tasks">
                                             <h5 class=" mt-0 task-header text-uppercase">Attended</h5>
                                             <?php
@@ -299,6 +302,7 @@
                                                     <div class="card mb-0">
                                                         <div class="card-body p-3">
                                                             <small class="float-end text-muted"><?= $row['event_date'] ?></small>
+
                                                             <span class="badge bg-info">Attended</span>
                                                             <h3 class="mt-2 mb-2 text-center">
                                                                 <?= $row['event_name'] ?>
