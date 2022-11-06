@@ -1620,16 +1620,16 @@ function addSingleMember($conn, $member_email, $department_id, $organization_id,
     exit();
 }
 
-function addQuestion($conn, $user_id, $question, $type)
+function addQuestion($conn, $event_id, $question, $type)
 {
-    $query = "INSERT INTO questions SET question_content = ?, question_type = ?, user_reference_id = ?";
+    $query = "INSERT INTO questions SET question_content = ?, question_type = ?, event_reference_id = ?";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $query)) {
         header("location: ../views/evaluation-creation-tool.php");
         exit();
     }
-    mysqli_stmt_bind_param($stmt, "sss", $question, $type, $user_id);
+    mysqli_stmt_bind_param($stmt, "sss", $question, $type, $event_id);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
 

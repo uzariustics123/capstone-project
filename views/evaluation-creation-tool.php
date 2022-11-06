@@ -5,6 +5,12 @@
         echo "<span>$status</span>";
     } ?>
 
+    <?php
+    if (isset($_GET['event_id'])) {
+        $event_id = $_GET['event_id'];
+    }
+    ?>
+
     <div class="wrapper">
         <?php require_once '../includes/sidebar.php' ?>
         <div class="content-page">
@@ -27,7 +33,7 @@
                                 <div class="card-body form-group">
                                     <div class="col-12 mb-2">
                                         <div class="row">
-                                            <input type="hidden" name="user_id" id="user_id" value=<?= $user ?>>
+                                            <input type="hidden" name="event_id" id="event_id" value=<?= $event_id ?>>
                                             <div class="col-6">
                                                 <label for="input1" class="form-label">Question</label>
                                                 <input type="text" name="question" id="question" class="form-control">
@@ -56,12 +62,7 @@
                     </div>
                 </div>
 
-                <?php
-                $query = "SELECT * FROM questions WHERE user_reference_id = $user";
-                $results = $conn->query($query);
-                while ($row = $results->fetch_assoc()) {
-                }
-                ?>
+
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
@@ -78,8 +79,8 @@
                                         <table id="basic-datatable" class="table dt-responsive nowrap w-100">
                                             <thead>
                                                 <tr>
-                                                    <th>Name</th>
-                                                    <th>Role</th>
+                                                    <th>Question</th>
+                                                    <th>Type</th>
                                                     <th style="width: 75px;">Actions</th>
 
                                                 </tr>
@@ -87,7 +88,7 @@
 
                                             <tbody>
                                                 <?php
-                                                $query = "SELECT * FROM questions WHERE user_reference_id = $user";
+                                                $query = "SELECT * FROM questions WHERE event_reference_id = $event_id";
                                                 $results = $conn->query($query);
                                                 while ($row = $results->fetch_assoc()) {
                                                 ?>
@@ -164,7 +165,7 @@
 
             let order = 0;
             $('#add_btn').click(function() {
-                let user_id = $("#user_id").val();
+                let event_id = $("#event_id").val();
                 let question = $("#question").val();
                 let type = $("#type").val();
 
@@ -178,7 +179,7 @@
                     confirmButtonText: 'Yes, save it!'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = "../controllers/add.question.ctrls.php?id=" + user_id + "&question=" + question + "&type=" + type;
+                        window.location.href = "../controllers/add.question.ctrls.php?id=" + event_id + "&question=" + question + "&type=" + type;
                     }
                 })
 

@@ -384,6 +384,7 @@
                                 <div class="page-title-box">
                                     <h4 class="page-title">Participants</h4>
                                     <a href="#" class="btn btn-success btn-sm ms-3 mb-2" data-bs-toggle="modal" data-bs-target="#add_participant"> <i class="mdi mdi-plus"></i> Add Participant</a>
+                                    <a href="evaluation-creation-tool.php?event_id=<?= $event_id ?>" class="btn btn-info btn-sm ms-3 mb-2"> <i class="mdi mdi-plus"></i> Add Evaluation</a>
                                 </div>
                             </div>
                         </div>

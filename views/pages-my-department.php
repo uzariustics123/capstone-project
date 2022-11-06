@@ -404,53 +404,6 @@
                                                         <label class=" form-check-label" for="event_all_day">Toggle this switch if event is half day</label>
                                                     </div>
                                                 </div>
-                                                <h4 class="modal-title" id="myCenterModalLabel">Add Event Evaluation Questions</h4>
-                                                <div class="table-responsive">
-                                                    <table class="table table-centered w-100 dt-responsive nowrap" id="products-datatable">
-                                                        <thead class="table-light">
-                                                            <tr>
-                                                                <th class="all" style="width: 20px;">
-                                                                    <div class="form-check">
-                                                                        <input type="checkbox" class="form-check-input" id="customCheck1">
-                                                                        <label class="form-check-label" for="customCheck1">&nbsp;</label>
-                                                                    </div>
-                                                                </th>
-                                                                <th class="all">Question</th>
-                                                                <th>Type</th>
-                                                                <th style="width: 85px;">Action</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <?php
-                                                            $query = "SELECT * FROM questions WHERE user_reference_id = $user";
-                                                            $results = $conn->query($query);
-                                                            while ($row = $results->fetch_assoc()) {
-                                                            ?>
-                                                                <tr>
-                                                                    <td>
-                                                                        <div class="form-check">
-                                                                            <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                            <label class="form-check-label" for="customCheck2">&nbsp;</label>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td>
-                                                                        <?= $row['question_content'] ?>
-                                                                    </td>
-                                                                    <td>
-                                                                        <?= $row['question_type'] ?>
-                                                                    </td>
-
-                                                                    <td class="table-action">
-                                                                        <a href="javascript:void(0);" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
-                                                                        <a href="javascript:void(0);" class="action-icon"> <i class="mdi mdi-delete"></i></a>
-                                                                    </td>
-                                                                </tr>
-
-                                                            <?php } ?>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-
                                                 <button type="submit" name="submit" class="btn btn-primary">Publish</button>
                                             </div>
                                         </form>
