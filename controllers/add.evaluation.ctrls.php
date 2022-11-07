@@ -1,20 +1,22 @@
 <?php
-if (isset($_POST['submit'])) {
+require_once '../config/db.php';
+require_once 'functions.ctrls.php';
 
-    require_once '../config/db.php';
-    require_once 'functions.ctrls.php';
 
-    $event_id = $_POST['event_id'];
-    $user_id = $_POST['user_id'];
+$answerList[] = $_POST['json'];
+$user[] = $_POST['user'];
 
-    $customRadio1 = $_POST['customRadio1'];
-    $customRadio2 = $_POST['customRadio2'];
-    $customRadio3 = $_POST['customRadio3'];
-    $customRadio4 = $_POST['customRadio4'];
-    $customRadio5 = $_POST['customRadio5'];
+foreach ($_POST['json'] as $answer) {
+    echo $_POST['user'] . ' ' . $answer['name'] . ' ' . $answer['value'] . '<br/>';
 
-    addEvaluation($conn, $user_id, $event_id, $customRadio1, $customRadio2, $customRadio3, $customRadio4, $customRadio5);
-} else {
-    header("location: ../views/pages-profile.php");
-    exit();
+    $sql = "INSERT INTO evaluations SET question_reference_id=?, evaluation_content=?,user_reference_id=?, event_reference_id=?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        header("location: ../views/pages-profile.php?error=stmtfailed");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, "ssss", $answer['name'], $answer['value'],  $_POST['user'], $_POST['event_id']);
+    mysqli_stmt_execute($stmt);
 }
+mysqli_stmt_close($stmt);

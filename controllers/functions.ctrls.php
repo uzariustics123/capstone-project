@@ -1447,49 +1447,7 @@ function confirmAttendanceEmail($conn, $participant_id)
     exit();
 }
 
-function addEvaluation($conn, $user_id, $event_id,  $customRadio1, $customRadio2, $customRadio3, $customRadio4, $customRadio5)
-{
 
-    $query = "SELECT * FROM evaluations WHERE user_reference_id = $user_id AND event_reference_id = $event_id;";
-    $result = $conn->query($query);
-    $rows = $result->fetch_assoc();
-    if (!empty($rows)) {
-        session_start();
-        $_SESSION["status"] =
-            "<script>
-        Swal.fire(
-        'Warning!',
-        'evaluation already added',
-        'warning')
-        </script>";
-
-        header("location: ../views/pages-profile.php");
-        exit();
-    }
-
-
-    $sql = "INSERT INTO evaluations SET user_reference_id=?, event_reference_id=?, question_1=?, question_2=?, question_3=?, question_4=?, question_5 =?;";
-    $stmt = mysqli_stmt_init($conn);
-
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        header("location: ../views/pages-profile.php?error=stmtfailed");
-        exit();
-    }
-    mysqli_stmt_bind_param($stmt, "sssssss", $user_id, $event_id,  $customRadio1, $customRadio2, $customRadio3, $customRadio4, $customRadio5);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
-    session_start();
-    $_SESSION["status"] =
-        "<script>
-        Swal.fire(
-        'Congratulations!',
-        'Succesfully added evaluation.',
-        'success')
-        </script>";
-
-    header("location: ../views/pages-profile.php");
-    exit();
-}
 function saveUserConfiguration($conn, $user_id, $color_scheme, $width, $theme, $compact)
 {
     $sql = "INSERT INTO configurations SET user_reference_id=?, event_reference_id=?, question_1=?, question_2=?, question_3=?, question_4=?, question_5 =?;";
@@ -1641,7 +1599,7 @@ function addQuestion($conn, $event_id, $question, $type)
         'Succesfully added this evaluation question.',
         'success')
         </script>";
-    header("location: ../views/evaluation-creation-tool.php");
+    header("location: ../views/evaluation-creation-tool.php?event_id=$event_id");
     exit();
 }
 function editQuestion($conn, $question_id, $question_content, $question_type)

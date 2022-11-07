@@ -114,26 +114,23 @@
                                                                 ?>" class="rounded-circle avatar-lg img-thumbnail" alt="profile-image" />
                                                     <h4><?= $row['firstname'] ?> <?= $row['lastname'] ?></h4>
                                                 </div>
+
                                                 <div class="modal-body">
                                                     <div class="text-center">
-                                                        <div class="row">
-                                                            <?php
-                                                            include "../assets/phpqrcode/qrlib.php";
-                                                            $PNG_TEMP_DIR = '../assets/images/temp/';
-                                                            if (!file_exists($PNG_TEMP_DIR))
-                                                                mkdir($PNG_TEMP_DIR);
-                                                            $filename = $PNG_TEMP_DIR . 'test.png';
-                                                            $codeString = "userid:" . bin2hex($user);
-                                                            $hexed = $codeString;
-                                                            $filename = $PNG_TEMP_DIR . 'test' . md5($hexed) . '.png';
-                                                            QRcode::png($hexed, $filename);
-                                                            $file = $PNG_TEMP_DIR . basename($filename);
-                                                            ?>
-                                                            <div class="text-center">
-                                                                <img src="<?= $file ?>" class="img-fluid" width="250" />
-                                                            </div>
+                                                        <?php
+                                                        include "../assets/phpqrcode/qrlib.php";
+                                                        $PNG_TEMP_DIR = '../assets/images/temp/';
+                                                        if (!file_exists($PNG_TEMP_DIR))
+                                                            mkdir($PNG_TEMP_DIR);
+                                                        $filename = $PNG_TEMP_DIR . 'test.png';
+                                                        $codeString = bin2hex($user);
+                                                        $hexed = $codeString;
+                                                        $filename = $PNG_TEMP_DIR . 'test' . md5($hexed) . '.png';
+                                                        QRcode::png($hexed, $filename);
+                                                        $file = $PNG_TEMP_DIR . basename($filename);
+                                                        ?>
+                                                        <?= '<img src="' . $file . '" alt="" height="200">'; ?>
 
-                                                        </div>
                                                         <button type="button" id="deleteqr" class="btn btn-success my-2" data-bs-dismiss="modal" data-image="<?= $file ?>">Close</button>
                                                     </div>
                                                 </div>
@@ -223,6 +220,7 @@
                                                 ?>
                                                         <div class="card mb-0">
                                                             <div class="card-body p-3">
+                                                                <?php $event_id = $row['event_id'] ?>
                                                                 <small class="float-end text-muted"><?= $row['event_date'] ?></small>
                                                                 <span class="badge bg-success"><?= $row['participant_status'] ?></span>
                                                                 <h2 class="mt-2 mb-2">
@@ -232,6 +230,16 @@
                                                                     <p><b><?= $row['dept_name'] ?></b></p>
                                                                     <p><?= $row['event_description'] ?></p>
 
+                                                                    <?php
+                                                                    $sql = "SELECT * FROM  evaluations WHERE event_reference_id =$event_id AND user_reference_id = $user";
+                                                                    $number = $conn->query($sql);
+                                                                    $rowCount = mysqli_num_rows($number);
+                                                                    if ($rowCount < 0) {
+                                                                    ?>
+                                                                        <div class="text-center">
+                                                                            <a href="pages-add-evaluation.php?event_id=<?= $row['event_id'] ?>" class="btn btn-info">Evaluate <?= $row['event_id'] ?></a>
+                                                                        </div>
+                                                                    <?php } ?>
                                                             </div> <!-- end card-body -->
                                                         </div>
                                                 <?php }
@@ -240,9 +248,24 @@
                                             </div> <!-- end company-list-2-->
                                         </div>
 
+
+                                        <div class="modal fade" id="evaluate_modal" tabindex="-1" role="dialog" aria-hidden="true">
+                                            <div class="modal-dialog  modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h3 class="modal-title" id="myCenterModalLabel">Event Evaluation</h3>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+
+                                                    </div>
+                                                </div><!-- /.modal-content -->
+                                            </div><!-- /.modal-dialog -->
+                                        </div>
+
                                         <!-- BUUUG!!! -->
                                         <div class="tasks">
-                                            <h5 class="mt-0 task-header text-uppercase">Attended and Evaluated</h5>
+                                            <h5 class="mt-0 task-header text-uppercase">Evaluated</h5>
                                             <?php
                                             $query = "SELECT * FROM events
                                                     RIGHT OUTER JOIN participants ON participants.event_id = events.event_id
@@ -259,7 +282,7 @@
                                             ?>
                                                 <?php
                                                 $event_id = $row['event_id'];
-                                                $sql = "SELECT * FROM evaluations WHERE event_reference_id = $event_id;";
+                                                $sql = "SELECT * FROM evaluations WHERE user_reference_id = $user;";
                                                 $result = $conn->query($sql);
                                                 while ($rows = $result->fetch_assoc()) {
                                                     if ($rows['event_reference_id'] == $event_id) {
@@ -282,175 +305,7 @@
                                         </div>
                                         <!-- BUUUG!!! -->
 
-                                        <div class="tasks">
-                                            <h5 class=" mt-0 task-header text-uppercase">Attended</h5>
-                                            <?php
-                                            $query = "SELECT * FROM events
-                                                    RIGHT OUTER JOIN participants ON participants.event_id = events.event_id
-                                                    RIGHT OUTER JOIN members ON participants.member_reference_id = members.member_id
-                                                    RIGHT OUTER JOIN users ON members.user_reference_id = users.userid
-                                                    RIGHT OUTER JOIN attendances ON attendances.event_reference_id = events.event_id
-                                                    WHERE users.userid = $user AND participant_status = 'confirmed'
-                                                    GROUP BY events.event_id
-                                                    HAVING COUNT(*) > 0
-                                                    ORDER BY event_date ASC;";
 
-                                            $results = $conn->query($query);
-                                            while ($row = $results->fetch_assoc()) {
-                                            ?>
-                                                <div id="task-list-three" class="task-list-items">
-                                                    <div class="card mb-0">
-                                                        <div class="card-body p-3">
-                                                            <small class="float-end text-muted"><?= $row['event_date'] ?></small>
-
-                                                            <span class="badge bg-info">Attended</span>
-                                                            <h3 class="mt-2 mb-2 text-center">
-                                                                <?= $row['event_name'] ?>
-                                                            </h3>
-                                                            <div class="text-center">
-                                                                <a href="javascript:void(0)" class="btn btn-info evaluate" data-bs-toggle="modal" data-bs-target="#evaluate_modal" data-event_id="<?= $row['event_id'] ?>">Evaluate</a>
-                                                            </div>
-                                                        </div> <!-- end card-body -->
-                                                    </div>
-                                                </div>
-                                            <?php } ?>
-                                        </div>
-                                        <div class="modal fade" id="evaluate_modal" tabindex="-1" role="dialog" aria-hidden="true">
-                                            <div class="modal-dialog  modal-lg">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h3 class="modal-title" id="myCenterModalLabel">Event Evaluation</h3>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <form action="../controllers/add.evaluation.ctrls.php" method="post" enctype="multipart/form-data">
-                                                            <input type="hidden" name="user_id" value="<?= $user ?>">
-                                                            <input type="hidden" name="event_id" id="eevent_id">
-                                                            <div class=" mt-3">
-                                                                <h4>What is your level of satisfaction with this event?</h4>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio1" name="customRadio1" class="form-check-input" value="1" required>
-                                                                    <label class="form-check-label" for="customRadio1">Very Good</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio2" name="customRadio1" class="form-check-input" value="2" required>
-                                                                    <label class="form-check-label" for="customRadio2">Good</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio3" name="customRadio1" class="form-check-input" value="3" required>
-                                                                    <label class="form-check-label" for="customRadio3">Neutral</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio4" name="customRadio1" class="form-check-input" value="4" required>
-                                                                    <label class="form-check-label" for="customRadio4">Poor</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio5" name="customRadio1" class="form-check-input" value="5" required>
-                                                                    <label class="form-check-label" for="customRadio5">Very Poor</label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="mt-3">
-                                                                <h4>How likely are you to tell a friend about this event?</h4>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio6" name="customRadio2" class="form-check-input" value="1" required>
-                                                                    <label class="form-check-label" for="customRadio6">Very Good</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio7" name="customRadio2" class="form-check-input" value="2" required>
-                                                                    <label class="form-check-label" for="customRadio7">Good</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio8" name="customRadio2" class="form-check-input" value="3" required>
-                                                                    <label class="form-check-label" for="customRadio8">Neutral</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio9" name="customRadio2" class="form-check-input" value="4" required>
-                                                                    <label class="form-check-label" for="customRadio9">Bad</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio10" name="customRadio2" class="form-check-input" value="5" required>
-                                                                    <label class="form-check-label" for="customRadio10">Very Bad</label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="mt-3">
-                                                                <h4>How would you rate our event venue and equipment in regards to how it <br>served your keynote?</h4>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio11" name="customRadio3" class="form-check-input" value="1" required>
-                                                                    <label class="form-check-label" for="customRadio11">Very Good</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio12" name="customRadio3" class="form-check-input" value="2" required>
-                                                                    <label class="form-check-label" for="customRadio12">Good</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio13" name="customRadio3" class="form-check-input" value="3" required>
-                                                                    <label class="form-check-label" for="customRadio13">Neutral</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio14" name="customRadio3" class="form-check-input" value="4" required>
-                                                                    <label class="form-check-label" for="customRadio14">Bad</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio15" name="customRadio3" class="form-check-input" value="5" required>
-                                                                    <label class="form-check-label" for="customRadio15">Very Bad</label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="mt-3">
-                                                                <h4>How satisfied were you with the speakers and sessions at our event?</h4>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio16" name="customRadio4" class="form-check-input" value="1" required>
-                                                                    <label class="form-check-label" for="customRadio16">Very Good</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio17" name="customRadio4" class="form-check-input" value="2" required>
-                                                                    <label class="form-check-label" for="customRadio17">Good</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio18" name="customRadio4" class="form-check-input" value="3" required>
-                                                                    <label class="form-check-label" for="customRadio18">Neutral</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio19" name="customRadio4" class="form-check-input" value="4" required>
-                                                                    <label class="form-check-label" for="customRadio19">Bad</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio20" name="customRadio4" class="form-check-input" value="5" required>
-                                                                    <label class="form-check-label" for="customRadio20">Very Bad</label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="mt-3">
-                                                                <h4>How did you feel about the duration of the content?</h4>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio21" name="customRadio5" class="form-check-input" value="1" required>
-                                                                    <label class="form-check-label" for="customRadio21">Very Good</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio22" name="customRadio5" class="form-check-input" value="2" required>
-                                                                    <label class="form-check-label" for="customRadio22">Good</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio23" name="customRadio5" class="form-check-input" value="3" required>
-                                                                    <label class="form-check-label" for="customRadio23">Neutral</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio24" name="customRadio5" class="form-check-input" value="4" required>
-                                                                    <label class="form-check-label" for="customRadio24">Bad</label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input type="radio" id="customRadio25" name="customRadio5" class="form-check-input" value="5" required>
-                                                                    <label class="form-check-label" for="customRadio25">Very Bad</label>
-                                                                </div>
-                                                            </div>
-                                                            <hr>
-                                                            <div class="text-center">
-                                                                <button type="submit" class="btn btn-primary mt-3 mb-3" name="submit">Submit Evaluation</button>
-                                                            </div>
-
-                                                        </form>
-                                                    </div>
-                                                </div><!-- /.modal-content -->
-                                            </div><!-- /.modal-dialog -->
-                                        </div>
 
 
                                     </div> <!-- end .board-->
