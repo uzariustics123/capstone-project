@@ -1,4 +1,7 @@
 <?php
+$appURL = "https://zusa4.localtonet.com/capstone-project/";
+$GLOBALS[$appURL];
+
 function randomPassword()
 {
     $alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
@@ -155,9 +158,9 @@ function createUser($conn, $firstname, $lastname, $email)
         $recipient = $email;
         $hashed_email = base64_encode($email);
         $subject = "Clyde from Events Management System!";
-        $body = "To Register you need to click this <a href='http://localhost/capstone-project/views/pages-register-password.php?id=$user_id&email=$hashed_email'>link</a> and enter your password. <br>
+        $body = "To Register you need to click this <a href='" . $GLOBALS['appURL'] . "views/pages-register-password.php?id=$user_id&email=$hashed_email'>link</a> and enter your password. <br>
     If the link above did not work you can click this. <br>
-    http://localhost/capstone-project/views/pages-register-password.php?id=$user_id&email=$hashed_email
+    " . $GLOBALS['appURL'] . "views/pages-register-password.php?id=$user_id&email=$hashed_email
     ";
 
         mailSender($recipient, $subject, $body);
@@ -294,7 +297,7 @@ function resetPassword($conn, $email)
     $recipient = $email;
     $subject = "Password Recovery";
     $body = "Here is your temporary password. After logging in make sure to change your password <br><h1><b> " . $temp_pass . " </b></h1>";
-    //mailSender($recipient, $subject, $body);
+    mailSender($recipient, $subject, $body);
     session_start();
     $_SESSION["email"] = $emailExist["email"];
     header("location: ../views/pages-confirm-mail.php");
@@ -453,7 +456,7 @@ function editUserProfile($conn, $user_id, $firstname, $lastname, $file)
                     exit();
                 }
                 $trimmed = ltrim($filePath, "./");
-                $updated_path = "https://emapppp.000webhostapp.com/" . $trimmed;
+                $updated_path = $GLOBALS['appURL'] . $trimmed;
 
                 mysqli_stmt_bind_param($stmt, "sss", $firstname, $lastname, $updated_path);
                 mysqli_stmt_execute($stmt);
@@ -502,7 +505,7 @@ function setupProfile($conn, $user, $password, $firstname, $lastname, $file)
                         exit();
                     }
                     $trimmed = ltrim($filePath, "./");
-                    $updated_path = "https://emapppp.000webhostapp.com/" . $trimmed;
+                    $updated_path = $GLOBALS['appURL'] . $trimmed;
                     $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
                     mysqli_stmt_bind_param(
                         $stmt,
@@ -605,6 +608,8 @@ function createOrganization($conn, $organization_name, $organization_description
 
         $filePath = '../assets/uploads/' . $fileNew;
         $attachmentPath = '../assets/documents/' . $attachmentNew;
+        $trimmer = ltrim($attachmentPath, "./");
+        $updatedAttachmentPath = $GLOBALS['appURL'] . $trimmer;
 
         $org_status = 'pending';
 
@@ -619,9 +624,9 @@ function createOrganization($conn, $organization_name, $organization_description
                         exit();
                     }
                     $trimmed = ltrim($filePath, "./");
-                    $updated_path = "https://emapppp.000webhostapp.com/" . $trimmed;
+                    $updated_path = $GLOBALS['appURL'] . $trimmed;
 
-                    mysqli_stmt_bind_param($stmt, "ssssssss", $organization_name, $organization_description, $organization_address, $filePath, $date_created, $userid, $attachmentPath, $org_status);
+                    mysqli_stmt_bind_param($stmt, "ssssssss", $organization_name, $organization_description, $organization_address, $updated_path, $date_created, $userid, $updatedAttachmentPath, $org_status);
                     mysqli_stmt_execute($stmt);
 
 
@@ -777,7 +782,7 @@ function editOrganization($conn, $organization_id, $organization_name, $organiza
                     exit();
                 }
                 $trimmed = ltrim($filePath, "./");
-                $updated_path = "https://emapppp.000webhostapp.com/" . $trimmed;
+                $updated_path = $GLOBALS['appURL'] . $trimmed;
 
                 mysqli_stmt_bind_param($stmt, "ssss", $organization_name, $organization_description, $organization_address, $updated_path);
                 mysqli_stmt_execute($stmt);
@@ -841,7 +846,7 @@ function createDepartment($conn, $department_name, $department_desc, $department
                 }
 
                 $trimmed = ltrim($filePath, "./");
-                $updated_path = "https://emapppp.000webhostapp.com/" . $trimmed;
+                $updated_path = $GLOBALS['appURL'] . $trimmed;
 
                 mysqli_stmt_bind_param($stmt, "sssss", $department_name, $department_desc, $department_code, $updated_path, $organization_id);
                 mysqli_stmt_execute($stmt);
@@ -885,7 +890,7 @@ function editDepartment($conn, $department_name, $department_desc, $department_c
                 }
 
                 $trimmed = ltrim($filePath, "./");
-                $updated_path = "https://emapppp.000webhostapp.com/" . $trimmed;
+                $updated_path = $GLOBALS['appURL'] . $trimmed;
 
                 mysqli_stmt_bind_param($stmt, "ssss", $department_name, $department_desc, $department_code, $updated_path);
                 mysqli_stmt_execute($stmt);
@@ -1058,7 +1063,7 @@ function importMembers($conn, $department_id, $organization_id, $files, $org_adm
 
                         $subject = "Congratulations!!";
                         $body = "<h1><b>You have been successfully added to a department in your organization</b></h1>";
-                        //mailSender($email, $subject, $body);
+                        mailSender($email, $subject, $body);
                     }
                 } else if ($emailExist == false) {
 
@@ -1090,9 +1095,9 @@ function importMembers($conn, $department_id, $organization_id, $files, $org_adm
                         $recipient = $email;
                         $hashed_email = base64_encode($email);
                         $subject = "Clyde from Events Management System!";
-                        $body = "To Register you need to click this <a href='http://localhost/capstone-project/views/pages-register-password.php?id=$user_id&email=$hashed_email'>link</a> and enter your password. <br>
+                        $body = "To Register you need to click this <a href='" . $GLOBALS['appURL'] . "views/pages-register-password.php?id=$user_id&email=$hashed_email'>link</a> and enter your password. <br>
                             If the link above did not work you can click this. <br>
-                            http://localhost/capstone-project/views/pages-register-password.php?id=$user_id&email=$hashed_email";
+                            " . $GLOBALS['appURL'] . "views/pages-register-password.php?id=$user_id&email=$hashed_email";
                         mailSender($recipient, $subject, $body);
                     }
                 }
@@ -1228,9 +1233,9 @@ function createEvent($conn, $event_name, $event_description, $event_location, $d
             $hashed_participant_id = base64_encode($participant_id);
             $recipient = $row['member_email'];
             $subject = "Event Invitation";
-            $body = "Hey you are invited to attend you can view and confirm your attendance by logging in to your account or by clicking this <a href='http://localhost/capstone-project/confirm.attendance.prompt.php?participant_id=$hashed_participant_id'>link</a>.
+            $body = "Hey you are invited to attend you can view and confirm your attendance by logging in to your account or by clicking this <a href='" . $GLOBALS['appURL'] . "confirm.attendance.prompt.php?participant_id=$hashed_participant_id'>link</a>.
             or by clicking this link below <br>
-            http://localhost/capstone-project/confirm.attendance.prompt.php?participant_id=$hashed_participant_id
+            " . $GLOBALS['appURL'] . "confirm.attendance.prompt.php?participant_id=$hashed_participant_id
             ";
 
             mailSender($recipient, $subject, $body);
@@ -1265,7 +1270,7 @@ function deleteEvent($conn, $event_id, $organization_id, $department_id)
         $recipient = $row['member_email'];
         $subject = $row['event_name'];
         $body = 'The Event ' . $subject . ' has been deleted ';
-        //mailSender($recipient, $subject, $body);
+        mailSender($recipient, $subject, $body);
     }
 
 
@@ -1328,13 +1333,20 @@ function approveEvent($conn, $event_id)
     $query = "SELECT * FROM events 
                 RIGHT OUTER JOIN departments ON events.department_id = departments.department_id
                 RIGHT OUTER JOIN members ON events.department_id = members.department_id
+                RIGHT OUTER JOIN participants ON participants.member_reference_id = members.member_id
                 WHERE events.event_id = $event_id;";
     $results = $conn->query($query);
     while ($row = $results->fetch_assoc()) {
+        $participant_id = $row['participant_id'];
+        $hashed_participant_id = base64_encode($participant_id);
         $recipient = $row['member_email'];
-        $subject = $row['event_name'];
-        $body = 'Hey you are invited to attend ' . $subject . ' you can view and confirm your attendance by logging in to your account';
-        //mailSender($recipient, $subject, $body);
+        $subject = "Event Invitation";
+        $body = "Hey you are invited to attend you can view and confirm your attendance by logging in to your account or by clicking this <a href='" . $GLOBALS['appURL'] . "confirm.attendance.prompt.php?participant_id=$hashed_participant_id'>link</a>.
+            or by clicking this link below <br>
+            " . $GLOBALS['appURL'] . "confirm.attendance.prompt.php?participant_id=$hashed_participant_id
+            ";
+
+        mailSender($recipient, $subject, $body);
     }
 
     session_start();

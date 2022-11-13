@@ -384,7 +384,14 @@
                                 <div class="page-title-box">
                                     <h4 class="page-title">Participants</h4>
                                     <a href="#" class="btn btn-success btn-sm ms-3 mb-2" data-bs-toggle="modal" data-bs-target="#add_participant"> <i class="mdi mdi-plus"></i> Add Participant</a>
-                                    <a href="evaluation-creation-tool.php?event_id=<?= $event_id ?>" class="btn btn-info btn-sm ms-3 mb-2"> <i class="mdi mdi-plus"></i> Add Evaluation</a>
+                                    <?php
+                                    $event_date;
+                                    $now = date('Y-m-d');
+                                    $parsed_date = date("Y-m-d", strtotime($event_date));
+                                    if ($now < $parsed_date) {
+                                    ?>
+                                        <a href="evaluation-creation-tool.php?event_id=<?= $event_id ?>" class="btn btn-info btn-sm ms-3 mb-2"> <i class="mdi mdi-plus"></i> Add Evaluation</a>
+                                    <?php } ?>
                                 </div>
                             </div>
                         </div>
@@ -605,7 +612,7 @@
                                 <div class="card tilebox-one">
                                     <div class="card-body">
                                         <i class='uil uil-analytics float-end'></i>
-                                        <h4 class="text-uppercase mt-0">Attended</h4>
+                                        <h4 class="text-uppercase mt-0">Attendance</h4>
                                         <?php
                                         $query = "SELECT * FROM attendances
                                                 RIGHT OUTER JOIN participants ON participants.participant_id = attendances.participant_reference_id
@@ -634,8 +641,7 @@
                                         <i class='uil uil-file-check-alt float-end'></i>
                                         <h4 class="text-uppercase mt-0">Evaluated</h4>
                                         <?php
-                                        $query = "SELECT * FROM evaluations 
-                                        WHERE event_reference_id = $event_id;";
+                                        $query = "SELECT * FROM evaluations WHERE event_reference_id = $event_id GROUP BY evaluations.`user_reference_id` HAVING COUNT(*) > 0;";
                                         $results = $conn->query($query);
                                         $total = $results->num_rows;
                                         ?>

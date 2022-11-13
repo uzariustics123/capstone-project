@@ -57,35 +57,35 @@
 
                                                                 <div class="form-check list-group-item d-flex list-group-item-success test">
                                                                     &nbsp;
-                                                                    <input class="form-check-input" type="radio" name="<?= $row['question_id'] ?>" id="<?= $row['question_id'] . "1" ?>" value="very_satisfied">
+                                                                    <input class="form-check-input" type="radio" name="<?= $row['question_id'] ?>" id="<?= $row['question_id'] . "1" ?>" value="Very Satisfied">
                                                                     <label class="form-check-label" for="<?= $row['question_id'] . "1" ?>">
                                                                         &nbsp; 😁 Very Satisfied
                                                                     </label>
                                                                 </div>
                                                                 <div class="form-check list-group-item d-flex list-group-item-primary test">
                                                                     &nbsp;
-                                                                    <input class="form-check-input" type="radio" name="<?= $row['question_id'] ?>" id="<?= $row['question_id'] . "2" ?>" value="satisfied">
+                                                                    <input class="form-check-input" type="radio" name="<?= $row['question_id'] ?>" id="<?= $row['question_id'] . "2" ?>" value="Satisfied">
                                                                     <label class="form-check-label" for="<?= $row['question_id'] . "2" ?>">
                                                                         &nbsp; 🙂 Satisfied
                                                                     </label>
                                                                 </div>
                                                                 <div class="form-check list-group-item d-flex list-group-item-info test">
                                                                     &nbsp;
-                                                                    <input class="form-check-input" type="radio" name="<?= $row['question_id'] ?>" id="<?= $row['question_id'] . "3" ?>" value="fair" checked>
+                                                                    <input class="form-check-input" type="radio" name="<?= $row['question_id'] ?>" id="<?= $row['question_id'] . "3" ?>" value="Fair" checked>
                                                                     <label class="form-check-label" for="<?= $row['question_id'] . "3" ?>">
                                                                         &nbsp; 😐 Fair
                                                                     </label>
                                                                 </div>
                                                                 <div class="form-check list-group-item d-flex list-group-item-warning test">
                                                                     &nbsp;
-                                                                    <input class="form-check-input" type="radio" name="<?= $row['question_id']  ?>" id="<?= $row['question_id'] . "4" ?>" value="poor">
+                                                                    <input class="form-check-input" type="radio" name="<?= $row['question_id']  ?>" id="<?= $row['question_id'] . "4" ?>" value="Poor">
                                                                     <label class="form-check-label" for="<?= $row['question_id'] . "4" ?>">
                                                                         &nbsp; 😕 Poor
                                                                     </label>
                                                                 </div>
                                                                 <div class="form-check list-group-item d-flex list-group-item-danger test">
                                                                     &nbsp;
-                                                                    <input class="form-check-input" type="radio" name="<?= $row['question_id'] ?>" id="<?= $row['question_id'] . "5" ?>" value="very_poor">
+                                                                    <input class="form-check-input" type="radio" name="<?= $row['question_id'] ?>" id="<?= $row['question_id'] . "5" ?>" value="Very Poor">
                                                                     <label class="form-check-label" for="<?= $row['question_id'] . "5" ?>">
                                                                         &nbsp; 😒 Very Poor
                                                                     </label>

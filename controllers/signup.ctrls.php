@@ -28,40 +28,6 @@ if (isset($_POST['submit'])) {
     header("location: ../views/pages-register.php");
     exit();
   }
-  if (strlen($password) < 6 && strlen($repeat_password) < 6) {
-    session_start();
-    $_SESSION['status'] = "
-        <script>const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000
-      })
-
-      Toast.fire({
-        icon: 'warning',
-        title: 'Password must be at least 6 characters'
-      })</script>";
-    header("location: ../views/pages-register.php");
-    exit();
-  }
-  if (pwdMatch($password, $repeat_password) !== false) {
-    session_start();
-    $_SESSION['status'] = "
-        <script>const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000
-      })
-
-      Toast.fire({
-        icon: 'warning',
-        title: 'Passwords do not match'
-      })</script>";
-    header("location: ../views/pages-register.php");
-    exit();
-  }
 
   if (invalidEmail($email) !== false) {
     session_start();

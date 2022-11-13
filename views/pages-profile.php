@@ -123,8 +123,8 @@
                                                         if (!file_exists($PNG_TEMP_DIR))
                                                             mkdir($PNG_TEMP_DIR);
                                                         $filename = $PNG_TEMP_DIR . 'test.png';
-                                                        $codeString = bin2hex($user);
-                                                        $hexed = $codeString;
+                                                        $codeString = "userid:" . bin2hex($user);
+                                                        $hexed =  $codeString;
                                                         $filename = $PNG_TEMP_DIR . 'test' . md5($hexed) . '.png';
                                                         QRcode::png($hexed, $filename);
                                                         $file = $PNG_TEMP_DIR . basename($filename);
@@ -215,9 +215,71 @@
                                                 while ($row = $results->fetch_assoc()) {
                                                     $event_date = $row['event_date'];
                                                     $now = date('Y-m-d');
-                                                    $parsed_date = date("M d, Y", strtotime($event_date));
-                                                    if ($parsed_date >= $now) {
+                                                    $parsed_date = date("Y-m-d", strtotime($event_date));
+                                                    $event_id = $row['event_id']
                                                 ?>
+                                                    <?php
+                                                    $sql = "SELECT * FROM  evaluations WHERE event_reference_id =$event_id AND user_reference_id = $user;";
+                                                    $number = $conn->query($sql);
+                                                    $rowCount = mysqli_num_rows($number);
+                                                    if ($rowCount < 1) {
+
+                                                    ?>
+                                                        <?php
+                                                        $sql = "SELECT * FROM  attendances WHERE event_reference_id =$event_id AND attendance_user_id = $user AND attendance_status = 'attended'";
+                                                        $number = $conn->query($sql);
+                                                        $rowCount = mysqli_num_rows($number);
+                                                        if ($rowCount == 0) {
+                                                        ?>
+                                                            <div class="card mb-0">
+                                                                <div class="card-body p-3">
+
+                                                                    <small class="float-end text-muted"><?= $row['event_date'] ?></small>
+                                                                    <span class="badge bg-success"><?= $row['participant_status'] ?></span>
+                                                                    <h2 class="mt-2 mb-2">
+
+                                                                        <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body"><?= $row['event_name'] ?></a>
+                                                                        </h3>
+                                                                        <p><b><?= $row['dept_name'] ?></b></p>
+                                                                        <p><?= $row['event_description'] ?></p>
+
+
+                                                                </div> <!-- end card-body -->
+                                                            </div>
+                                                <?php
+                                                        }
+                                                    }
+                                                }
+                                                ?>
+                                            </div> <!-- end company-list-2-->
+                                        </div>
+
+                                        <div class="tasks">
+                                            <h5 class="mt-0 task-header text-uppercase">Attended</h5>
+
+                                            <div id="task-list-two" class="task-list-items">
+                                                <?php
+                                                $query = "SELECT * FROM events
+                                                        RIGHT OUTER JOIN participants ON participants.event_id = events.event_id
+                                                        RIGHT OUTER JOIN members ON participants.member_reference_id = members.member_id
+                                                        RIGHT OUTER JOIN users ON members.user_reference_id = users.userid
+                                                        RIGHT OUTER JOIN departments ON events.`department_id` = departments.`department_id`
+                                                        WHERE users.userid = $user AND participant_status = 'confirmed' 
+                                                        ORDER BY event_date ASC;";
+
+                                                $results = $conn->query($query);
+                                                while ($row = $results->fetch_assoc()) {
+                                                    $event_date = $row['event_date'];
+                                                    $now = date('Y-m-d');
+                                                    $parsed_date = date("Y-m-d", strtotime($event_date));
+                                                    $event_id = $row['event_id']
+                                                ?>
+                                                    <?php
+                                                    $sql = "SELECT * FROM  attendances WHERE event_reference_id =$event_id AND attendance_user_id = $user AND attendance_status = 'attended'";
+                                                    $number = $conn->query($sql);
+                                                    $rowCount = mysqli_num_rows($number);
+                                                    if ($rowCount != 0) {
+                                                    ?>
                                                         <div class="card mb-0">
                                                             <div class="card-body p-3">
                                                                 <?php $event_id = $row['event_id'] ?>
@@ -229,82 +291,71 @@
                                                                     </h3>
                                                                     <p><b><?= $row['dept_name'] ?></b></p>
                                                                     <p><?= $row['event_description'] ?></p>
-
                                                                     <?php
-                                                                    $sql = "SELECT * FROM  evaluations WHERE event_reference_id =$event_id AND user_reference_id = $user";
-                                                                    $number = $conn->query($sql);
-                                                                    $rowCount = mysqli_num_rows($number);
-                                                                    if ($rowCount < 0) {
+                                                                    if ($parsed_date >= $now) {
                                                                     ?>
                                                                         <div class="text-center">
-                                                                            <a href="pages-add-evaluation.php?event_id=<?= $row['event_id'] ?>" class="btn btn-info">Evaluate <?= $row['event_id'] ?></a>
+                                                                            <a href="pages-add-evaluation.php?event_id=<?= $row['event_id'] ?>" class="btn btn-info">Evaluate</a>
                                                                         </div>
-                                                                    <?php } ?>
+                                                                    <?php
+
+                                                                    }
+                                                                    ?>
                                                             </div> <!-- end card-body -->
                                                         </div>
-                                                <?php }
+                                                <?php
+                                                    }
                                                 }
                                                 ?>
                                             </div> <!-- end company-list-2-->
                                         </div>
 
 
-                                        <div class="modal fade" id="evaluate_modal" tabindex="-1" role="dialog" aria-hidden="true">
-                                            <div class="modal-dialog  modal-lg">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h3 class="modal-title" id="myCenterModalLabel">Event Evaluation</h3>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-
-                                                    </div>
-                                                </div><!-- /.modal-content -->
-                                            </div><!-- /.modal-dialog -->
-                                        </div>
-
-                                        <!-- BUUUG!!! -->
                                         <div class="tasks">
                                             <h5 class="mt-0 task-header text-uppercase">Evaluated</h5>
-                                            <?php
-                                            $query = "SELECT * FROM events
-                                                    RIGHT OUTER JOIN participants ON participants.event_id = events.event_id
-                                                    RIGHT OUTER JOIN members ON participants.member_reference_id = members.member_id
-                                                    RIGHT OUTER JOIN users ON members.user_reference_id = users.userid
-                                                    RIGHT OUTER JOIN attendances ON attendances.event_reference_id = events.event_id
-                                                    WHERE users.userid = $user AND participant_status = 'confirmed'
-                                                    GROUP BY events.event_id
-                                                    HAVING COUNT(*) > 0
-                                                    ORDER BY event_date ASC;";
 
-                                            $results = $conn->query($query);
-                                            while ($row = $results->fetch_assoc()) {
-                                            ?>
+                                            <div id="task-list-two" class="task-list-items">
                                                 <?php
-                                                $event_id = $row['event_id'];
-                                                $sql = "SELECT * FROM evaluations WHERE user_reference_id = $user;";
-                                                $result = $conn->query($sql);
-                                                while ($rows = $result->fetch_assoc()) {
-                                                    if ($rows['event_reference_id'] == $event_id) {
-                                                ?>
-                                                        <div id="task-list-three" class="task-list-items">
-                                                            <div class="card mb-0">
-                                                                <div class="card-body p-3">
-                                                                    <?= $rows['evaluation_id'] ?>
-                                                                    <small class="float-end text-muted"><?= $row['event_date'] ?></small>
-                                                                    <span class="badge bg-success">Attended and Evaluated</span>
-                                                                    <h3 class="mt-2 mb-2 text-center">
-                                                                        <?= $row['event_name'] ?>
-                                                                    </h3>
-                                                                </div> <!-- end card-body -->
-                                                            </div>
-                                                        </div>
-                                                <?php }
-                                                } ?>
-                                            <?php } ?>
-                                        </div>
-                                        <!-- BUUUG!!! -->
+                                                $query = "SELECT * FROM events
+                                                        RIGHT OUTER JOIN participants ON participants.event_id = events.event_id
+                                                        RIGHT OUTER JOIN members ON participants.member_reference_id = members.member_id
+                                                        RIGHT OUTER JOIN users ON members.user_reference_id = users.userid
+                                                        RIGHT OUTER JOIN departments ON events.`department_id` = departments.`department_id`
+                                                        WHERE users.userid = $user AND participant_status = 'confirmed' 
+                                                        ORDER BY event_date ASC;";
 
+                                                $results = $conn->query($query);
+                                                while ($row = $results->fetch_assoc()) {
+                                                    $event_date = $row['event_date'];
+                                                    $now = date('Y-m-d');
+                                                    $parsed_date = date("Y-m-d", strtotime($event_date));
+                                                    $event_id = $row['event_id']
+                                                ?>
+                                                    <?php
+                                                    $sql = "SELECT * FROM  evaluations WHERE event_reference_id =$event_id AND user_reference_id = $user";
+                                                    $number = $conn->query($sql);
+                                                    $rowCount = mysqli_num_rows($number);
+                                                    if ($rowCount != 0) {
+                                                    ?>
+                                                        <div class="card mb-0">
+                                                            <div class="card-body p-3">
+                                                                <?php $event_id = $row['event_id'] ?>
+                                                                <small class="float-end text-muted"><?= $row['event_date'] ?></small>
+                                                                <span class="badge bg-success"><?= $row['participant_status'] ?></span>
+                                                                <h2 class="mt-2 mb-2">
+
+                                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#task-detail-modal" class="text-body"><?= $row['event_name'] ?></a>
+                                                                    </h3>
+                                                                    <p><b><?= $row['dept_name'] ?></b></p>
+                                                                    <p><?= $row['event_description'] ?></p>
+                                                            </div> <!-- end card-body -->
+                                                        </div>
+                                                <?php
+                                                    }
+                                                }
+                                                ?>
+                                            </div> <!-- end company-list-2-->
+                                        </div>
 
 
 

@@ -421,11 +421,15 @@
                     <div class="col-12">
                         <div class="page-title-box">
                             <h4 class="page-title">Events
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#centermodal" class="btn btn-success btn-sm ms-3">Add New Event</a>
+                                <?php
+                                if ($usertype == 'organizer' || $usertype == 'admin' || $org_admin_id == $user) {
+                                ?>
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#centermodal" class="btn btn-success btn-sm ms-3">Add New Event</a><?php } ?>
                             </h4>
                         </div>
                     </div>
                 </div>
+
 
                 <!-- end page title -->
                 <div class="row">
@@ -565,7 +569,7 @@
                                     $results = $conn->query($query);
                                     while ($row = $results->fetch_assoc()) {
                                         $parsed_date = date("Y-m-d", strtotime($row['event_date']));
-                                        if ($parsed_date > $now) {
+                                        if ($parsed_date = $now) {
                                     ?>
                                             <!-- Task Item -->
                                             <div class="card mb-0">
