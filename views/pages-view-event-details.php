@@ -46,10 +46,13 @@
                                 WHERE event_id = $event_id;";
                     $results = $conn->query($query);
                     while ($row = $results->fetch_assoc()) {
+
                         $department_id = $row['department_id'];
                         $event_date = $row['event_date'];
                         $event_all_day = $row['event_all_day'];
                         $organization_id = $row['organization_id'];
+                        $event_end_time_pm = $row['event_end_time_pm'];
+
                     ?>
 
                         <div class="modal fade" id="edit-event-modal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -388,7 +391,7 @@
                                     $event_date;
                                     $now = date('Y-m-d');
                                     $parsed_date = date("Y-m-d", strtotime($event_date));
-                                    if ($now < $parsed_date) {
+                                    if ($now <= $parsed_date) {
                                     ?>
                                         <a href="evaluation-creation-tool.php?event_id=<?= $event_id ?>" class="btn btn-info btn-sm ms-3 mb-2"> <i class="mdi mdi-plus"></i> Add Evaluation</a>
                                     <?php } ?>
@@ -455,6 +458,8 @@
                                                         date_default_timezone_set('Asia/Manila');
                                                         $now = date('Y-m-d');
                                                         $parsed_date = date("Y-m-d", strtotime($event_date));
+                                                        date_default_timezone_set('Asia/Manila');
+                                                        $current_time = date('h:i:s');
                                                         ?>
                                                         <thead>
                                                             <tr>

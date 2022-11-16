@@ -18,7 +18,7 @@ $userid = isset($_POST["userid"]) ? $_POST['userid'] : endProcessWithMessage("us
 
 $query = $db->prepare("SELECT * FROM evaluations
 RIGHT OUTER JOIN users ON users.userid = evaluations.user_reference_id
-WHERE evaluations.event_reference_id = ?");
+WHERE evaluations.event_reference_id = ? GROUP BY evaluations.user_reference_id");
 $query->bind_param('i', $eventid);
 $query->execute();
 //execute the query

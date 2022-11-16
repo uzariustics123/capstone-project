@@ -60,7 +60,8 @@
                                                             <th>Attendance Out PM</th>
                                                         <?php   } else { ?>
                                                             <th>Attendance In</th>
-                                                            <th>Attendance Out</th><?php } ?>
+                                                            <th>Attendance Out</th>
+                                                        <?php } ?>
                                                     </tr>
                                                 </thead>
 

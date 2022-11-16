@@ -1,6 +1,6 @@
 <?php
-$appURL = "https://zusa4.localtonet.com/capstone-project/";
-$GLOBALS[$appURL];
+$appURL = "https://wterm.localtonet.com/capstone-project/";
+$GLOBALS['appURL'];
 
 function randomPassword()
 {

@@ -93,7 +93,7 @@
 
                                                             </ul>
                                                         <?php } else { ?>
-                                                            <input class="form-control" type="text" name="<?= $row['question_id'] ?>" id="<?= $row['question_id'] ?>" />
+                                                            <input class="form-control" type="text" name="<?= $row['question_id'] ?>" id="<?= $row['question_id'] ?>" value="Empty" />
 
                                                         <?php } ?>
                                                     </footer>

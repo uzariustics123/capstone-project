@@ -24,9 +24,9 @@ $result = array();
 
 if ($row = $user->num_rows > 0) {
 
-    $result = array('status' => 'success', 'message' => "you already have a evaluation of this event");
+    $result = array('status' => 'success', 'message' => "you already have an evaluation of this event");
     echo json_encode($result);
 } else {
 
-    endProcessWithMessage("No evaluation has been made for this event.");
+    endProcessWithMessage("haven't evaluated yet.");
 }

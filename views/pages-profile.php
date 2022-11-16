@@ -226,7 +226,7 @@
 
                                                     ?>
                                                         <?php
-                                                        $sql = "SELECT * FROM  attendances WHERE event_reference_id =$event_id AND attendance_user_id = $user AND attendance_status = 'attended'";
+                                                        $sql = "SELECT * FROM  attendances WHERE event_reference_id =$event_id AND attendance_user_id = $user AND attendance_status = 'attended' OR attendance_status = 'late'";
                                                         $number = $conn->query($sql);
                                                         $rowCount = mysqli_num_rows($number);
                                                         if ($rowCount == 0) {
@@ -275,7 +275,7 @@
                                                     $event_id = $row['event_id']
                                                 ?>
                                                     <?php
-                                                    $sql = "SELECT * FROM  attendances WHERE event_reference_id =$event_id AND attendance_user_id = $user AND attendance_status = 'attended'";
+                                                    $sql = "SELECT * FROM  attendances WHERE event_reference_id =$event_id AND attendance_user_id = $user AND attendance_status = 'attended' OR attendance_status = 'late'";
                                                     $number = $conn->query($sql);
                                                     $rowCount = mysqli_num_rows($number);
                                                     if ($rowCount != 0) {

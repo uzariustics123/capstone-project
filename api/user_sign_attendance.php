@@ -11,6 +11,7 @@ $orgid = isset($_POST["orgid"]) ? $_POST['orgid'] : endProcessWithMessage("orgid
 $deptid = isset($_POST["deptid"]) ? $_POST['deptid'] : endProcessWithMessage("deptid not set");
 $eventid = isset($_POST["eventid"]) ? $_POST['eventid'] : endProcessWithMessage("eventid not set");
 $attendancetype = isset($_POST["attendancetype"]) ? $_POST["attendancetype"] : endProcessWithMessage("attendancetype is missing");
+
 $scannedUserid = isset($_POST["clientUserid"]) ? $_POST["clientUserid"] : endProcessWithMessage("scan user id is missing");
 // $usertypes = isset($_POST["usertype"]) ? $_POST['usertype'] : endProcessWithMessage("usertype not set");
 //$data = json_decode(file_get_contents("php://input"))
@@ -48,11 +49,12 @@ if ($_POST["tag"] == "attend") {
         endProcessWithMessage("This user is not a participant of this event.");
     }
 } else if ($_POST["tag"] == "confirm_attend") {
-    $checkExistingAttendamce = $db->prepare("SELECT * FROM attendances WHERE attendance_user_id = ? AND attendance_type = ?");
-    $checkExistingAttendamce->bind_param('is', $scannedUserid, $attendancetype);
+    $checkExistingAttendamce = $db->prepare("SELECT * FROM attendances 
+    WHERE attendance_user_id = ? AND attendance_type = ? AND event_reference_id  = ?");
+    $checkExistingAttendamce->bind_param('isi', $scannedUserid, $attendancetype, $eventid);
     $checkExistingAttendamce->execute();
-    if ($checkExistingAttendamce->get_result()->num_rows > 0) {
 
+    if ($checkExistingAttendamce->get_result()->num_rows > 0) {
         endProcessWithMessage("A participant already attended");
     } else {
     }
@@ -68,6 +70,7 @@ if ($_POST["tag"] == "attend") {
     event_reference_id = ?");
     $query->bind_param('siisi', $attendancetype, $participantid, $scannedUserid, $attendancestatus, $eventid);
     $query->execute();
+    $users = $query->get_result();
     $users = $query->get_result();
     $result = array();
 

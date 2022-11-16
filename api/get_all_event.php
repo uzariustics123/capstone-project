@@ -12,7 +12,7 @@ $orgid = isset($_POST["orgid"]) ? $_POST['orgid'] : endProcessWithMessage("orgid
 
 $query = $db->prepare("SELECT * FROM events
 LEFT OUTER JOIN departments ON departments.department_id = events.department_id
-WHERE departments.organization_id = ? ");
+WHERE departments.organization_id = ?");
 $query->bind_param('i', $orgid);
 $query->execute();
 
